@@ -206,19 +206,19 @@ const Navbar = () => {
           </div>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden md:flex items-center gap-1 lg:gap-3">
+          <nav className="hidden md:flex items-center gap-1 lg:gap-4">
             {navLinks.map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
-                className={`relative px-3 py-2 text-sm font-bold transition-all duration-200 ${
+                className={`px-3 py-2 text-sm transition-colors duration-200 ${
                   isActive(link.path)
                     ? isTransparent
-                      ? 'text-white font-extrabold after:content-[""] after:absolute after:bottom-0 after:left-3 after:right-3 after:h-0.5 after:bg-[#00C9B7]'
-                      : 'text-[#00C9B7] font-extrabold after:content-[""] after:absolute after:bottom-0 after:left-3 after:right-3 after:h-0.5 after:bg-[#00C9B7]'
+                      ? 'text-white font-extrabold'
+                      : 'text-[#00C9B7] font-extrabold'
                     : isTransparent
-                      ? 'text-white/80 hover:text-white'
-                      : 'text-gray-700 hover:text-[#00C9B7]'
+                      ? 'text-white/80 hover:text-white font-semibold'
+                      : 'text-gray-700 hover:text-[#00C9B7] font-semibold'
                 }`}
               >
                 {link.name}
