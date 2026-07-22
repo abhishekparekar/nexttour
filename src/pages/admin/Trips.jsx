@@ -438,8 +438,8 @@ const AdminTrips = () => {
     <div className="bg-gray-50 min-h-screen pb-12">
       <div className="bg-white border-b border-gray-100 px-4 py-3 flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h1 className="text-lg font-bold text-gray-900">Manage Trips</h1>
-          <p className="text-gray-400 text-xs mt-0.5">{trips.length} trips total</p>
+          <h1 className="text-base font-bold text-gray-900">Manage Trips</h1>
+          <p className="text-gray-600 text-xs mt-0.5">{trips.length} trips total</p>
         </div>
         <button onClick={handleAddNew} className="btn-primary flex items-center gap-2">
           <Plus size={18} /> Add New Trip
@@ -492,7 +492,7 @@ const AdminTrips = () => {
                         <img src={trip.images?.[0]} alt={trip.title} className="w-20 h-14 rounded-lg object-cover bg-gray-100" />
                         <div>
                           <div className="text-gray-900 font-semibold">{trip.title}</div>
-                          <div className="text-gray-500 text-sm">{trip.location}</div>
+                          <div className="text-gray-600 text-sm">{trip.location}</div>
                         </div>
                       </div>
                     </td>
@@ -511,16 +511,16 @@ const AdminTrips = () => {
                     </td>
                     <td className="p-4">
                       {trip.featured ? (
-                        <span className="px-2 py-0.5 bg-[#E6FAF8] text-[#00A192] border border-[#00C9B7]/30 rounded-full text-[10px] font-bold flex items-center gap-1"><Star size={10} className="fill-[#00C9B7] text-[#00C9B7]" /> Featured</span>
+                        <span className="px-2 py-0.5 bg-[#E6FAF8] text-[#00A192] border border-[#00C9B7]/30 rounded-full text-xs font-bold flex items-center gap-1"><Star size={10} className="fill-[#00C9B7] text-[#00C9B7]" /> Featured</span>
                       ) : (
-                        <span className="text-gray-400 text-sm">-</span>
+                        <span className="text-gray-600 text-sm">-</span>
                       )}
                     </td>
                     <td className="p-4">
                       {trip.upcoming ? (
                         <span className="px-3 py-1 bg-blue-50 text-blue-700 border border-blue-200 rounded-full text-xs font-semibold">📅 Upcoming</span>
                       ) : (
-                        <span className="text-gray-400 text-sm">-</span>
+                        <span className="text-gray-600 text-sm">-</span>
                       )}
                     </td>
                     <td className="p-4">
@@ -564,7 +564,7 @@ const AdminTrips = () => {
               {/* Basic Information Section */}
               <div className="bg-white rounded-2xl overflow-hidden border border-gray-200 shadow-sm">
                 <button type="button" onClick={() => toggleSection('basic')} className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors">
-                  <span className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                  <span className="text-base font-bold text-gray-900 flex items-center gap-2">
                     <span className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center text-white text-sm">1</span>
                     Basic Information
                   </span>
@@ -731,7 +731,7 @@ const AdminTrips = () => {
               {/* Images Section */}
               <div className="bg-white rounded-2xl overflow-hidden border border-gray-200 shadow-sm">
                 <button type="button" onClick={() => toggleSection('images')} className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors">
-                  <span className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                  <span className="text-base font-bold text-gray-900 flex items-center gap-2">
                     <span className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center text-white text-sm">2</span>
                     Trip Images ({editingTrip.images?.length || 0})
                   </span>
@@ -740,7 +740,7 @@ const AdminTrips = () => {
                 
                 {expandedSections.includes('images') && (
                   <div className="p-6 pt-2 space-y-4">
-                    <p className="text-gray-500 text-sm">Upload images (auto-compressed to 100-200KB)</p>
+                    <p className="text-gray-600 text-sm">Upload images (auto-compressed to 100-200KB)</p>
                     
                     {editingTrip.images?.length > 0 && (
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -773,7 +773,7 @@ const AdminTrips = () => {
               {/* Highlights Section */}
               <div className="bg-white rounded-2xl overflow-hidden border border-gray-200 shadow-sm">
                 <button type="button" onClick={() => toggleSection('highlights')} className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors">
-                  <span className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                  <span className="text-base font-bold text-gray-900 flex items-center gap-2">
                     <span className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center text-white text-sm">3</span>
                     Trip Highlights ({typeof editingTrip.highlights === 'string' ? editingTrip.highlights.split(',').map(h => h.trim()).filter(Boolean).length : (editingTrip.highlights || []).length})
                   </span>
@@ -799,7 +799,7 @@ const AdminTrips = () => {
               {/* Inclusions Section */}
               <div className="bg-white rounded-2xl overflow-hidden border border-gray-200 shadow-sm">
                 <button type="button" onClick={() => toggleSection('inclusions')} className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors">
-                  <span className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                  <span className="text-base font-bold text-gray-900 flex items-center gap-2">
                     <span className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center text-white text-sm">4</span>
                     Inclusions & Exclusions
                   </span>
@@ -852,7 +852,7 @@ const AdminTrips = () => {
               {/* Itinerary Section */}
               <div className="bg-white rounded-2xl overflow-hidden border border-gray-200 shadow-sm">
                 <button type="button" onClick={() => toggleSection('itinerary')} className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors">
-                  <span className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                  <span className="text-base font-bold text-gray-900 flex items-center gap-2">
                     <span className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center text-white text-sm">5</span>
                     Day-wise Itinerary ({(editingTrip.itinerary || []).length})
                   </span>
@@ -926,7 +926,7 @@ const AdminTrips = () => {
               {/* Departure Dates / Batches Section */}
               <div className="bg-white rounded-2xl overflow-hidden border border-gray-200 shadow-sm">
                 <button type="button" onClick={() => toggleSection('availableDates')} className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors">
-                  <span className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                  <span className="text-base font-bold text-gray-900 flex items-center gap-2">
                     <span className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center text-white text-sm">6</span>
                     Departure Dates / Batches ({(editingTrip.availableDates || []).length + (editingTrip.pickupLocations || []).filter(p => p.date).length})
                   </span>
@@ -949,12 +949,12 @@ const AdminTrips = () => {
                         <span className="text-gray-900 font-bold text-xs flex items-center gap-1.5">
                           🛠️ Custom Recurring Batch Generator
                         </span>
-                        <span className="text-[11px] text-primary-600 font-semibold">Pick Any Days & Duration</span>
+                        <span className="text-xs text-primary-600 font-semibold">Pick Any Days & Duration</span>
                       </div>
 
                       {/* Day Selection Checkboxes */}
                       <div>
-                        <span className="block text-gray-700 text-[11px] font-semibold mb-1.5">1. Select Days of the Week:</span>
+                        <span className="block text-gray-700 text-xs font-semibold mb-1.5">1. Select Days of the Week:</span>
                         <div className="flex flex-wrap gap-1.5">
                           {[
                             { label: 'Mon', val: 1 },
@@ -991,7 +991,7 @@ const AdminTrips = () => {
                       {/* Duration Dropdown & Generate Button */}
                       <div className="flex flex-col sm:flex-row items-stretch sm:items-end gap-2 pt-1">
                         <div className="flex-1">
-                          <span className="block text-gray-700 text-[11px] font-semibold mb-1">2. Select Duration / Weeks:</span>
+                          <span className="block text-gray-700 text-xs font-semibold mb-1">2. Select Duration / Weeks:</span>
                           <select
                             value={recurrenceWeeks}
                             onChange={(e) => setRecurrenceWeeks(parseInt(e.target.value) || 4)}
@@ -1022,7 +1022,7 @@ const AdminTrips = () => {
                       </span>
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                         <div>
-                          <label className="block text-gray-700 text-[11px] font-semibold mb-1">Select Date *</label>
+                          <label className="block text-gray-700 text-xs font-semibold mb-1">Select Date *</label>
                           <input
                             type="date"
                             value={newDateInput}
@@ -1031,7 +1031,7 @@ const AdminTrips = () => {
                           />
                         </div>
                         <div>
-                          <label className="block text-gray-700 text-[11px] font-semibold mb-1">Time (Optional)</label>
+                          <label className="block text-gray-700 text-xs font-semibold mb-1">Time (Optional)</label>
                           <input
                             type="text"
                             placeholder="e.g., 10:00 PM"
@@ -1041,7 +1041,7 @@ const AdminTrips = () => {
                           />
                         </div>
                         <div>
-                          <label className="block text-gray-700 text-[11px] font-semibold mb-1">Pickup Location (Optional)</label>
+                          <label className="block text-gray-700 text-xs font-semibold mb-1">Pickup Location (Optional)</label>
                           <input
                             type="text"
                             placeholder="e.g., Wakad, Pune"
@@ -1115,7 +1115,7 @@ const AdminTrips = () => {
                               Configured Departure Dates ({totalCount})
                             </label>
                             {totalCount === 0 ? (
-                              <div className="text-center py-6 border border-dashed border-gray-200 rounded-xl bg-gray-50 text-gray-400 text-xs font-medium">
+                              <div className="text-center py-6 border border-dashed border-gray-200 rounded-xl bg-gray-50 text-gray-600 text-xs font-medium">
                                 No departure dates added yet. Pick a date above or use the generator!
                               </div>
                             ) : (
@@ -1136,7 +1136,7 @@ const AdminTrips = () => {
                                         </div>
                                         <div className="truncate">
                                           <span className="text-sm font-bold text-gray-800 block leading-tight truncate">{formatted}</span>
-                                          <span className="text-[10px] text-gray-500 font-medium block leading-none mt-0.5 truncate">{item.time} | {item.location}</span>
+                                          <span className="text-xs text-gray-500 font-medium block leading-none mt-0.5 truncate">{item.time} | {item.location}</span>
                                         </div>
                                       </div>
                                       <button
@@ -1175,7 +1175,7 @@ const AdminTrips = () => {
               {/* Pickup Information Section */}
               <div className="bg-white rounded-2xl overflow-hidden border border-gray-200 shadow-sm">
                 <button type="button" onClick={() => toggleSection('pickup')} className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors">
-                  <span className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                  <span className="text-base font-bold text-gray-900 flex items-center gap-2">
                     <span className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center text-white text-sm">7</span>
                     Pickup Locations ({(editingTrip.pickupLocations || []).length})
                   </span>
@@ -1184,7 +1184,7 @@ const AdminTrips = () => {
                 
                 {expandedSections.includes('pickup') && (
                   <div className="p-6 pt-2 space-y-4">
-                    <p className="text-gray-500 text-sm">Add multiple pickup locations for this trip</p>
+                    <p className="text-gray-600 text-sm">Add multiple pickup locations for this trip</p>
                     
                     {(editingTrip.pickupLocations || []).map((loc, index) => (
                       <div key={loc.id || index} className="bg-white rounded-xl p-4 space-y-3 border border-gray-200 shadow-sm">
@@ -1237,7 +1237,7 @@ const AdminTrips = () => {
               {/* Things to Carry Section */}
               <div className="bg-white rounded-2xl overflow-hidden border border-gray-200 shadow-sm">
                 <button type="button" onClick={() => toggleSection('thingsToCarry')} className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors">
-                  <span className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                  <span className="text-base font-bold text-gray-900 flex items-center gap-2">
                     <span className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center text-white text-sm">8</span>
                     Things to Carry ({typeof editingTrip.thingsToCarry === 'string' ? editingTrip.thingsToCarry.split(',').map(t => t.trim()).filter(Boolean).length : (editingTrip.thingsToCarry || []).length})
                   </span>
@@ -1246,7 +1246,7 @@ const AdminTrips = () => {
                 
                 {expandedSections.includes('thingsToCarry') && (
                   <div className="p-6 pt-2 space-y-4">
-                    <p className="text-gray-500 text-sm">Add items that trekkers should carry for this trip (separated by commas)</p>
+                    <p className="text-gray-600 text-sm">Add items that trekkers should carry for this trip (separated by commas)</p>
                     <div className="flex gap-3 items-start">
                       <CheckCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-3" />
                       <textarea 
@@ -1264,7 +1264,7 @@ const AdminTrips = () => {
               {/* Cancellation Policy Section */}
               <div className="bg-white rounded-2xl overflow-hidden border border-gray-200 shadow-sm">
                 <button type="button" onClick={() => toggleSection('cancellationPolicy')} className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors">
-                  <span className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                  <span className="text-base font-bold text-gray-900 flex items-center gap-2">
                     <span className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center text-white text-sm">9</span>
                     Cancellation Policy ({typeof editingTrip.cancellationPolicy === 'string' ? editingTrip.cancellationPolicy.split(',').map(c => c.trim()).filter(Boolean).length : (editingTrip.cancellationPolicy || []).length})
                   </span>
@@ -1273,7 +1273,7 @@ const AdminTrips = () => {
                 
                 {expandedSections.includes('cancellationPolicy') && (
                   <div className="p-6 pt-2 space-y-4">
-                    <p className="text-gray-500 text-sm">Add cancellation policy rules for this trip (separated by commas)</p>
+                    <p className="text-gray-600 text-sm">Add cancellation policy rules for this trip (separated by commas)</p>
                     <div className="flex gap-3 items-start">
                       <X className="w-5 h-5 text-orange-600 flex-shrink-0 mt-3" />
                       <textarea 
@@ -1291,7 +1291,7 @@ const AdminTrips = () => {
               {/* Trip Rules Section */}
               <div className="bg-white rounded-2xl overflow-hidden border border-gray-200 shadow-sm">
                 <button type="button" onClick={() => toggleSection('rules')} className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors">
-                  <span className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                  <span className="text-base font-bold text-gray-900 flex items-center gap-2">
                     <span className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center text-white text-sm">10</span>
                     Trip Rules ({typeof editingTrip.rules === 'string' ? editingTrip.rules.split(',').map(r => r.trim()).filter(Boolean).length : (editingTrip.rules || []).length})
                   </span>
@@ -1300,7 +1300,7 @@ const AdminTrips = () => {
                 
                 {expandedSections.includes('rules') && (
                   <div className="p-6 pt-2 space-y-4">
-                    <p className="text-gray-500 text-sm">Add rules and guidelines for this trip (separated by commas)</p>
+                    <p className="text-gray-600 text-sm">Add rules and guidelines for this trip (separated by commas)</p>
                     <div className="flex gap-3 items-start">
                       <AlertCircle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-3" />
                       <textarea 
@@ -1318,7 +1318,7 @@ const AdminTrips = () => {
               {/* Hotel & Food Details Section */}
               <div className="bg-white rounded-2xl overflow-hidden border border-gray-200 shadow-sm">
                 <button type="button" onClick={() => toggleSection('hotelsAndFood')} className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors">
-                  <span className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                  <span className="text-base font-bold text-gray-900 flex items-center gap-2">
                     <span className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center text-white text-sm">11</span>
                     Hotel & Food Details
                   </span>
@@ -1354,7 +1354,7 @@ const AdminTrips = () => {
               {/* Places Covered & Important Instructions Section */}
               <div className="bg-white rounded-2xl overflow-hidden border border-gray-200 shadow-sm">
                 <button type="button" onClick={() => toggleSection('additionalInfo')} className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors">
-                  <span className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                  <span className="text-base font-bold text-gray-900 flex items-center gap-2">
                     <span className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center text-white text-sm">12</span>
                     Places Covered & Important Instructions
                   </span>

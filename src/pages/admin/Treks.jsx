@@ -38,8 +38,8 @@ const AdminTreks = () => {
     <div className="min-h-screen bg-gray-50 pb-12">
       <div className="bg-white border-b border-gray-100 px-4 py-3 flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h1 className="text-lg font-bold text-gray-900">Manage Treks</h1>
-          <p className="text-gray-400 text-xs mt-0.5">Add, edit, or remove trekking packages</p>
+          <h1 className="text-base font-bold text-gray-900">Manage Treks</h1>
+          <p className="text-gray-600 text-xs mt-0.5">Add, edit, or remove trekking packages</p>
         </div>
         <button onClick={() => { setEditingTrek(null); setShowModal(true); }} className="btn-primary flex items-center gap-2">
           <Plus size={18} /> Add New Trek
@@ -77,7 +77,7 @@ const AdminTreks = () => {
                         <img src={trek.image} alt={trek.title} className="w-16 h-12 rounded-lg object-cover bg-gray-100" />
                         <div>
                           <div className="text-gray-900 font-semibold">{trek.title}</div>
-                          <div className="text-gray-500 text-sm">ID: {trek.id}</div>
+                          <div className="text-gray-600 text-sm">ID: {trek.id}</div>
                         </div>
                       </div>
                     </td>

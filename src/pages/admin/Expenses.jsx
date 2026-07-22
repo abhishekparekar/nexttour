@@ -129,8 +129,8 @@ const AdminExpenses = () => {
     <div className="bg-gray-50 min-h-screen">
       <div className="bg-white border-b border-gray-100 px-4 py-3 flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h1 className="text-lg font-bold text-gray-900">Trip Expenses</h1>
-          <p className="text-gray-400 text-xs mt-0.5">{expenses.length} records registered</p>
+          <h1 className="text-base font-bold text-gray-900">Trip Expenses</h1>
+          <p className="text-gray-600 text-xs mt-0.5">{expenses.length} records registered</p>
         </div>
         <button
           onClick={handleOpenAdd}
@@ -183,7 +183,7 @@ const AdminExpenses = () => {
           <div className="hidden lg:block overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="text-left text-gray-400 text-xs font-bold uppercase tracking-wider border-b border-gray-200 bg-gray-50/50">
+                <tr className="text-left text-gray-600 text-xs font-bold uppercase tracking-wide border-b border-gray-200 bg-gray-50/50">
                   <th className="px-3 py-2">Trip / Departure</th>
                   <th className="px-3 py-2">Category</th>
                   <th className="px-3 py-2">Date</th>
@@ -199,7 +199,7 @@ const AdminExpenses = () => {
                       <div className="text-gray-900 font-bold text-[13px]">{expense.tripTitle}</div>
                     </td>
                     <td className="px-3 py-2 align-middle">
-                      <span className="bg-gray-100 text-gray-800 text-[11px] font-bold px-2 py-0.5 rounded-full capitalize">
+                      <span className="bg-gray-100 text-gray-800 text-xs font-bold px-2 py-0.5 rounded-full capitalize">
                         {expense.category}
                       </span>
                     </td>
@@ -211,7 +211,7 @@ const AdminExpenses = () => {
                     <td className="px-3 py-2 align-middle text-right text-gray-900 font-bold text-[13px]">
                       ₹{expense.amount?.toLocaleString()}
                     </td>
-                    <td className="px-3 py-2 align-middle text-gray-500 text-xs truncate max-w-[200px]">{expense.notes || 'N/A'}</td>
+                    <td className="px-3 py-2 align-middle text-gray-700 text-xs truncate max-w-[200px]">{expense.notes || 'N/A'}</td>
                     <td className="px-3 py-2 align-middle">
                       <div className="flex items-center gap-2">
                         <button onClick={() => handleOpenEdit(expense)} className="p-1.5 text-gray-400 hover:text-primary-600 hover:bg-gray-50 rounded-lg transition-colors">
@@ -235,9 +235,9 @@ const AdminExpenses = () => {
                 <div className="flex justify-between items-start">
                   <div>
                     <h4 className="font-bold text-gray-900 text-[14px]">{expense.tripTitle}</h4>
-                    <p className="text-gray-500 text-[11px] mt-0.5">Date: {expense.date}</p>
+                    <p className="text-gray-600 text-xs mt-0.5">Date: {expense.date}</p>
                   </div>
-                  <span className="bg-primary-50 text-primary-700 text-[10px] font-bold px-2.5 py-0.5 rounded-full capitalize border border-primary-200">
+                  <span className="bg-primary-50 text-primary-700 text-xs font-bold px-2.5 py-0.5 rounded-full capitalize border border-primary-200">
                     {expense.category}
                   </span>
                 </div>
@@ -276,7 +276,7 @@ const AdminExpenses = () => {
             <div className="text-center py-12">
               <CreditCard className="w-12 h-12 text-gray-300 mx-auto mb-4" />
               <h3 className="text-gray-900 font-semibold mb-1">No expense records found</h3>
-              <p className="text-gray-500 text-sm">Add expenses to track financial status and trip profitability.</p>
+              <p className="text-gray-600 text-sm">Add expenses to track financial status and trip profitability.</p>
             </div>
           )}
         </div>

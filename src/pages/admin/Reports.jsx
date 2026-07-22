@@ -96,7 +96,7 @@ const AdminReports = () => {
     const activeTrips = tripReports.filter(t => t.totalCollection > 0 || t.totalExpenses > 0).slice(0, 5);
     if (activeTrips.length === 0) {
       return (
-        <div className="text-center py-6 text-gray-400 text-xs italic">
+        <div className="text-center py-6 text-gray-600 text-xs italic">
           No trip departure sales recorded yet to render bar graph.
         </div>
       );
@@ -128,7 +128,7 @@ const AdminReports = () => {
               return (
                 <g key={index}>
                   <line x1={paddingLeft} y1={y} x2={width - paddingRight} y2={y} stroke="#f1f5f9" strokeWidth="1" />
-                  <text x={paddingLeft - 8} y={y + 4} textAnchor="end" className="text-[9px] fill-gray-400 font-bold">
+                  <text x={paddingLeft - 8} y={y + 4} textAnchor="end" className="text-xs fill-gray-400 font-bold">
                     ₹{labelVal >= 1000 ? `${(labelVal / 1000).toFixed(0)}k` : labelVal}
                   </text>
                 </g>
@@ -172,7 +172,7 @@ const AdminReports = () => {
                     x={xCenter}
                     y={height - paddingBottom + 16}
                     textAnchor="middle"
-                    className="text-[9px] fill-gray-500 font-bold truncate max-w-[70px]"
+                    className="text-xs fill-gray-500 font-bold truncate max-w-[70px]"
                   >
                     {trip.title.length > 8 ? `${trip.title.substring(0, 8)}...` : trip.title}
                   </text>
@@ -201,7 +201,7 @@ const AdminReports = () => {
             </defs>
           </svg>
         </div>
-        <div className="flex gap-4 items-center justify-center text-[10px] font-bold text-gray-500 mt-2">
+        <div className="flex gap-4 items-center justify-center text-xs font-bold text-gray-500 mt-2">
           <div className="flex items-center gap-1">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Collections
           </div>
@@ -287,7 +287,7 @@ const AdminReports = () => {
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             <span className="text-xl font-black text-gray-950">{totalCount}</span>
-            <span className="text-[9px] text-gray-400 uppercase font-bold tracking-wider">Bookings</span>
+            <span className="text-xs text-gray-400 uppercase font-bold tracking-wider">Bookings</span>
           </div>
         </div>
 
@@ -323,7 +323,7 @@ const AdminReports = () => {
   const renderExpensesDonutChart = () => {
     if (totalExpenseAmount === 0) {
       return (
-        <div className="text-center py-12 text-gray-400 text-xs italic">
+        <div className="text-center py-12 text-gray-600 text-xs italic">
           No expenses recorded yet.
         </div>
       );
@@ -402,8 +402,8 @@ const AdminReports = () => {
     <div className="bg-gray-50 min-h-screen pb-12">
       <div className="bg-white border-b border-gray-100 px-4 py-3 flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h1 className="text-lg font-bold text-gray-900">Reports & Insights</h1>
-          <p className="text-gray-400 text-xs mt-0.5">Real-time business performance analytics</p>
+          <h1 className="text-base font-bold text-gray-900">Reports & Insights</h1>
+          <p className="text-gray-600 text-xs mt-0.5">Real-time business performance analytics</p>
         </div>
       </div>
 
@@ -451,14 +451,14 @@ const AdminReports = () => {
             <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
               <div className="p-5 border-b border-gray-200 flex justify-between items-center bg-gray-50/50">
                 <h3 className="font-bold text-gray-900 text-[15px]">Departure Summary</h3>
-                <span className="text-gray-400 text-xs font-semibold">{tripReports.length} departures mapped</span>
+                <span className="text-gray-600 text-xs font-semibold">{tripReports.length} departures mapped</span>
               </div>
               
               {/* Desktop Table View */}
               <div className="hidden md:block overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="text-left text-gray-400 text-xs font-bold uppercase tracking-wider border-b border-gray-200 bg-gray-50/50">
+                    <tr className="text-left text-gray-600 text-xs font-bold uppercase tracking-wide border-b border-gray-200 bg-gray-50/50">
                       <th className="px-3 py-2">Package Departure</th>
                       <th className="p-4 text-center">Travellers</th>
                       <th className="p-4 text-right">Collections</th>
@@ -472,7 +472,7 @@ const AdminReports = () => {
                       <tr key={report.id} className="border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors">
                         <td className="px-3 py-2 align-middle">
                           <div className="text-gray-900 font-bold text-[13px]">{report.title}</div>
-                          <div className="text-gray-400 text-[11px] mt-0.5">{report.departureDate} ({report.status})</div>
+                          <div className="text-gray-600 text-xs mt-0.5">{report.departureDate} ({report.status})</div>
                         </td>
                         <td className="px-3 py-2 align-middle text-center font-bold text-gray-900 text-xs">
                           {report.totalPersons} ({report.totalBookingsCount} bookings)
@@ -486,7 +486,7 @@ const AdminReports = () => {
                         <td className={`p-4 align-middle text-right font-black text-[13px] ${report.netProfit >= 0 ? 'text-primary-600' : 'text-red-600'}`}>
                           ₹{report.netProfit?.toLocaleString()}
                         </td>
-                        <td className="px-3 py-2 align-middle text-right text-gray-500 text-xs">
+                        <td className="px-3 py-2 align-middle text-right text-gray-600 text-xs">
                           ₹{report.pendingCollection?.toLocaleString()}
                         </td>
                       </tr>
@@ -502,9 +502,9 @@ const AdminReports = () => {
                     <div className="flex justify-between items-start">
                       <div>
                         <h4 className="font-bold text-gray-900 text-sm">{report.title}</h4>
-                        <p className="text-gray-550 text-[11px] mt-0.5">{report.departureDate} ({report.status})</p>
+                        <p className="text-gray-550 text-xs mt-0.5">{report.departureDate} ({report.status})</p>
                       </div>
-                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${report.netProfit >= 0 ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
+                      <span className={`px-2 py-0.5 rounded text-xs font-bold ${report.netProfit >= 0 ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
                         ₹{report.netProfit?.toLocaleString()}
                       </span>
                     </div>
@@ -543,7 +543,7 @@ const AdminReports = () => {
                   <DollarSign size={24} />
                 </div>
                 <div>
-                  <div className="text-gray-400 text-xs font-bold uppercase tracking-wider">Total Sales</div>
+                  <div className="text-gray-600 text-xs font-bold uppercase tracking-wide">Total Sales</div>
                   <div className="text-2xl font-black text-gray-900 mt-1">₹{globalTotalBooked.toLocaleString()}</div>
                 </div>
               </div>
@@ -553,7 +553,7 @@ const AdminReports = () => {
                   <TrendingUp size={24} />
                 </div>
                 <div>
-                  <div className="text-gray-400 text-xs font-bold uppercase tracking-wider">Total Collections</div>
+                  <div className="text-gray-600 text-xs font-bold uppercase tracking-wide">Total Collections</div>
                   <div className="text-2xl font-black text-green-600 mt-1">₹{globalTotalCollected.toLocaleString()}</div>
                 </div>
               </div>
@@ -563,7 +563,7 @@ const AdminReports = () => {
                   <Wallet size={24} />
                 </div>
                 <div>
-                  <div className="text-gray-400 text-xs font-bold uppercase tracking-wider">Pending Receivables</div>
+                  <div className="text-gray-600 text-xs font-bold uppercase tracking-wide">Pending Receivables</div>
                   <div className="text-2xl font-black text-red-600 mt-1">₹{globalTotalPending.toLocaleString()}</div>
                 </div>
               </div>
@@ -581,7 +581,7 @@ const AdminReports = () => {
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <h3 className="font-bold text-gray-900 text-lg">Expense Category Analysis</h3>
-                  <p className="text-gray-500 text-xs mt-0.5 font-medium">Summary of expenses by group</p>
+                  <p className="text-gray-600 text-xs mt-0.5 font-medium">Summary of expenses by group</p>
                 </div>
                 <div className="text-right">
                   <span className="text-xs text-gray-400 uppercase tracking-wider block font-bold">Total Expenditure</span>

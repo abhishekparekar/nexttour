@@ -162,7 +162,7 @@ const AdminLogin = ({ onLogin }) => {
 
         {/* Footer */}
         <div className="mt-8 pt-6 border-t border-white/10 text-center">
-          <p className="text-[11px] text-gray-400">
+          <p className="text-xs text-gray-400">
             Protected Admin System • NextTour Admin © {new Date().getFullYear()}
           </p>
         </div>

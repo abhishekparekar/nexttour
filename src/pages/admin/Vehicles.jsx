@@ -100,8 +100,8 @@ const AdminVehicles = () => {
     <div className="bg-gray-50 min-h-screen">
       <div className="bg-white border-b border-gray-100 px-4 py-3 flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h1 className="text-lg font-bold text-gray-900">Vehicle Management</h1>
-          <p className="text-gray-400 text-xs mt-0.5">{vehicles.length} vehicles registered</p>
+          <h1 className="text-base font-bold text-gray-900">Vehicle Management</h1>
+          <p className="text-gray-600 text-xs mt-0.5">{vehicles.length} vehicles registered</p>
         </div>
         <button
           onClick={handleOpenAdd}
@@ -179,7 +179,7 @@ const AdminVehicles = () => {
             <div className="col-span-full bg-white border border-gray-200 rounded-2xl p-12 text-center">
               <Truck className="w-12 h-12 text-gray-300 mx-auto mb-4" />
               <h3 className="text-gray-900 font-semibold mb-1">No vehicles found</h3>
-              <p className="text-gray-500 text-sm">Create a new vehicle to associate it with scheduled trips.</p>
+              <p className="text-gray-600 text-sm">Create a new vehicle to associate it with scheduled trips.</p>
             </div>
           )}
         </div>

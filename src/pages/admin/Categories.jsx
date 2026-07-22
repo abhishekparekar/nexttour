@@ -119,8 +119,8 @@ const AdminCategories = () => {
     <div className="bg-gray-50 min-h-screen pb-12">
       <div className="bg-white border-b border-gray-100 px-4 py-3 flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h1 className="text-lg font-bold text-gray-900">Manage Categories</h1>
-          <p className="text-gray-400 text-xs mt-0.5">{categories.length} categories total</p>
+          <h1 className="text-base font-bold text-gray-900">Manage Categories</h1>
+          <p className="text-gray-600 text-xs mt-0.5">{categories.length} categories total</p>
         </div>
         <button onClick={handleAddNew} className="btn-primary flex items-center gap-2">
           <Plus size={18} /> Add Category

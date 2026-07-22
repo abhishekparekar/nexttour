@@ -144,8 +144,8 @@ const AdminGallery = () => {
     <div className="bg-gray-50 min-h-screen pb-12">
       <div className="bg-white border-b border-gray-100 px-4 py-3 flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h1 className="text-lg font-bold text-gray-900">Gallery Management</h1>
-          <p className="text-gray-400 text-xs mt-0.5">{images.length} images</p>
+          <h1 className="text-base font-bold text-gray-900">Gallery Management</h1>
+          <p className="text-gray-600 text-xs mt-0.5">{images.length} images</p>
         </div>
         <button onClick={() => setShowModal(true)} className="btn-primary flex items-center gap-2">
           <Plus size={18} /> Add Images
@@ -251,7 +251,7 @@ const AdminGallery = () => {
                 {selectedFiles.length > 0 ? (
                   <div className="space-y-2">
                     <p className="text-primary-600 font-bold">{selectedFiles.length} file(s) selected</p>
-                    <p className="text-gray-500 text-xs truncate max-w-xs mx-auto">{selectedFiles.map(f => f.name).join(', ')}</p>
+                    <p className="text-gray-600 text-xs truncate max-w-xs mx-auto">{selectedFiles.map(f => f.name).join(', ')}</p>
                     <button type="button" onClick={(e) => { e.stopPropagation(); setSelectedFiles([]); }} className="text-red-600 text-sm font-bold hover:underline">
                       Clear selection
                     </button>
@@ -260,11 +260,11 @@ const AdminGallery = () => {
                   <>
                     <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                     <p className="text-gray-900 font-bold mb-1">Drag & drop images here</p>
-                    <p className="text-gray-400 text-xs mb-3">or</p>
+                    <p className="text-gray-600 text-xs mb-3">or</p>
                     <button type="button" className="px-6 py-2 bg-white border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 font-semibold shadow-sm transition-colors text-sm">
                       Browse Files
                     </button>
-                    <p className="text-gray-400 text-xs mt-4">Images will be auto-compressed to 100-200KB</p>
+                    <p className="text-gray-600 text-xs mt-4">Images will be auto-compressed to 100-200KB</p>
                   </>
                 )}
               </div>

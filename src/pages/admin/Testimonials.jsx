@@ -146,8 +146,8 @@ const AdminTestimonials = () => {
     <div className="bg-gray-50 min-h-screen pb-12">
       <div className="bg-white border-b border-gray-100 px-4 py-3 flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h1 className="text-lg font-bold text-gray-900">Manage Testimonials</h1>
-          <p className="text-gray-400 text-xs mt-0.5">{testimonials.length} testimonials</p>
+          <h1 className="text-base font-bold text-gray-900">Manage Testimonials</h1>
+          <p className="text-gray-600 text-xs mt-0.5">{testimonials.length} testimonials</p>
         </div>
         <button onClick={openAddModal} className="btn-primary flex items-center gap-2">
           <Plus size={18} /> Add Testimonial
@@ -184,8 +184,8 @@ const AdminTestimonials = () => {
                   )}
                   <div>
                     <h3 className="text-gray-900 font-bold">{testimonial.name}</h3>
-                    <p className="text-gray-500 text-xs mt-0.5 font-medium">{testimonial.role}</p>
-                    <p className="text-gray-500 text-xs font-medium">{testimonial.location}</p>
+                    <p className="text-gray-600 text-xs mt-0.5 font-medium">{testimonial.role}</p>
+                    <p className="text-gray-700 text-xs font-medium">{testimonial.location}</p>
                   </div>
                   <span className={`ml-auto px-2 py-1 rounded text-xs font-semibold ${testimonial.status === 'active' ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-gray-100 text-gray-600 border border-gray-200'}`}>
                     {testimonial.status}

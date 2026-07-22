@@ -108,8 +108,8 @@ const AdminDrivers = () => {
     <div className="bg-gray-50 min-h-screen">
       <div className="bg-white border-b border-gray-100 px-4 py-3 flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h1 className="text-lg font-bold text-gray-900">Driver Management</h1>
-          <p className="text-gray-400 text-xs mt-0.5">{drivers.length} drivers registered</p>
+          <h1 className="text-base font-bold text-gray-900">Driver Management</h1>
+          <p className="text-gray-600 text-xs mt-0.5">{drivers.length} drivers registered</p>
         </div>
         <button
           onClick={handleOpenAdd}
@@ -182,7 +182,7 @@ const AdminDrivers = () => {
             <div className="col-span-full bg-white border border-gray-200 rounded-2xl p-12 text-center">
               <UserCheck className="w-12 h-12 text-gray-300 mx-auto mb-4" />
               <h3 className="text-gray-900 font-semibold mb-1">No drivers found</h3>
-              <p className="text-gray-500 text-sm">Create a new driver to associate them with vehicles and schedules.</p>
+              <p className="text-gray-600 text-sm">Create a new driver to associate them with vehicles and schedules.</p>
             </div>
           )}
         </div>

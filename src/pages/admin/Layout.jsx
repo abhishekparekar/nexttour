@@ -68,14 +68,14 @@ const Sidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen, onLogout 
               to={item.path}
               end={item.exact}
               onClick={() => setMobileOpen(false)}
-              className={`flex items-center gap-2.5 px-2.5 py-2 rounded-lg transition-all text-xs font-medium ${
+              className={`flex items-center gap-2.5 px-2.5 py-2.5 rounded-lg transition-all text-xs font-semibold ${
                 isActive
                   ? 'bg-[#00C9B7] text-white shadow-sm'
-                  : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                  : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
               } ${isCollapsed ? 'md:justify-center md:px-2' : ''}`}
               title={isCollapsed ? item.label : undefined}
             >
-              <item.icon className="w-4 h-4 flex-shrink-0" />
+              <item.icon className="w-4 h-4 flex-shrink-0" style={{minWidth:'16px'}} />
               {!isCollapsed && <span className="truncate">{item.label}</span>}
             </NavLink>
           );
@@ -161,7 +161,7 @@ const AdminLayout = () => {
       <main
         className={`transition-all duration-300 pt-12 md:pt-0 ${
           collapsed ? 'md:ml-16' : 'md:ml-56'
-        } ml-0 min-h-screen`}
+        } ml-0 min-h-screen admin-panel-content`}
       >
         <Outlet />
       </main>

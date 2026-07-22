@@ -151,8 +151,8 @@ const AdminSchedules = () => {
     <div className="bg-gray-50 min-h-screen">
       <div className="bg-white border-b border-gray-100 px-4 py-3 flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h1 className="text-lg font-bold text-gray-900">Trips / Schedule</h1>
-          <p className="text-gray-400 text-xs mt-0.5">{schedules.length} departures scheduled</p>
+          <h1 className="text-base font-bold text-gray-900">Trips / Schedule</h1>
+          <p className="text-gray-600 text-xs mt-0.5">{schedules.length} departures scheduled</p>
         </div>
         <button
           onClick={handleOpenAdd}
@@ -195,7 +195,7 @@ const AdminSchedules = () => {
           <div className="hidden lg:block overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="text-left text-gray-400 text-xs font-bold uppercase tracking-wider border-b border-gray-200 bg-gray-50/50">
+                <tr className="text-left text-gray-600 text-xs font-bold uppercase tracking-wide border-b border-gray-200 bg-gray-50/50">
                   <th className="px-3 py-2">Tour Package</th>
                   <th className="px-3 py-2">Departure / Return</th>
                   <th className="px-3 py-2">Vehicle</th>
@@ -210,7 +210,7 @@ const AdminSchedules = () => {
                   <tr key={schedule.id} className="border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors">
                     <td className="px-3 py-2 align-middle">
                       <div className="text-gray-900 font-bold text-[13px]">{schedule.tripTitle}</div>
-                      <div className="text-gray-400 text-[11px]">ID: {schedule.tripId}</div>
+                      <div className="text-gray-600 text-xs">ID: {schedule.tripId}</div>
                     </td>
                     <td className="px-3 py-2 align-middle">
                       <div className="flex items-center gap-1.5 text-gray-800 text-xs font-semibold">
@@ -218,14 +218,14 @@ const AdminSchedules = () => {
                         {schedule.departureDate} to {schedule.returnDate}
                       </div>
                     </td>
-                    <td className="px-3 py-2 align-middle text-gray-600 text-xs">
+                    <td className="px-3 py-2 align-middle text-gray-700 text-xs">
                       {schedule.vehicleName ? (
                         <div className="flex items-center gap-1.5">
                           <Truck size={13} className="text-gray-400" /> {schedule.vehicleName}
                         </div>
                       ) : 'Not Assigned'}
                     </td>
-                    <td className="px-3 py-2 align-middle text-gray-600 text-xs">
+                    <td className="px-3 py-2 align-middle text-gray-700 text-xs">
                       {schedule.driverName ? (
                         <div className="flex items-center gap-1.5">
                           <UserCheck size={13} className="text-gray-400" /> {schedule.driverName}
@@ -234,7 +234,7 @@ const AdminSchedules = () => {
                     </td>
                     <td className="px-3 py-2 align-middle text-center text-gray-800 text-xs font-bold">{schedule.capacity} seats</td>
                     <td className="px-3 py-2 align-middle">
-                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${statusColors[schedule.status]}`}>
+                      <span className={`px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider ${statusColors[schedule.status]}`}>
                         {schedule.status}
                       </span>
                     </td>
@@ -271,9 +271,9 @@ const AdminSchedules = () => {
                 <div className="flex justify-between items-start">
                   <div>
                     <h4 className="font-bold text-gray-900 text-[14px]">{schedule.tripTitle}</h4>
-                    <p className="text-gray-500 text-xs mt-0.5">ID: {schedule.tripId}</p>
+                    <p className="text-gray-600 text-xs mt-0.5">ID: {schedule.tripId}</p>
                   </div>
-                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${statusColors[schedule.status]}`}>
+                  <span className={`px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider ${statusColors[schedule.status]}`}>
                     {schedule.status}
                   </span>
                 </div>
@@ -332,7 +332,7 @@ const AdminSchedules = () => {
             <div className="text-center py-12">
               <Clock className="w-12 h-12 text-gray-300 mx-auto mb-4" />
               <h3 className="text-gray-900 font-semibold mb-1">No schedules found</h3>
-              <p className="text-gray-500 text-sm">Create a departure date configuration to activate schedules.</p>
+              <p className="text-gray-600 text-sm">Create a departure date configuration to activate schedules.</p>
             </div>
           )}
         </div>
@@ -481,7 +481,7 @@ const AdminSchedules = () => {
             <div className="px-6 py-4 border-b border-gray-150 flex items-center justify-between bg-gray-50/50">
               <div>
                 <h3 className="font-bold text-gray-900 text-lg">Traveler List</h3>
-                <p className="text-gray-500 text-xs">
+                <p className="text-gray-600 text-xs">
                   Tour: <strong>{selectedScheduleForTravelers.tripTitle}</strong> | Date: <strong>{selectedScheduleForTravelers.departureDate}</strong>
                 </p>
               </div>
@@ -513,19 +513,19 @@ const AdminSchedules = () => {
                   {/* Summary Cards */}
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
                     <div className="border border-gray-200 rounded-2xl p-4 bg-gray-50/30">
-                      <span className="block text-[10px] text-gray-400 uppercase tracking-wider font-bold">Total Confirmed</span>
+                      <span className="block text-xs text-gray-400 uppercase tracking-wider font-bold">Total Confirmed</span>
                       <span className="block font-black text-gray-800 text-base mt-1">{totalTravelers} Travelers</span>
                     </div>
                     <div className="border border-gray-200 rounded-2xl p-4 bg-blue-50/10">
-                      <span className="block text-[10px] text-blue-500 uppercase tracking-wider font-bold">Total Booking</span>
+                      <span className="block text-xs text-blue-500 uppercase tracking-wider font-bold">Total Booking</span>
                       <span className="block font-black text-blue-700 text-base mt-1">₹{totalAmount.toLocaleString()}</span>
                     </div>
                     <div className="border border-gray-200 rounded-2xl p-4 bg-green-50/20">
-                      <span className="block text-[10px] text-green-500 uppercase tracking-wider font-bold">Collected Amount</span>
+                      <span className="block text-xs text-green-500 uppercase tracking-wider font-bold">Collected Amount</span>
                       <span className="block font-black text-green-700 text-base mt-1">₹{totalPaid.toLocaleString()}</span>
                     </div>
                     <div className="border border-gray-200 rounded-2xl p-4 bg-red-50/20">
-                      <span className="block text-[10px] text-red-500 uppercase tracking-wider font-bold">Pending Collection</span>
+                      <span className="block text-xs text-red-500 uppercase tracking-wider font-bold">Pending Collection</span>
                       <span className="block font-black text-red-750 text-base mt-1 font-bold">₹{totalPending.toLocaleString()}</span>
                     </div>
                   </div>
@@ -534,7 +534,7 @@ const AdminSchedules = () => {
                   <div className="border border-gray-200 rounded-2xl overflow-hidden max-h-[45vh] overflow-y-auto bg-white shadow-2xs">
                     <table className="w-full">
                       <thead>
-                        <tr className="text-left text-gray-400 text-[10px] font-bold uppercase tracking-wider border-b border-gray-200 bg-gray-50/60">
+                        <tr className="text-left text-gray-600 text-xs font-bold uppercase tracking-wide border-b border-gray-200 bg-gray-50/60">
                           <th className="p-3">Customer</th>
                           <th className="p-3">Contact</th>
                           <th className="p-3 text-center">Persons</th>
@@ -562,7 +562,7 @@ const AdminSchedules = () => {
                               <td className="p-3 text-right font-semibold text-green-650 text-xs">₹{(b.paidAmount || 0).toLocaleString()}</td>
                               <td className="p-3 text-right font-semibold text-red-600 text-xs">₹{remaining.toLocaleString()}</td>
                               <td className="p-3 text-xs">
-                                <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold border uppercase tracking-wider ${
+                                <span className={`px-2 py-0.5 rounded-full text-xs font-bold border uppercase tracking-wider ${
                                   b.paymentStatus === 'paid' ? 'bg-green-50 text-green-700 border-green-200' :
                                   b.paymentStatus === 'partial' ? 'bg-yellow-50 text-yellow-700 border-yellow-200' :
                                   'bg-red-50 text-red-700 border-red-200'

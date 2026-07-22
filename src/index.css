@@ -281,3 +281,79 @@
 .shadow-primary-500\/30 {
   --tw-shadow: 0 10px 15px -3px rgba(0, 201, 183, 0.3), 0 4px 6px -4px rgba(0, 201, 183, 0.3) !important;
 }
+
+/* ============================================
+   ADMIN PANEL — MOBILE & TEXT VISIBILITY
+   ============================================ */
+
+/* Ensure all table text is readable on mobile */
+.admin-table th {
+  font-size: 11px;
+  font-weight: 700;
+  color: #6B7280;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 8px 12px;
+  white-space: nowrap;
+}
+
+.admin-table td {
+  font-size: 12px;
+  color: #374151;
+  padding: 8px 12px;
+}
+
+/* Admin card section headers */
+.admin-section-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #111827;
+}
+
+/* Status badge base */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Admin input fields — consistent and readable */
+.admin-input {
+  width: 100%;
+  border: 1px solid #E5E7EB;
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 13px;
+  color: #111827;
+  background: white;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.admin-input:focus {
+  border-color: #00C9B7;
+  box-shadow: 0 0 0 2px rgba(0, 201, 183, 0.15);
+}
+
+/* Mobile: prevent text overflow in table cells */
+@media (max-width: 768px) {
+  .admin-panel-content {
+    font-size: 12px;
+  }
+  .admin-panel-content h1,
+  .admin-panel-content h2 {
+    font-size: 15px;
+  }
+  .admin-panel-content .stat-value {
+    font-size: 18px;
+  }
+  /* Ensure buttons are tappable */
+  .admin-panel-content button,
+  .admin-panel-content a[class*="rounded"] {
+    min-height: 36px;
+  }
+}

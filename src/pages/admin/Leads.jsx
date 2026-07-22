@@ -75,10 +75,10 @@ const AdminLeads = () => {
       {/* Header */}
       <div className="bg-white border-b border-gray-100 px-4 py-3 flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h1 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+          <h1 className="text-base font-bold text-gray-900 flex items-center gap-2">
             <Download className="w-7 h-7 text-primary-500" /> PDF Itinerary Leads
           </h1>
-          <p className="text-gray-400 text-xs mt-0.5">View and manage customers who downloaded trip PDFs</p>
+          <p className="text-gray-600 text-xs mt-0.5">View and manage customers who downloaded trip PDFs</p>
         </div>
       </div>
 
@@ -136,7 +136,7 @@ const AdminLeads = () => {
           <div className="overflow-x-auto">
             <table className="w-full border-collapse">
               <thead>
-                <tr className="text-left text-gray-500 text-xs font-bold uppercase tracking-wider border-b border-gray-200 bg-gray-50/50">
+                <tr className="text-left text-gray-600 text-xs font-bold uppercase tracking-wide border-b border-gray-200 bg-gray-50/50">
                   <th className="p-6 font-semibold">Customer Details</th>
                   <th className="p-6 font-semibold">WhatsApp / Contact</th>
                   <th className="p-6 font-semibold">Last Downloaded Trip</th>
@@ -150,7 +150,7 @@ const AdminLeads = () => {
                     {/* Customer */}
                     <td className="p-4">
                       <div className="text-gray-900 font-bold text-[15px]">{lead.name}</div>
-                      <div className="text-gray-500 text-xs mt-1 flex items-center gap-1">
+                      <div className="text-gray-600 text-xs mt-1 flex items-center gap-1">
                         <MapPin size={12} className="text-gray-400" /> {lead.city}
                       </div>
                     </td>
@@ -195,7 +195,7 @@ const AdminLeads = () => {
                       <div className="flex flex-col gap-0.5">
                         <span className="text-gray-900 font-semibold text-xs">{formatDate(lead.updatedAt)}</span>
                         {lead.createdAt && lead.createdAt !== lead.updatedAt && (
-                          <span className="text-[10px] text-gray-500">First Download: {formatDate(lead.createdAt)}</span>
+                          <span className="text-xs text-gray-600">First Download: {formatDate(lead.createdAt)}</span>
                         )}
                       </div>
                     </td>

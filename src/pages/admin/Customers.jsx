@@ -112,8 +112,8 @@ const AdminCustomers = () => {
     <div className="bg-gray-50 min-h-screen">
       <div className="bg-white border-b border-gray-100 px-4 py-3 flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h1 className="text-lg font-bold text-gray-900">Customer Management</h1>
-          <p className="text-gray-400 text-xs mt-0.5">{customers.length} registered customers</p>
+          <h1 className="text-base font-bold text-gray-900">Customer Management</h1>
+          <p className="text-gray-600 text-xs mt-0.5">{customers.length} registered customers</p>
         </div>
         <button
           onClick={handleOpenAdd}
@@ -183,7 +183,7 @@ const AdminCustomers = () => {
                     <Calendar size={13} /> {history.length} Bookings
                   </button>
                   {customer.notes && (
-                    <span className="text-[10px] text-gray-400 italic max-w-[120px] truncate" title={customer.notes}>
+                    <span className="text-xs text-gray-400 italic max-w-[120px] truncate" title={customer.notes}>
                       {customer.notes}
                     </span>
                   )}
@@ -196,7 +196,7 @@ const AdminCustomers = () => {
             <div className="col-span-full bg-white border border-gray-200 rounded-2xl p-12 text-center">
               <User className="w-12 h-12 text-gray-300 mx-auto mb-4" />
               <h3 className="text-gray-900 font-semibold mb-1">No customers found</h3>
-              <p className="text-gray-500 text-sm">Customers are registered automatically on booking or can be manually added.</p>
+              <p className="text-gray-600 text-sm">Customers are registered automatically on booking or can be manually added.</p>
             </div>
           )}
         </div>
@@ -307,7 +307,7 @@ const AdminCustomers = () => {
             <div className="px-6 py-4 border-b border-gray-150 flex items-center justify-between bg-gray-50/50">
               <div>
                 <h3 className="font-bold text-gray-900 text-lg">Booking History</h3>
-                <p className="text-gray-500 text-xs">{selectedCustomer.name}'s departures</p>
+                <p className="text-gray-600 text-xs">{selectedCustomer.name}'s departures</p>
               </div>
               <button onClick={() => setShowHistoryModal(false)} className="p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all">
                 <X size={20} />
@@ -319,7 +319,7 @@ const AdminCustomers = () => {
                 <div key={b.id} className="p-4 border border-gray-200 rounded-2xl flex flex-col sm:flex-row justify-between sm:items-center gap-4 bg-gray-50/50 hover:bg-gray-50 transition-colors">
                   <div>
                     <h4 className="font-bold text-gray-900 text-[14px]">{b.tripName}</h4>
-                    <div className="text-gray-500 text-xs mt-1 flex flex-wrap gap-x-4 gap-y-1">
+                    <div className="text-gray-600 text-xs mt-1 flex flex-wrap gap-x-4 gap-y-1">
                       <span>Date: <strong>{b.selectedDate}</strong></span>
                       <span>Travelers: <strong>{b.travelers}</strong></span>
                       <span>Booking Date: {b.bookingDate}</span>
@@ -328,9 +328,9 @@ const AdminCustomers = () => {
                   <div className="flex items-center gap-3 justify-between sm:justify-end">
                     <div className="text-right">
                       <span className="block text-[14px] font-black text-gray-900">₹{b.amount?.toLocaleString()}</span>
-                      <span className="block text-[10px] text-green-600 font-bold">Paid: ₹{(b.paidAmount || 0).toLocaleString()}</span>
+                      <span className="block text-xs text-green-600 font-bold">Paid: ₹{(b.paidAmount || 0).toLocaleString()}</span>
                     </div>
-                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                    <span className={`px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider ${
                       b.status === 'confirmed' ? 'bg-green-50 text-green-700 border border-green-200' :
                       b.status === 'pending' ? 'bg-yellow-50 text-yellow-700 border border-yellow-200' :
                       'bg-red-50 text-red-700 border border-red-200'
