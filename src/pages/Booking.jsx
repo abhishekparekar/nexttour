@@ -273,7 +273,7 @@ const Booking = () => {
         </div>
       </div>
 
-      <div className="max-w-[700px] mx-auto px-4 py-16 lg:py-20">
+      <div className="max-w-[700px] mx-auto px-4 py-8 lg:py-12">
         
         {error && (
           <motion.div 

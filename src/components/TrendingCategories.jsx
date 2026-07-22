@@ -50,7 +50,7 @@ const TrendingCategories = () => {
           <p className="text-[#555555] max-w-xl mx-auto">Explore the most popular adventure categories loved by thousands of travelers</p>
         </motion.div>
 
-        <motion.div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" variants={categoryVariants.container} initial="hidden" whileInView="visible" viewport={viewportConfig}>
+        <motion.div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6" variants={categoryVariants.container} initial="hidden" whileInView="visible" viewport={viewportConfig}>
           {categories.map((category, index) => {
             const color = categoryColors[index % categoryColors.length];
             const categoryTitle = category.title || category.name || 'Adventure';

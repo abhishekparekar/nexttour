@@ -40,7 +40,7 @@ const FeaturedDestinations = () => {
           <p className="text-[#555555] max-w-2xl mx-auto text-lg">Handpicked destinations that promise unforgettable experiences. Each journey crafted for the ultimate explorer.</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {trips.map((trip) => (<TripCard key={trip.id} trip={trip} />))}
         </div>
 

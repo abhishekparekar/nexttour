@@ -39,7 +39,7 @@ const PopularTreks = () => {
           <p className="text-[#555555] max-w-xl mx-auto">Handpicked destinations that promise unforgettable experiences</p>
         </motion.div>
 
-        <motion.div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" variants={cardVariants.container} initial="hidden" whileInView="visible" viewport={viewportConfig}>
+        <motion.div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6" variants={cardVariants.container} initial="hidden" whileInView="visible" viewport={viewportConfig}>
           {trips.map((trip, index) => (
             <motion.div key={trip.id} variants={cardVariants.card} whileHover={{ y: -8, scale: 1.03, transition: { type: "spring", stiffness: 150, damping: 15 } }} className="will-change-transform">
               <TripCard trip={trip} />

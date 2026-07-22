@@ -45,7 +45,7 @@ const TestimonialsPage = () => {
         </div>
       </div>
 
-      <div className="max-w-[1200px] mx-auto px-4 lg:px-8 py-12 lg:py-20">
+      <div className="max-w-[1200px] mx-auto px-4 lg:px-8 py-6 lg:py-12">
         {active.length === 0 ? (
           <motion.div 
             initial={{ opacity: 0 }} animate={{ opacity: 1 }}

@@ -35,7 +35,7 @@ const Testimonials = () => {
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#111111] mb-6">What Our Trekkers<span className="block text-gradient">Say About Us</span></h2>
         </motion.div>
 
-        <motion.div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" variants={testimonialVariants.container} initial="hidden" whileInView="visible" viewport={viewportConfig}>
+        <motion.div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6" variants={testimonialVariants.container} initial="hidden" whileInView="visible" viewport={viewportConfig}>
           {activeTestimonials.slice(0, 4).map((testimonial, index) => (
             <motion.div key={testimonial.id} variants={testimonialVariants.card} whileHover={{ y: -5, scale: 1.02, transition: { type: "spring", stiffness: 150, damping: 15 } }} className={`bg-white rounded-2xl p-6 border border-[#EEEEEE] hover:border-[#00C9B7]/30 transition-all duration-300 will-change-transform ${index === 0 || index === 3 ? 'lg:translate-y-8' : ''}`}>
               <div className="w-10 h-10 rounded-full bg-[#00C9B7]/10 flex items-center justify-center mb-4"><Quote className="w-5 h-5 text-[#00C9B7]" /></div>

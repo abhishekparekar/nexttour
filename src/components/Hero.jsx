@@ -102,42 +102,42 @@ const Hero = () => {
       }} />
 
       {/* Content */}
-      <div className="relative z-10 flex-1 flex flex-col items-center justify-center text-center px-4 sm:px-6 pt-16 pb-16">
+      <div className="relative z-10 flex-1 flex flex-col items-center justify-center text-center px-4 sm:px-6 pt-24 sm:pt-28 pb-6">
 
-        {/* Logo — bigger */}
+        {/* Logo */}
         <motion.div
           initial={{ scale: 0.5, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.1, ease: easings.premium }}
-          className="mb-8"
+          className="mb-5 sm:mb-6"
         >
-          <div className="max-w-[280px] sm:max-w-[340px] mx-auto bg-white p-4 rounded-2xl shadow-[0_0_40px_rgba(0,201,183,0.3)] border border-gray-100/50">
+          <div className="max-w-[200px] sm:max-w-[260px] md:max-w-[300px] mx-auto bg-white p-3 sm:p-4 rounded-2xl shadow-[0_0_30px_rgba(0,201,183,0.3)] border border-gray-100/50">
             <img src="/nexttour.jpeg" alt="NextTour" className="w-full h-auto object-contain" />
           </div>
         </motion.div>
 
         {/* Tagline */}
         <motion.div
-          className="mb-6"
+          className="mb-4 sm:mb-6"
           initial={{ y: 30, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.9, delay: 0.35, ease: easings.premium }}
         >
           <h1 className="leading-tight">
             <span
-              className="block text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-white tracking-tight"
+              className="block text-3xl sm:text-5xl md:text-6xl font-extrabold text-white tracking-tight"
               style={{ textShadow: '0 2px 16px rgba(0,0,0,0.5)' }}
             >
               Discover the
             </span>
             <span
-              className="block text-7xl sm:text-8xl md:text-9xl font-black leading-none tracking-tight text-[#00C9B7]"
+              className="block text-5xl sm:text-7xl md:text-8xl font-black leading-none tracking-tight text-[#00C9B7]"
               style={{ textShadow: '0 4px 24px rgba(0, 201, 183,0.5)' }}
             >
               World
             </span>
             <span
-              className="block text-2xl sm:text-3xl md:text-4xl font-medium text-white/80 tracking-[0.25em] uppercase mt-1"
+              className="block text-xl sm:text-2xl md:text-3xl font-medium text-white/80 tracking-[0.2em] uppercase mt-1"
               style={{ textShadow: '0 2px 10px rgba(0,0,0,0.4)' }}
             >
               with us
@@ -150,7 +150,7 @@ const Hero = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 1.0 }}
-          className="text-sm sm:text-base text-white/75 max-w-xs sm:max-w-sm mx-auto font-light tracking-wide leading-relaxed min-h-[1.5em]"
+          className="text-xs sm:text-sm md:text-base text-white/80 max-w-xs sm:max-w-md mx-auto font-light tracking-wide leading-relaxed min-h-[1.5em]"
           style={{ textShadow: '0 1px 8px rgba(0,0,0,0.4)' }}
         >
           <TypingText text="Adventure Starts With One Step — Let's Take It Together" />
@@ -162,10 +162,10 @@ const Hero = () => {
         initial={{ y: 40, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.7, delay: 1.1, ease: easings.premium }}
-        className="relative z-10 mx-4 sm:mx-8 md:mx-16 lg:mx-24 mb-6 sm:mb-8"
+        className="relative z-10 mx-4 sm:mx-6 md:mx-12 lg:mx-20 mb-4 sm:mb-6"
       >
         <div
-          className="flex items-center justify-around rounded-2xl px-4 py-4 sm:py-5"
+          className="flex items-center justify-around rounded-2xl px-3 sm:px-6 py-3 sm:py-4"
           style={{ background: 'rgba(15,60,55,0.92)', backdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.08)' }}
         >
           <StatItem delay={1.3} target={100} suffix="+" label="Google Reviews" icon={

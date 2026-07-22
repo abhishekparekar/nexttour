@@ -96,7 +96,7 @@ const CategoryDetail = () => {
             ))}
           </div>
         ) : (
-          <div className="text-center py-20 bg-white rounded-2xl border border-[#EEEEEE]">
+          <div className="text-center py-10 bg-white rounded-2xl border border-[#EEEEEE]">
             <div className="w-20 h-20 bg-[#F3F4F6] rounded-full flex items-center justify-center mx-auto mb-5">
               <Mountain className="w-10 h-10 text-[#9CA3AF]" />
             </div>

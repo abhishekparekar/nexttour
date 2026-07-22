@@ -30,7 +30,7 @@ const Footer = () => {
   return (
     <footer style={{ background: '#1a1a2e' }}>
       <div className="container-custom py-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
 
           {/* Brand */}
           <motion.div className="space-y-3 lg:col-span-1" initial={{ y: 20 }} whileInView={{ y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}>

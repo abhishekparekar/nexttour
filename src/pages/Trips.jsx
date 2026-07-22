@@ -174,7 +174,7 @@ const Trips = () => {
         </div>
 
         {filteredTrips.length === 0 && (
-          <div className="text-center py-20 bg-white rounded-2xl border border-[#EEEEEE]">
+          <div className="text-center py-10 bg-white rounded-2xl border border-[#EEEEEE]">
             <div className="w-16 h-16 bg-[#F3F4F6] rounded-full flex items-center justify-center mx-auto mb-4">
               <Mountain className="w-8 h-8 text-[#9CA3AF]" />
             </div>

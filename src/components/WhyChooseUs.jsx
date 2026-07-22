@@ -40,7 +40,7 @@ const WhyChooseUs = () => {
           <p className="text-[#555555] max-w-2xl mx-auto text-lg leading-relaxed">We're not just another travel company. We craft extraordinary journeys that become cherished memories for a lifetime.</p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {features.map((feature, index) => {
             const Icon = feature.icon;
             const colors = colorMap[feature.color];

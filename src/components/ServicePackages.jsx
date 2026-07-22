@@ -38,7 +38,7 @@ const ServicePackages = () => {
             <p className="text-[#555555] max-w-2xl mx-auto text-lg">Premium travel experiences for every type of traveler.</p>
           </motion.div>
 
-          <motion.div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" variants={cardVariants.container} initial="hidden" whileInView="visible" viewport={viewportConfig}>
+          <motion.div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6" variants={cardVariants.container} initial="hidden" whileInView="visible" viewport={viewportConfig}>
             {tourPackages.map((pkg) => {
               const Icon = pkg.icon;
               const colors = tourColorMap[pkg.color];
@@ -77,7 +77,7 @@ const ServicePackages = () => {
             <p className="text-white/50 max-w-2xl mx-auto text-lg">All your travel needs under one roof.</p>
           </motion.div>
 
-          <motion.div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" variants={cardVariants.container} initial="hidden" whileInView="visible" viewport={viewportConfig}>
+          <motion.div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6" variants={cardVariants.container} initial="hidden" whileInView="visible" viewport={viewportConfig}>
             {otherServices.map((service) => {
               const Icon = service.icon;
               const colors = serviceColorMap[service.color];
