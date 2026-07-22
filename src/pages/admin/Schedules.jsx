@@ -149,22 +149,22 @@ const AdminSchedules = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      <div className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+      <div className="bg-white border-b border-gray-100 px-4 py-3 flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Trips / Schedule</h1>
-          <p className="text-gray-500 text-sm mt-0.5">{schedules.length} departures scheduled</p>
+          <h1 className="text-lg font-bold text-gray-900">Trips / Schedule</h1>
+          <p className="text-gray-400 text-xs mt-0.5">{schedules.length} departures scheduled</p>
         </div>
         <button
           onClick={handleOpenAdd}
-          className="flex items-center gap-2 bg-primary-500 hover:bg-primary-600 text-white font-bold py-2.5 px-4 rounded-xl transition-all shadow-md"
+          className="flex items-center gap-2 bg-[#00C9B7] hover:bg-[#00b3a2] text-white font-semibold py-2 px-3 rounded-lg text-xs transition-all shadow-md"
         >
           <Plus size={18} /> Schedule Trip
         </button>
       </div>
 
-      <div className="p-6">
+      <div className="p-4">
         {/* Filter Section */}
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-4 mb-6 flex flex-col md:flex-row gap-4">
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 mb-4 flex flex-col md:flex-row gap-4">
           <div className="relative flex-1">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
             <input
@@ -189,56 +189,56 @@ const AdminSchedules = () => {
         </div>
 
         {/* Schedule Table */}
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
 
           {/* Desktop Table View */}
           <div className="hidden lg:block overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr className="text-left text-gray-400 text-xs font-bold uppercase tracking-wider border-b border-gray-200 bg-gray-50/50">
-                  <th className="p-4">Tour Package</th>
-                  <th className="p-4">Departure / Return</th>
-                  <th className="p-4">Vehicle</th>
-                  <th className="p-4">Driver</th>
+                  <th className="px-3 py-2">Tour Package</th>
+                  <th className="px-3 py-2">Departure / Return</th>
+                  <th className="px-3 py-2">Vehicle</th>
+                  <th className="px-3 py-2">Driver</th>
                   <th className="p-4 text-center">Capacity</th>
-                  <th className="p-4">Status</th>
-                  <th className="p-4">Actions</th>
+                  <th className="px-3 py-2">Status</th>
+                  <th className="px-3 py-2">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredSchedules.map(schedule => (
                   <tr key={schedule.id} className="border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors">
-                    <td className="p-4 align-middle">
+                    <td className="px-3 py-2 align-middle">
                       <div className="text-gray-900 font-bold text-[13px]">{schedule.tripTitle}</div>
                       <div className="text-gray-400 text-[11px]">ID: {schedule.tripId}</div>
                     </td>
-                    <td className="p-4 align-middle">
+                    <td className="px-3 py-2 align-middle">
                       <div className="flex items-center gap-1.5 text-gray-800 text-xs font-semibold">
                         <Calendar size={13} className="text-gray-400" />
                         {schedule.departureDate} to {schedule.returnDate}
                       </div>
                     </td>
-                    <td className="p-4 align-middle text-gray-600 text-xs">
+                    <td className="px-3 py-2 align-middle text-gray-600 text-xs">
                       {schedule.vehicleName ? (
                         <div className="flex items-center gap-1.5">
                           <Truck size={13} className="text-gray-400" /> {schedule.vehicleName}
                         </div>
                       ) : 'Not Assigned'}
                     </td>
-                    <td className="p-4 align-middle text-gray-600 text-xs">
+                    <td className="px-3 py-2 align-middle text-gray-600 text-xs">
                       {schedule.driverName ? (
                         <div className="flex items-center gap-1.5">
                           <UserCheck size={13} className="text-gray-400" /> {schedule.driverName}
                         </div>
                       ) : 'Not Assigned'}
                     </td>
-                    <td className="p-4 align-middle text-center text-gray-800 text-xs font-bold">{schedule.capacity} seats</td>
-                    <td className="p-4 align-middle">
+                    <td className="px-3 py-2 align-middle text-center text-gray-800 text-xs font-bold">{schedule.capacity} seats</td>
+                    <td className="px-3 py-2 align-middle">
                       <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${statusColors[schedule.status]}`}>
                         {schedule.status}
                       </span>
                     </td>
-                    <td className="p-4 align-middle">
+                    <td className="px-3 py-2 align-middle">
                       <div className="flex items-center gap-2">
                         <button 
                           onClick={() => {
@@ -509,7 +509,7 @@ const AdminSchedules = () => {
               const totalPending = totalAmount - totalPaid;
 
               return (
-                <div className="p-6 space-y-6">
+                <div className="p-4 space-y-4">
                   {/* Summary Cards */}
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
                     <div className="border border-gray-200 rounded-2xl p-4 bg-gray-50/30">

@@ -267,16 +267,16 @@ const AdminBookings = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      <div className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+      <div className="bg-white border-b border-gray-100 px-4 py-3 flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Manage Bookings</h1>
-          <p className="text-gray-500 text-sm mt-0.5">{bookings.length} bookings total</p>
+          <h1 className="text-lg font-bold text-gray-900">Manage Bookings</h1>
+          <p className="text-gray-400 text-xs mt-0.5">{bookings.length} bookings total</p>
         </div>
       </div>
 
-      <div className="p-6">
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-          <div className="p-6 border-b border-gray-200 bg-white">
+      <div className="p-4">
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+          <div className="p-4 border-b border-gray-100 bg-white">
             <div className="flex flex-col md:flex-row gap-4">
               <div className="relative flex-1">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -307,15 +307,15 @@ const AdminBookings = () => {
             <table className="w-full">
               <thead>
                 <tr className="text-left text-gray-400 text-xs font-bold uppercase tracking-wider border-b border-gray-200 bg-gray-50/50">
-                  <th className="p-4">Customer</th>
-                  <th className="p-4">Contact</th>
-                  <th className="p-4">Trip Package</th>
+                  <th className="px-3 py-2">Customer</th>
+                  <th className="px-3 py-2">Contact</th>
+                  <th className="px-3 py-2">Trip Package</th>
                   <th className="p-4 text-center">Travelers</th>
-                  <th className="p-4">Departure Date</th>
+                  <th className="px-3 py-2">Departure Date</th>
                   <th className="p-4 text-right">Cost</th>
-                  <th className="p-4">Payment</th>
-                  <th className="p-4">Booking Status</th>
-                  <th className="p-4">Actions</th>
+                  <th className="px-3 py-2">Payment</th>
+                  <th className="px-3 py-2">Booking Status</th>
+                  <th className="px-3 py-2">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -323,24 +323,24 @@ const AdminBookings = () => {
                   const StatusIcon = statusIcons[booking.status] || Clock;
                   return (
                     <tr key={booking.id} className="border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors">
-                      <td className="p-4 align-middle">
+                      <td className="px-3 py-2 align-middle">
                         <div className="text-gray-900 font-bold text-[13px]">{booking.name}</div>
                         {booking.email && <div className="text-gray-400 text-[11px]">{booking.email}</div>}
                       </td>
-                      <td className="p-4 align-middle">
+                      <td className="px-3 py-2 align-middle">
                         <div className="flex flex-col gap-1">
                           <span className="flex items-center gap-1.5 text-gray-600 text-xs">
                             <Phone size={13} className="text-gray-400" /> {booking.phone}
                           </span>
                         </div>
                       </td>
-                      <td className="p-4 align-middle">
+                      <td className="px-3 py-2 align-middle">
                         <div className="text-gray-900 font-bold text-[13px]">{booking.tripName || 'N/A'}</div>
                       </td>
-                      <td className="p-4 align-middle text-center text-gray-800 text-xs font-bold">{booking.travelers}</td>
-                      <td className="p-4 align-middle text-gray-600 text-xs">{booking.selectedDate || 'N/A'}</td>
-                      <td className="p-4 align-middle text-right text-gray-900 font-bold text-[13px]">₹{booking.amount?.toLocaleString() || 0}</td>
-                      <td className="p-4 align-middle">
+                      <td className="px-3 py-2 align-middle text-center text-gray-800 text-xs font-bold">{booking.travelers}</td>
+                      <td className="px-3 py-2 align-middle text-gray-600 text-xs">{booking.selectedDate || 'N/A'}</td>
+                      <td className="px-3 py-2 align-middle text-right text-gray-900 font-bold text-[13px]">₹{booking.amount?.toLocaleString() || 0}</td>
+                      <td className="px-3 py-2 align-middle">
                         <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${
                           booking.paymentStatus === 'paid' ? 'bg-green-50 text-green-700 border-green-200' :
                           booking.paymentStatus === 'partial' ? 'bg-yellow-50 text-yellow-700 border-yellow-200' :
@@ -349,13 +349,13 @@ const AdminBookings = () => {
                           {booking.paymentStatus || 'pending'}
                         </span>
                       </td>
-                      <td className="p-4 align-middle">
+                      <td className="px-3 py-2 align-middle">
                         <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold flex items-center gap-1 w-fit ${statusColors[booking.status] || 'bg-gray-100 text-gray-700'}`}>
                           <StatusIcon size={12} />
                           {booking.status?.charAt(0).toUpperCase() + booking.status?.slice(1)}
                         </span>
                       </td>
-                      <td className="p-4 align-middle">
+                      <td className="px-3 py-2 align-middle">
                         <button
                           onClick={() => handleOpenDetails(booking)}
                           className="bg-primary-50 hover:bg-primary-100 text-primary-700 font-bold py-1.5 px-3 rounded-lg text-xs transition-colors shadow-sm"
@@ -454,7 +454,7 @@ const AdminBookings = () => {
               </button>
             </div>
 
-            <div className="p-6 space-y-6 max-h-[75vh] overflow-y-auto">
+            <div className="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
               {/* Profile Block */}
               <div>
                 <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Traveler Profile</h4>

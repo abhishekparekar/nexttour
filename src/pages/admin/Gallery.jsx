@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Plus, Trash2, Upload, Image, X, Search, Loader2, AlertCircle } from 'lucide-react';
+import { Plus, Trash2, Upload, Image, X, Search, Loader2, AlertCircle, Star } from 'lucide-react';
 import { collection, addDoc, deleteDoc, doc, updateDoc, onSnapshot, query, orderBy } from 'firebase/firestore';
 import { db, uploadCompressedImage } from '../../firebase';
 import { getTenantPath } from '../../config/tenant';
@@ -142,17 +142,17 @@ const AdminGallery = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen pb-12">
-      <div className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+      <div className="bg-white border-b border-gray-100 px-4 py-3 flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Gallery Management</h1>
-          <p className="text-gray-500 text-sm mt-0.5">{images.length} images</p>
+          <h1 className="text-lg font-bold text-gray-900">Gallery Management</h1>
+          <p className="text-gray-400 text-xs mt-0.5">{images.length} images</p>
         </div>
         <button onClick={() => setShowModal(true)} className="btn-primary flex items-center gap-2">
           <Plus size={18} /> Add Images
         </button>
       </div>
 
-      <div className="p-6">
+      <div className="p-4">
         {error && (
           <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-xl flex items-center gap-3 text-red-700">
             <AlertCircle size={20} />
@@ -161,8 +161,8 @@ const AdminGallery = () => {
           </div>
         )}
 
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-          <div className="p-6 border-b border-gray-200 bg-white">
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+          <div className="p-4 border-b border-gray-100 bg-white">
             <div className="flex items-center justify-between gap-4 flex-wrap">
               <div className="relative flex-1 max-w-md">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -201,7 +201,7 @@ const AdminGallery = () => {
                       }`}
                       title={img.featured ? 'Unfeature Image' : 'Feature Image'}
                     >
-                      <span className="text-sm">⭐</span>
+                      <Star size={14} />
                     </button>
                     <button 
                       onClick={() => handleDelete(img.id)} 
@@ -226,7 +226,7 @@ const AdminGallery = () => {
       {showModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl border border-gray-200 overflow-hidden">
-            <div className="p-6 border-b border-gray-200 flex items-center justify-between bg-white">
+            <div className="p-4 border-b border-gray-100 flex items-center justify-between bg-white">
               <h2 className="text-xl font-bold text-gray-900">Upload Images</h2>
               <button onClick={() => { setShowModal(false); setSelectedFiles([]); }} className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center text-gray-500 hover:text-gray-700 hover:bg-gray-200 transition-colors">
                 <X size={20} />

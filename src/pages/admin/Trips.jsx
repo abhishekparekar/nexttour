@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2, Search, X, Upload, Calendar, ChevronDown, ChevronUp, PlusCircle, Trash, CheckCircle, Loader2, AlertCircle, Send } from 'lucide-react';
+import { Plus, Edit, Trash2, Search, X, Upload, Calendar, ChevronDown, ChevronUp, PlusCircle, Trash, CheckCircle, Loader2, AlertCircle, Send, Star } from 'lucide-react';
 import { deleteTrip, updateTrip, addTrip, uploadCompressedImage, subscribeToTrips, subscribeToCategories } from '../../firebase';
 
 const isSaturday = (dateStr) => {
@@ -436,17 +436,17 @@ const AdminTrips = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen pb-12">
-      <div className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+      <div className="bg-white border-b border-gray-100 px-4 py-3 flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Manage Trips</h1>
-          <p className="text-gray-500 text-sm mt-0.5">{trips.length} trips total</p>
+          <h1 className="text-lg font-bold text-gray-900">Manage Trips</h1>
+          <p className="text-gray-400 text-xs mt-0.5">{trips.length} trips total</p>
         </div>
         <button onClick={handleAddNew} className="btn-primary flex items-center gap-2">
           <Plus size={18} /> Add New Trip
         </button>
       </div>
 
-      <div className="p-6">
+      <div className="p-4">
         {error && (
           <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-xl flex items-center gap-3 text-red-700">
             <AlertCircle size={20} />
@@ -455,8 +455,8 @@ const AdminTrips = () => {
           </div>
         )}
 
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-          <div className="p-6 border-b border-gray-200 bg-white">
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+          <div className="p-4 border-b border-gray-100 bg-white">
             <div className="relative max-w-md">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input 
@@ -487,7 +487,7 @@ const AdminTrips = () => {
               <tbody>
                 {filteredTrips.map((trip) => (
                   <tr key={trip.id} className="border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors">
-                    <td className="p-6">
+                    <td className="p-4">
                       <div className="flex items-center gap-4">
                         <img src={trip.images?.[0]} alt={trip.title} className="w-20 h-14 rounded-lg object-cover bg-gray-100" />
                         <div>
@@ -496,34 +496,34 @@ const AdminTrips = () => {
                         </div>
                       </div>
                     </td>
-                    <td className="p-6">
+                    <td className="p-4">
                       <span className="px-3 py-1 bg-primary-50 text-primary-700 border border-primary-200 rounded-full text-xs font-semibold">{trip.categoryName}</span>
                     </td>
                     <td className="p-6 text-gray-700">{trip.nights || 0}N/{trip.days || (trip.nights || 0) + 1}D</td>
                     <td className="p-6 text-gray-900 font-bold">₹{trip.price?.toLocaleString()}</td>
-                    <td className="p-6">
+                    <td className="p-4">
                       <span className={`px-3 py-1 rounded-full text-xs font-semibold ${difficultyColors[trip.difficulty]}`}>{trip.difficulty}</span>
                     </td>
-                    <td className="p-6">
+                    <td className="p-4">
                       <span className={`px-3 py-1 rounded-full text-xs font-semibold ${trip.status === 'active' ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-gray-100 text-gray-600 border border-gray-200'}`}>
                         {trip.status?.charAt(0).toUpperCase() + trip.status?.slice(1)}
                       </span>
                     </td>
-                    <td className="p-6">
+                    <td className="p-4">
                       {trip.featured ? (
-                        <span className="px-3 py-1 bg-yellow-50 text-yellow-700 border border-yellow-200 rounded-full text-xs font-semibold">⭐ Featured</span>
+                        <span className="px-2 py-0.5 bg-[#E6FAF8] text-[#00A192] border border-[#00C9B7]/30 rounded-full text-[10px] font-bold flex items-center gap-1"><Star size={10} className="fill-[#00C9B7] text-[#00C9B7]" /> Featured</span>
                       ) : (
                         <span className="text-gray-400 text-sm">-</span>
                       )}
                     </td>
-                    <td className="p-6">
+                    <td className="p-4">
                       {trip.upcoming ? (
                         <span className="px-3 py-1 bg-blue-50 text-blue-700 border border-blue-200 rounded-full text-xs font-semibold">📅 Upcoming</span>
                       ) : (
                         <span className="text-gray-400 text-sm">-</span>
                       )}
                     </td>
-                    <td className="p-6">
+                    <td className="p-4">
                       <div className="flex items-center gap-2">
                         <button 
                           onClick={() => handleShareWhatsApp(trip)} 
@@ -551,7 +551,7 @@ const AdminTrips = () => {
       {showModal && editingTrip && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-start justify-center z-50 p-4 overflow-y-auto">
           <div className="bg-white rounded-2xl w-full max-w-5xl max-h-[95vh] overflow-hidden my-4 flex flex-col shadow-2xl border border-gray-200">
-            <div className="p-6 border-b border-gray-200 flex items-center justify-between flex-shrink-0 bg-white">
+            <div className="p-4 border-b border-gray-100 flex items-center justify-between flex-shrink-0 bg-white">
               <h2 className="text-xl font-bold text-gray-900">
                 {editingTrip.id ? 'Edit Trip' : 'Add New Trip'}
               </h2>
@@ -807,7 +807,7 @@ const AdminTrips = () => {
                 </button>
                 
                 {expandedSections.includes('inclusions') && (
-                  <div className="p-6 pt-2 space-y-6">
+                  <div className="p-6 pt-2 space-y-4">
                     <div>
                       <h4 className="text-green-700 font-bold mb-3 flex items-center gap-2">
                         <span>✓ What's Included</span>

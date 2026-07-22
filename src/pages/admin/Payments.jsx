@@ -117,16 +117,16 @@ const AdminPayments = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      <div className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+      <div className="bg-white border-b border-gray-100 px-4 py-3 flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Payment Management</h1>
-          <p className="text-gray-500 text-sm mt-0.5">{bookings.length} active bookings tracked</p>
+          <h1 className="text-lg font-bold text-gray-900">Payment Management</h1>
+          <p className="text-gray-400 text-xs mt-0.5">{bookings.length} active bookings tracked</p>
         </div>
       </div>
 
-      <div className="p-6">
+      <div className="p-4">
         {/* Filters */}
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-4 mb-6 flex flex-col md:flex-row gap-4">
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 mb-4 flex flex-col md:flex-row gap-4">
           <div className="relative flex-1">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
             <input
@@ -150,21 +150,21 @@ const AdminPayments = () => {
         </div>
 
         {/* Payments Table */}
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
 
           {/* Desktop Table View */}
           <div className="hidden lg:block overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr className="text-left text-gray-400 text-xs font-bold uppercase tracking-wider border-b border-gray-200 bg-gray-50/50">
-                  <th className="p-4">Customer</th>
-                  <th className="p-4">Tour Package / Date</th>
+                  <th className="px-3 py-2">Customer</th>
+                  <th className="px-3 py-2">Tour Package / Date</th>
                   <th className="p-4 text-right">Total Amount</th>
                   <th className="p-4 text-right">Paid Amount</th>
                   <th className="p-4 text-right">Pending Balance</th>
-                  <th className="p-4">Payment Status</th>
-                  <th className="p-4">Transactions</th>
-                  <th className="p-4">Actions</th>
+                  <th className="px-3 py-2">Payment Status</th>
+                  <th className="px-3 py-2">Transactions</th>
+                  <th className="px-3 py-2">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -173,31 +173,31 @@ const AdminPayments = () => {
                   const isFullyPaid = remaining <= 0;
                   return (
                     <tr key={booking.id} className="border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors">
-                      <td className="p-4 align-middle">
+                      <td className="px-3 py-2 align-middle">
                         <div className="text-gray-900 font-bold text-[13px]">{booking.name}</div>
                         <div className="text-gray-400 text-[11px] flex items-center gap-1 mt-0.5">
                           <Phone size={11} /> {booking.phone}
                         </div>
                       </td>
-                      <td className="p-4 align-middle">
+                      <td className="px-3 py-2 align-middle">
                         <div className="text-gray-900 font-bold text-[13px]">{booking.tripName}</div>
                         <div className="text-gray-400 text-[11px] mt-0.5">{booking.selectedDate}</div>
                       </td>
-                      <td className="p-4 align-middle text-right text-gray-900 font-bold text-[13px]">
+                      <td className="px-3 py-2 align-middle text-right text-gray-900 font-bold text-[13px]">
                         ₹{booking.amount?.toLocaleString()}
                       </td>
-                      <td className="p-4 align-middle text-right text-green-600 font-bold text-[13px]">
+                      <td className="px-3 py-2 align-middle text-right text-green-600 font-bold text-[13px]">
                         ₹{(booking.paidAmount || 0).toLocaleString()}
                       </td>
-                      <td className="p-4 align-middle text-right text-red-600 font-bold text-[13px]">
+                      <td className="px-3 py-2 align-middle text-right text-red-600 font-bold text-[13px]">
                         ₹{remaining.toLocaleString()}
                       </td>
-                      <td className="p-4 align-middle">
+                      <td className="px-3 py-2 align-middle">
                         <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${paymentStatusColors[booking.paymentStatus || 'pending']}`}>
                           {booking.paymentStatus || 'pending'}
                         </span>
                       </td>
-                      <td className="p-4 align-middle text-gray-600 text-xs">
+                      <td className="px-3 py-2 align-middle text-gray-600 text-xs">
                         {booking.payments && booking.payments.length > 0 ? (
                           <div className="space-y-1">
                             {booking.payments.map((txn, index) => (
@@ -209,7 +209,7 @@ const AdminPayments = () => {
                           </div>
                         ) : 'None'}
                       </td>
-                      <td className="p-4 align-middle">
+                      <td className="px-3 py-2 align-middle">
                         <button
                           disabled={isFullyPaid}
                           onClick={() => handleOpenPaymentModal(booking)}

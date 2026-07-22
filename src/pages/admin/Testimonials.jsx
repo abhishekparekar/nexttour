@@ -144,17 +144,17 @@ const AdminTestimonials = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen pb-12">
-      <div className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+      <div className="bg-white border-b border-gray-100 px-4 py-3 flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Manage Testimonials</h1>
-          <p className="text-gray-500 text-sm mt-0.5">{testimonials.length} testimonials</p>
+          <h1 className="text-lg font-bold text-gray-900">Manage Testimonials</h1>
+          <p className="text-gray-400 text-xs mt-0.5">{testimonials.length} testimonials</p>
         </div>
         <button onClick={openAddModal} className="btn-primary flex items-center gap-2">
           <Plus size={18} /> Add Testimonial
         </button>
       </div>
 
-      <div className="p-6">
+      <div className="p-4">
         {error && (
           <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-xl flex items-center gap-3 text-red-700">
             <AlertCircle size={20} />
@@ -171,7 +171,7 @@ const AdminTestimonials = () => {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {testimonials.map((testimonial) => (
               <div key={testimonial.id} className="bg-white border border-gray-200 shadow-sm rounded-2xl p-6 relative">
                 <div className="flex items-start gap-4 mb-4">
@@ -217,7 +217,7 @@ const AdminTestimonials = () => {
       {showModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl border border-gray-200">
-            <div className="p-6 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white">
+            <div className="p-4 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white">
               <h2 className="text-xl font-bold text-gray-900">
                 {editingId ? 'Edit Testimonial' : 'Add New Testimonial'}
               </h2>

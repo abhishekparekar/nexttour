@@ -1,23 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { NavLink, useLocation, Outlet } from 'react-router-dom';
 import { 
-  LayoutDashboard, 
-  Mountain, 
-  Calendar, 
-  Users, 
-  Image, 
-  Star, 
-  ChevronLeft,
-  ChevronRight,
-  Download,
-  LogOut,
-  Truck,
-  UserCheck,
-  Clock,
-  CreditCard,
-  AlertTriangle,
-  BarChart3,
-  Menu
+  LayoutDashboard, MapPin, Calendar, Users, Image,
+  ChevronLeft, ChevronRight, FileDown, LogOut, Truck,
+  UserCheck, Clock, CreditCard, AlertCircle, BarChart3,
+  Menu, X, MessageSquare, Tags, Receipt
 } from 'lucide-react';
 import AdminLogin from './Login';
 
@@ -26,101 +13,94 @@ const Sidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen, onLogout 
   
   const navItems = [
     { path: '/admin', icon: LayoutDashboard, label: 'Dashboard', exact: true },
-    { path: '/admin/trips', icon: Mountain, label: 'Tour Packages' },
+    { path: '/admin/trips', icon: MapPin, label: 'Tour Packages' },
     { path: '/admin/schedules', icon: Clock, label: 'Trips / Schedule' },
     { path: '/admin/bookings', icon: Calendar, label: 'Bookings' },
     { path: '/admin/payments', icon: CreditCard, label: 'Payments' },
-    { path: '/admin/pending-payments', icon: AlertTriangle, label: 'Pending Payments' },
+    { path: '/admin/pending-payments', icon: AlertCircle, label: 'Pending Payments' },
     { path: '/admin/customers', icon: Users, label: 'Customers' },
     { path: '/admin/vehicles', icon: Truck, label: 'Vehicles' },
     { path: '/admin/drivers', icon: UserCheck, label: 'Drivers' },
-    { path: '/admin/expenses', icon: Download, label: 'Trip Expenses' },
-    { path: '/admin/leads', icon: Download, label: 'PDF Leads' },
-    { path: '/admin/categories', icon: Star, label: 'Categories' },
-    { path: '/admin/testimonials', icon: Users, label: 'Testimonials' },
+    { path: '/admin/expenses', icon: Receipt, label: 'Trip Expenses' },
+    { path: '/admin/leads', icon: FileDown, label: 'PDF Leads' },
+    { path: '/admin/categories', icon: Tags, label: 'Categories' },
+    { path: '/admin/testimonials', icon: MessageSquare, label: 'Testimonials' },
     { path: '/admin/gallery', icon: Image, label: 'Gallery' },
     { path: '/admin/reports', icon: BarChart3, label: 'Reports' }
   ];
 
+  const isCollapsed = collapsed && !mobileOpen;
+
   return (
-    <aside 
-      className={`fixed left-0 top-0 h-screen bg-white border-r border-gray-200 z-50 transition-all duration-300 flex flex-col ${
-        collapsed ? 'md:w-20' : 'md:w-64'
+    <aside
+      className={`fixed left-0 top-0 h-screen bg-white border-r border-gray-200 z-50 transition-all duration-300 flex flex-col shadow-sm ${
+        collapsed ? 'md:w-16' : 'md:w-56'
       } ${
-        mobileOpen ? 'w-64 translate-x-0' : 'w-64 -translate-x-full md:translate-x-0'
+        mobileOpen ? 'w-56 translate-x-0' : 'w-56 -translate-x-full md:translate-x-0'
       }`}
     >
-      {/* Logo */}
-      <div className="h-16 flex items-center justify-between px-4 border-b border-gray-200">
-        <div className="flex items-center gap-3">
-          <img 
-            src="/nexttour.jpeg" 
-            alt="NextTour Logo" 
-            className={`object-contain transition-all ${collapsed && !mobileOpen ? 'h-7 w-7 rounded-lg' : 'h-8 w-auto'}`} 
-          />
-          {(!collapsed || mobileOpen) && (
-            <div>
-              <h1 className="text-gray-900 font-bold text-sm leading-none">NextTour</h1>
-              <p className="text-gray-500 text-[10px] mt-0.5">Admin Panel</p>
-            </div>
-          )}
-        </div>
-        <button 
-          onClick={() => setMobileOpen(false)}
-          className="md:hidden p-1 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100"
-        >
-          <ChevronLeft size={20} />
-        </button>
+      {/* Logo Header */}
+      <div className={`h-12 flex items-center border-b border-gray-100 flex-shrink-0 ${isCollapsed ? 'justify-center px-2' : 'justify-between px-3'}`}>
+        {isCollapsed ? (
+          <img src="/nexttour.jpeg" alt="NextTour" className="h-7 w-7 object-contain rounded-md" />
+        ) : (
+          <>
+            <img src="/nexttour.jpeg" alt="NextTour" className="h-7 w-auto object-contain rounded-md max-w-[120px]" />
+            <button
+              onClick={() => setMobileOpen(false)}
+              className="md:hidden p-1 text-gray-400 hover:text-gray-600 rounded-md hover:bg-gray-100"
+            >
+              <X size={16} />
+            </button>
+          </>
+        )}
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 py-4 px-3 space-y-1 overflow-y-auto">
+      <nav className="flex-1 py-2 px-2 space-y-0.5 overflow-y-auto overflow-x-hidden">
         {navItems.map((item) => {
-          const isActive = item.exact 
-            ? location.pathname === item.path 
+          const isActive = item.exact
+            ? location.pathname === item.path
             : location.pathname.startsWith(item.path);
-          
           return (
             <NavLink
               key={item.path}
               to={item.path}
               end={item.exact}
               onClick={() => setMobileOpen(false)}
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
-                isActive 
-                  ? 'bg-primary-500 text-white shadow-lg shadow-primary-500/30' 
+              className={`flex items-center gap-2.5 px-2.5 py-2 rounded-lg transition-all text-xs font-medium ${
+                isActive
+                  ? 'bg-[#00C9B7] text-white shadow-sm'
                   : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-              } ${collapsed && !mobileOpen ? 'md:justify-center' : ''}`}
-              title={collapsed && !mobileOpen ? item.label : undefined}
+              } ${isCollapsed ? 'md:justify-center md:px-2' : ''}`}
+              title={isCollapsed ? item.label : undefined}
             >
-              <item.icon className="w-5 h-5 flex-shrink-0" />
-              {(!collapsed || mobileOpen) && <span className="font-medium text-sm">{item.label}</span>}
+              <item.icon className="w-4 h-4 flex-shrink-0" />
+              {!isCollapsed && <span className="truncate">{item.label}</span>}
             </NavLink>
           );
         })}
       </nav>
 
       {/* Footer Actions */}
-      <div className="p-3 border-t border-gray-200 space-y-1">
+      <div className="py-2 px-2 border-t border-gray-100 space-y-0.5 flex-shrink-0">
         <button
           onClick={onLogout}
-          className={`w-full flex items-center gap-3 px-4 py-2.5 text-red-600 hover:bg-red-50 font-semibold rounded-xl transition-colors ${
-            collapsed && !mobileOpen ? 'md:justify-center' : ''
+          className={`w-full flex items-center gap-2.5 px-2.5 py-2 text-red-500 hover:bg-red-50 font-medium rounded-lg transition-colors text-xs ${
+            isCollapsed ? 'md:justify-center md:px-2' : ''
           }`}
-          title={collapsed && !mobileOpen ? "Sign Out" : undefined}
+          title={isCollapsed ? 'Sign Out' : undefined}
         >
-          <LogOut size={18} className="flex-shrink-0" />
-          {(!collapsed || mobileOpen) && <span className="text-sm">Sign Out</span>}
+          <LogOut size={15} className="flex-shrink-0" />
+          {!isCollapsed && <span>Sign Out</span>}
         </button>
-
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className={`hidden md:flex w-full items-center gap-3 px-4 py-2 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-xl transition-colors ${
-            collapsed ? 'justify-center' : ''
+          className={`hidden md:flex w-full items-center gap-2.5 px-2.5 py-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors text-xs ${
+            isCollapsed ? 'justify-center px-2' : ''
           }`}
         >
-          {collapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
-          {!collapsed && <span className="text-sm font-medium">Collapse</span>}
+          {isCollapsed ? <ChevronRight size={15} /> : <><ChevronLeft size={15} /><span className="ml-1">Collapse</span></>}
         </button>
       </div>
     </aside>
@@ -147,19 +127,17 @@ const AdminLayout = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Mobile Top Navbar */}
-      <header className="fixed top-0 left-0 right-0 h-16 bg-white border-b border-gray-200 z-30 flex items-center justify-between px-4 md:hidden">
-        <div className="flex items-center gap-3">
-          <button 
+      <header className="fixed top-0 left-0 right-0 h-12 bg-white border-b border-gray-200 z-30 flex items-center justify-between px-3 md:hidden shadow-sm">
+        <div className="flex items-center gap-2">
+          <button
             onClick={() => setMobileOpen(true)}
-            className="p-2 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-xl transition-colors"
+            className="p-1.5 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
           >
-            <Menu size={22} />
+            <Menu size={18} />
           </button>
-          <div className="flex items-center gap-2">
-            <Mountain className="w-5 h-5 text-primary-500" />
-            <span className="font-bold text-gray-900 text-sm">NextTour Admin</span>
-          </div>
+          <img src="/nexttour.jpeg" alt="NextTour" className="h-6 w-auto object-contain" />
         </div>
+        <span className="text-xs font-semibold text-gray-400">Admin Panel</span>
       </header>
 
       {/* Backdrop for Mobile Sidebar */}
@@ -180,10 +158,10 @@ const AdminLayout = () => {
       />
       
       {/* Main Content Area */}
-      <main 
-        className={`transition-all duration-300 pt-16 md:pt-0 ${
-          collapsed ? 'md:ml-20' : 'md:ml-64'
-        } ml-0`}
+      <main
+        className={`transition-all duration-300 pt-12 md:pt-0 ${
+          collapsed ? 'md:ml-16' : 'md:ml-56'
+        } ml-0 min-h-screen`}
       >
         <Outlet />
       </main>

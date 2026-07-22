@@ -36,19 +36,19 @@ const AdminTreks = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-12">
-      <div className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+      <div className="bg-white border-b border-gray-100 px-4 py-3 flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Manage Treks</h1>
-          <p className="text-gray-500 text-sm mt-0.5">Add, edit, or remove trekking packages</p>
+          <h1 className="text-lg font-bold text-gray-900">Manage Treks</h1>
+          <p className="text-gray-400 text-xs mt-0.5">Add, edit, or remove trekking packages</p>
         </div>
         <button onClick={() => { setEditingTrek(null); setShowModal(true); }} className="btn-primary flex items-center gap-2">
           <Plus size={18} /> Add New Trek
         </button>
       </div>
 
-      <div className="p-6">
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-          <div className="p-6 border-b border-gray-200 bg-white">
+      <div className="p-4">
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+          <div className="p-4 border-b border-gray-100 bg-white">
             <div className="relative max-w-md">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input type="text" placeholder="Search treks..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
@@ -72,7 +72,7 @@ const AdminTreks = () => {
               <tbody>
                 {filteredTreks.map((trek) => (
                   <tr key={trek.id} className="border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors">
-                    <td className="p-6">
+                    <td className="p-4">
                       <div className="flex items-center gap-4">
                         <img src={trek.image} alt={trek.title} className="w-16 h-12 rounded-lg object-cover bg-gray-100" />
                         <div>
@@ -84,15 +84,15 @@ const AdminTreks = () => {
                     <td className="p-6 text-gray-700">{trek.location}</td>
                     <td className="p-6 text-gray-900 font-bold">₹{trek.price.toLocaleString()}</td>
                     <td className="p-6 text-gray-700">{trek.duration}</td>
-                    <td className="p-6">
+                    <td className="p-4">
                       <span className={`px-3 py-1 rounded-full text-xs font-semibold ${difficultyColors[trek.difficulty]}`}>{trek.difficulty}</span>
                     </td>
-                    <td className="p-6">
+                    <td className="p-4">
                       <span className={`px-3 py-1 rounded-full text-xs font-semibold ${trek.status === 'active' ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-gray-100 text-gray-600 border border-gray-200'}`}>
                         {trek.status.charAt(0).toUpperCase() + trek.status.slice(1)}
                       </span>
                     </td>
-                    <td className="p-6">
+                    <td className="p-4">
                       <div className="flex items-center gap-2">
                         <button onClick={() => handleEdit(trek)} className="w-10 h-10 bg-primary-50 rounded-lg flex items-center justify-center text-primary-600 hover:bg-primary-100 border border-primary-100 transition-colors">
                           <Edit size={18} />
@@ -113,13 +113,13 @@ const AdminTreks = () => {
       {showModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl border border-gray-200">
-            <div className="p-6 border-b border-gray-200 flex items-center justify-between">
+            <div className="p-4 border-b border-gray-100 flex items-center justify-between">
               <h2 className="text-xl font-bold text-gray-900">{editingTrek ? 'Edit Trek' : 'Add New Trek'}</h2>
               <button onClick={() => setShowModal(false)} className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center text-gray-500 hover:text-gray-700 hover:bg-gray-200 transition-colors">
                 <X size={20} />
               </button>
             </div>
-            <form className="p-6 space-y-6" onSubmit={(e) => e.preventDefault()}>
+            <form className="p-4 space-y-4" onSubmit={(e) => e.preventDefault()}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="md:col-span-2">
                   <label className="block text-gray-700 font-semibold text-sm mb-2">Trek Title *</label>

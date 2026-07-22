@@ -106,22 +106,22 @@ const AdminDrivers = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      <div className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+      <div className="bg-white border-b border-gray-100 px-4 py-3 flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Driver Management</h1>
-          <p className="text-gray-500 text-sm mt-0.5">{drivers.length} drivers registered</p>
+          <h1 className="text-lg font-bold text-gray-900">Driver Management</h1>
+          <p className="text-gray-400 text-xs mt-0.5">{drivers.length} drivers registered</p>
         </div>
         <button
           onClick={handleOpenAdd}
-          className="flex items-center gap-2 bg-primary-500 hover:bg-primary-600 text-white font-bold py-2.5 px-4 rounded-xl transition-all shadow-md"
+          className="flex items-center gap-2 bg-[#00C9B7] hover:bg-[#00b3a2] text-white font-semibold py-2 px-3 rounded-lg text-xs transition-all shadow-md"
         >
           <Plus size={18} /> Add Driver
         </button>
       </div>
 
-      <div className="p-6">
+      <div className="p-4">
         {/* Search */}
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-4 mb-6 flex items-center gap-4">
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 mb-4 flex items-center gap-4">
           <div className="relative flex-1">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
             <input
@@ -135,9 +135,9 @@ const AdminDrivers = () => {
         </div>
 
         {/* Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {filteredDrivers.map(driver => (
-            <div key={driver.id} className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 flex flex-col justify-between hover:shadow-md transition-shadow">
+            <div key={driver.id} className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 flex flex-col justify-between hover:shadow-md transition-shadow">
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <div className="w-10 h-10 bg-primary-50 text-primary-600 rounded-xl flex items-center justify-center">

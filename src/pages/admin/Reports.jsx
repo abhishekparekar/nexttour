@@ -400,16 +400,16 @@ const AdminReports = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen pb-12">
-      <div className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+      <div className="bg-white border-b border-gray-100 px-4 py-3 flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Reports & Insights</h1>
-          <p className="text-gray-500 text-sm mt-0.5">Real-time business performance analytics</p>
+          <h1 className="text-lg font-bold text-gray-900">Reports & Insights</h1>
+          <p className="text-gray-400 text-xs mt-0.5">Real-time business performance analytics</p>
         </div>
       </div>
 
-      <div className="p-6">
+      <div className="p-4">
         {/* Navigation Tabs */}
-        <div className="flex border-b border-gray-200 mb-6 gap-2 bg-white p-2 rounded-2xl border">
+        <div className="flex border-b border-gray-200 mb-4 gap-2 bg-white p-2 rounded-2xl border">
           <button
             onClick={() => setActiveReportTab('trips')}
             className={`flex-1 sm:flex-initial py-2.5 px-6 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 ${
@@ -444,11 +444,11 @@ const AdminReports = () => {
 
         {/* 1. Trip Profitability Report */}
         {activeReportTab === 'trips' && (
-          <div className="space-y-6 animate-in fade-in duration-200">
+          <div className="space-y-4 animate-in fade-in duration-200">
             {/* Top comparison bar chart */}
             {renderTripBarChart()}
 
-            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+            <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
               <div className="p-5 border-b border-gray-200 flex justify-between items-center bg-gray-50/50">
                 <h3 className="font-bold text-gray-900 text-[15px]">Departure Summary</h3>
                 <span className="text-gray-400 text-xs font-semibold">{tripReports.length} departures mapped</span>
@@ -459,7 +459,7 @@ const AdminReports = () => {
                 <table className="w-full">
                   <thead>
                     <tr className="text-left text-gray-400 text-xs font-bold uppercase tracking-wider border-b border-gray-200 bg-gray-50/50">
-                      <th className="p-4">Package Departure</th>
+                      <th className="px-3 py-2">Package Departure</th>
                       <th className="p-4 text-center">Travellers</th>
                       <th className="p-4 text-right">Collections</th>
                       <th className="p-4 text-right">Expenses</th>
@@ -470,23 +470,23 @@ const AdminReports = () => {
                   <tbody>
                     {tripReports.map(report => (
                       <tr key={report.id} className="border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors">
-                        <td className="p-4 align-middle">
+                        <td className="px-3 py-2 align-middle">
                           <div className="text-gray-900 font-bold text-[13px]">{report.title}</div>
                           <div className="text-gray-400 text-[11px] mt-0.5">{report.departureDate} ({report.status})</div>
                         </td>
-                        <td className="p-4 align-middle text-center font-bold text-gray-900 text-xs">
+                        <td className="px-3 py-2 align-middle text-center font-bold text-gray-900 text-xs">
                           {report.totalPersons} ({report.totalBookingsCount} bookings)
                         </td>
-                        <td className="p-4 align-middle text-right text-green-600 font-bold text-[13px]">
+                        <td className="px-3 py-2 align-middle text-right text-green-600 font-bold text-[13px]">
                           ₹{report.totalCollection?.toLocaleString()}
                         </td>
-                        <td className="p-4 align-middle text-right text-red-500 font-bold text-[13px]">
+                        <td className="px-3 py-2 align-middle text-right text-red-500 font-bold text-[13px]">
                           ₹{report.totalExpenses?.toLocaleString()}
                         </td>
                         <td className={`p-4 align-middle text-right font-black text-[13px] ${report.netProfit >= 0 ? 'text-primary-600' : 'text-red-600'}`}>
                           ₹{report.netProfit?.toLocaleString()}
                         </td>
-                        <td className="p-4 align-middle text-right text-gray-500 text-xs">
+                        <td className="px-3 py-2 align-middle text-right text-gray-500 text-xs">
                           ₹{report.pendingCollection?.toLocaleString()}
                         </td>
                       </tr>
@@ -536,7 +536,7 @@ const AdminReports = () => {
 
         {/* 2. Payments Report */}
         {activeReportTab === 'payments' && (
-          <div className="space-y-6 animate-in fade-in duration-200">
+          <div className="space-y-4 animate-in fade-in duration-200">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm flex items-center gap-4">
                 <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center">
@@ -576,9 +576,9 @@ const AdminReports = () => {
 
         {/* 3. Expense Report */}
         {activeReportTab === 'expenses' && (
-          <div className="space-y-6 animate-in fade-in duration-200">
-            <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
-              <div className="flex items-center justify-between mb-6">
+          <div className="space-y-4 animate-in fade-in duration-200">
+            <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
+              <div className="flex items-center justify-between mb-4">
                 <div>
                   <h3 className="font-bold text-gray-900 text-lg">Expense Category Analysis</h3>
                   <p className="text-gray-500 text-xs mt-0.5 font-medium">Summary of expenses by group</p>

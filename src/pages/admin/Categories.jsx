@@ -117,17 +117,17 @@ const AdminCategories = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen pb-12">
-      <div className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+      <div className="bg-white border-b border-gray-100 px-4 py-3 flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Manage Categories</h1>
-          <p className="text-gray-500 text-sm mt-0.5">{categories.length} categories total</p>
+          <h1 className="text-lg font-bold text-gray-900">Manage Categories</h1>
+          <p className="text-gray-400 text-xs mt-0.5">{categories.length} categories total</p>
         </div>
         <button onClick={handleAddNew} className="btn-primary flex items-center gap-2">
           <Plus size={18} /> Add Category
         </button>
       </div>
 
-      <div className="p-6">
+      <div className="p-4">
         {error && (
           <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-xl flex items-center gap-3 text-red-700">
             <AlertCircle size={20} />
@@ -136,8 +136,8 @@ const AdminCategories = () => {
           </div>
         )}
 
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-          <div className="p-6 border-b border-gray-200 bg-white">
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+          <div className="p-4 border-b border-gray-100 bg-white">
             <div className="relative max-w-md">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input 
@@ -163,7 +163,7 @@ const AdminCategories = () => {
               <tbody>
                 {filteredCategories.map((category) => (
                   <tr key={category.id} className="border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors">
-                    <td className="p-6">
+                    <td className="p-4">
                       <div className="flex items-center gap-4">
                         <img 
                           src={category.image || category.icon || 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=200'} 
@@ -177,14 +177,14 @@ const AdminCategories = () => {
                       </div>
                     </td>
                     <td className="p-6 text-gray-700">{category.order}</td>
-                    <td className="p-6">
+                    <td className="p-4">
                       <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
                         category.status === 'active' ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-gray-100 text-gray-600 border border-gray-200'
                       }`}>
                         {category.status?.charAt(0).toUpperCase() + category.status?.slice(1)}
                       </span>
                     </td>
-                    <td className="p-6">
+                    <td className="p-4">
                       <div className="flex items-center gap-2">
                         <button 
                           onClick={() => handleEdit(category)} 
@@ -211,7 +211,7 @@ const AdminCategories = () => {
       {showModal && editingCategory && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl border border-gray-200">
-            <div className="p-6 border-b border-gray-200 flex items-center justify-between">
+            <div className="p-4 border-b border-gray-100 flex items-center justify-between">
               <h2 className="text-xl font-bold text-gray-900">
                 {editingCategory.id ? 'Edit Category' : 'Add New Category'}
               </h2>

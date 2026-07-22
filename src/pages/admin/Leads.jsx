@@ -73,16 +73,16 @@ const AdminLeads = () => {
   return (
     <div className="bg-gray-50 min-h-screen pb-12 text-gray-700">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="bg-white border-b border-gray-100 px-4 py-3 flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
+          <h1 className="text-lg font-bold text-gray-900 flex items-center gap-2">
             <Download className="w-7 h-7 text-primary-500" /> PDF Itinerary Leads
           </h1>
-          <p className="text-gray-500 text-sm mt-0.5">View and manage customers who downloaded trip PDFs</p>
+          <p className="text-gray-400 text-xs mt-0.5">View and manage customers who downloaded trip PDFs</p>
         </div>
       </div>
 
-      <div className="p-6 space-y-6">
+      <div className="p-4 space-y-4">
         {/* Quick Stats Banner */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           <div className="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm flex items-center gap-4">
@@ -117,9 +117,9 @@ const AdminLeads = () => {
         </div>
 
         {/* Search & Data Card */}
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
           {/* Filters Bar */}
-          <div className="p-6 border-b border-gray-200 bg-white">
+          <div className="p-4 border-b border-gray-100 bg-white">
             <div className="relative w-full max-w-md">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
@@ -148,7 +148,7 @@ const AdminLeads = () => {
                 {filteredLeads.map((lead) => (
                   <tr key={lead.id} className="hover:bg-gray-50 transition-colors text-sm">
                     {/* Customer */}
-                    <td className="p-6">
+                    <td className="p-4">
                       <div className="text-gray-900 font-bold text-[15px]">{lead.name}</div>
                       <div className="text-gray-500 text-xs mt-1 flex items-center gap-1">
                         <MapPin size={12} className="text-gray-400" /> {lead.city}
@@ -156,7 +156,7 @@ const AdminLeads = () => {
                     </td>
 
                     {/* Contact details & click to WhatsApp */}
-                    <td className="p-6">
+                    <td className="p-4">
                       <div className="flex flex-col gap-1.5">
                         <span className="text-gray-900 font-semibold flex items-center gap-1.5">
                           <Phone size={13} className="text-gray-400" /> {lead.phone}
@@ -173,7 +173,7 @@ const AdminLeads = () => {
                     </td>
 
                     {/* Trip details */}
-                    <td className="p-6">
+                    <td className="p-4">
                       <div className="max-w-[240px]">
                         {lead.lastDownloadedTripId ? (
                           <a
@@ -191,7 +191,7 @@ const AdminLeads = () => {
                     </td>
 
                     {/* Update timestamps */}
-                    <td className="p-6">
+                    <td className="p-4">
                       <div className="flex flex-col gap-0.5">
                         <span className="text-gray-900 font-semibold text-xs">{formatDate(lead.updatedAt)}</span>
                         {lead.createdAt && lead.createdAt !== lead.updatedAt && (
