@@ -147,7 +147,9 @@ const Navbar = () => {
               <img
                 src="/nexttour.jpeg"
                 alt="NextTour Logo"
-                className="h-8 md:h-10 w-auto object-contain"
+                className={`h-8 md:h-10 w-auto object-contain bg-white rounded-xl p-1.5 transition-all duration-300 ${
+                  isTransparent ? 'shadow-[0_4px_20px_rgba(0,0,0,0.12)] border border-white/20' : 'border border-transparent'
+                }`}
               />
             </Link>
           </div>
