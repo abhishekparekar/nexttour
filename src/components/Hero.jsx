@@ -83,7 +83,7 @@ const StatItem = ({ icon, target, suffix, label, delay }) => {
 
 const Hero = () => {
   return (
-    <section className="relative overflow-hidden pt-20 sm:pt-24 pb-6 sm:pb-10 min-h-[80vh] sm:min-h-[85vh] flex flex-col justify-between" style={{ background: '#0a0a0a', isolation: 'isolate' }}>
+    <section className="relative overflow-hidden pt-24 sm:pt-24 pb-4 sm:pb-8 min-h-0 md:min-h-[75vh] flex flex-col justify-between" style={{ background: '#0a0a0a', isolation: 'isolate' }}>
 
       {/* Background image */}
       <div
@@ -102,16 +102,16 @@ const Hero = () => {
       }} />
 
       {/* Content */}
-      <div className="relative z-10 flex-1 flex flex-col items-center justify-center text-center px-4 sm:px-6 pt-6 sm:pt-10 pb-4">
+      <div className="relative z-10 flex-1 flex flex-col items-center justify-center text-center px-4 sm:px-6 pt-2 sm:pt-8 pb-2">
 
         {/* NextTour Badge */}
         <motion.div
           initial={{ y: -10, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="mb-4"
+          className="mb-3"
         >
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/15 backdrop-blur-md border border-white/25 text-[#00C9B7] text-xs sm:text-sm font-extrabold shadow-lg">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 backdrop-blur-md border border-white/25 text-[#00C9B7] text-xs sm:text-sm font-extrabold shadow-lg">
             <span>✨ Welcome to NextTour</span>
           </div>
         </motion.div>
@@ -121,29 +121,29 @@ const Hero = () => {
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.7, delay: 0.2, ease: easings.premium }}
-          className="mb-4 sm:mb-5"
+          className="mb-3 sm:mb-5"
         >
-          <div className="max-w-[180px] sm:max-w-[240px] md:max-w-[280px] mx-auto bg-white p-2.5 sm:p-3.5 rounded-2xl shadow-[0_0_30px_rgba(0,201,183,0.35)] border border-white/60">
+          <div className="max-w-[150px] sm:max-w-[220px] md:max-w-[260px] mx-auto bg-white p-2 sm:p-3 rounded-xl sm:rounded-2xl shadow-[0_0_25px_rgba(0,201,183,0.35)] border border-white/60">
             <img src="/nexttour.jpeg" alt="NextTour Travels" className="w-full h-auto object-contain" />
           </div>
         </motion.div>
 
-        {/* Main Headline with explicit NextTour mention */}
+        {/* Main Headline */}
         <motion.div
-          className="mb-3 sm:mb-5 max-w-3xl mx-auto"
+          className="mb-2 sm:mb-4 max-w-3xl mx-auto"
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.3, ease: easings.premium }}
         >
           <h1 className="leading-tight">
             <span
-              className="block text-3xl sm:text-5xl md:text-6xl font-black text-[#00C9B7] tracking-tight"
+              className="block text-2xl sm:text-4xl md:text-5xl font-black text-[#00C9B7] tracking-tight"
               style={{ textShadow: '0 4px 20px rgba(0, 201, 183, 0.4)' }}
             >
               NextTour
             </span>
             <span
-              className="block text-2xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-tight mt-1"
+              className="block text-xl sm:text-3xl md:text-4xl font-extrabold text-white tracking-tight mt-0.5"
               style={{ textShadow: '0 2px 14px rgba(0,0,0,0.6)' }}
             >
               Discover The World With Us
