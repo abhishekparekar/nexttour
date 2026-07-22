@@ -245,3 +245,39 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* Force NextTour Teal logo color scheme overrides for all primary components */
+.bg-primary-50 {
+  background-color: #E6FAF8 !important;
+}
+.bg-primary-100 {
+  background-color: #CCF5F1 !important;
+}
+.bg-primary-500 {
+  background-color: #00C9B7 !important;
+}
+.bg-primary-600 {
+  background-color: #00B5A5 !important;
+}
+.text-primary-500 {
+  color: #00C9B7 !important;
+}
+.text-primary-600 {
+  color: #00B5A5 !important;
+}
+.text-primary-700 {
+  color: #00A192 !important;
+}
+.border-primary-500 {
+  border-color: #00C9B7 !important;
+}
+.from-primary-500 {
+  --tw-gradient-from: #00C9B7 !important;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(0, 201, 183, 0)) !important;
+}
+.to-primary-600 {
+  --tw-gradient-to: #00B5A5 !important;
+}
+.shadow-primary-500\/30 {
+  --tw-shadow: 0 10px 15px -3px rgba(0, 201, 183, 0.3), 0 4px 6px -4px rgba(0, 201, 183, 0.3) !important;
+}
