@@ -83,7 +83,7 @@ const StatItem = ({ icon, target, suffix, label, delay }) => {
 
 const Hero = () => {
   return (
-    <section className="relative min-h-screen flex flex-col overflow-hidden" style={{ background: '#0a0a0a', isolation: 'isolate' }}>
+    <section className="relative overflow-hidden pt-20 sm:pt-24 pb-6 sm:pb-10 min-h-[80vh] sm:min-h-[85vh] flex flex-col justify-between" style={{ background: '#0a0a0a', isolation: 'isolate' }}>
 
       {/* Background image */}
       <div
@@ -97,50 +97,56 @@ const Hero = () => {
 
       {/* Overlay */}
       <div className="absolute inset-0" style={{
-        background: 'linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.3) 40%, rgba(0,0,0,0.6) 100%)',
+        background: 'linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.5) 50%, rgba(10,10,10,0.95) 100%)',
         transform: 'translateZ(0)'
       }} />
 
       {/* Content */}
-      <div className="relative z-10 flex-1 flex flex-col items-center justify-center text-center px-4 sm:px-6 pt-24 sm:pt-28 pb-6">
+      <div className="relative z-10 flex-1 flex flex-col items-center justify-center text-center px-4 sm:px-6 pt-6 sm:pt-10 pb-4">
 
-        {/* Logo */}
+        {/* NextTour Badge */}
         <motion.div
-          initial={{ scale: 0.5, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.1, ease: easings.premium }}
-          className="mb-5 sm:mb-6"
+          initial={{ y: -10, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+          className="mb-4"
         >
-          <div className="max-w-[200px] sm:max-w-[260px] md:max-w-[300px] mx-auto bg-white p-3 sm:p-4 rounded-2xl shadow-[0_0_30px_rgba(0,201,183,0.3)] border border-gray-100/50">
-            <img src="/nexttour.jpeg" alt="NextTour" className="w-full h-auto object-contain" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/15 backdrop-blur-md border border-white/25 text-[#00C9B7] text-xs sm:text-sm font-extrabold shadow-lg">
+            <span>✨ Welcome to NextTour</span>
           </div>
         </motion.div>
 
-        {/* Tagline */}
+        {/* Logo Card */}
         <motion.div
-          className="mb-4 sm:mb-6"
-          initial={{ y: 30, opacity: 0 }}
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.7, delay: 0.2, ease: easings.premium }}
+          className="mb-4 sm:mb-5"
+        >
+          <div className="max-w-[180px] sm:max-w-[240px] md:max-w-[280px] mx-auto bg-white p-2.5 sm:p-3.5 rounded-2xl shadow-[0_0_30px_rgba(0,201,183,0.35)] border border-white/60">
+            <img src="/nexttour.jpeg" alt="NextTour Travels" className="w-full h-auto object-contain" />
+          </div>
+        </motion.div>
+
+        {/* Main Headline with explicit NextTour mention */}
+        <motion.div
+          className="mb-3 sm:mb-5 max-w-3xl mx-auto"
+          initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.9, delay: 0.35, ease: easings.premium }}
+          transition={{ duration: 0.8, delay: 0.3, ease: easings.premium }}
         >
           <h1 className="leading-tight">
             <span
-              className="block text-3xl sm:text-5xl md:text-6xl font-extrabold text-white tracking-tight"
-              style={{ textShadow: '0 2px 16px rgba(0,0,0,0.5)' }}
+              className="block text-3xl sm:text-5xl md:text-6xl font-black text-[#00C9B7] tracking-tight"
+              style={{ textShadow: '0 4px 20px rgba(0, 201, 183, 0.4)' }}
             >
-              Discover the
+              NextTour
             </span>
             <span
-              className="block text-5xl sm:text-7xl md:text-8xl font-black leading-none tracking-tight text-[#00C9B7]"
-              style={{ textShadow: '0 4px 24px rgba(0, 201, 183,0.5)' }}
+              className="block text-2xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-tight mt-1"
+              style={{ textShadow: '0 2px 14px rgba(0,0,0,0.6)' }}
             >
-              World
-            </span>
-            <span
-              className="block text-xl sm:text-2xl md:text-3xl font-medium text-white/80 tracking-[0.2em] uppercase mt-1"
-              style={{ textShadow: '0 2px 10px rgba(0,0,0,0.4)' }}
-            >
-              with us
+              Discover The World With Us
             </span>
           </h1>
         </motion.div>
@@ -149,24 +155,24 @@ const Hero = () => {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.5, delay: 1.0 }}
-          className="text-xs sm:text-sm md:text-base text-white/80 max-w-xs sm:max-w-md mx-auto font-light tracking-wide leading-relaxed min-h-[1.5em]"
-          style={{ textShadow: '0 1px 8px rgba(0,0,0,0.4)' }}
+          transition={{ duration: 0.5, delay: 0.6 }}
+          className="text-xs sm:text-sm md:text-base text-white/85 max-w-xs sm:max-w-md mx-auto font-medium tracking-wide leading-relaxed min-h-[1.5em]"
+          style={{ textShadow: '0 1px 8px rgba(0,0,0,0.5)' }}
         >
-          <TypingText text="Adventure Starts With One Step — Let's Take It Together" />
+          <TypingText text="Your Dream Travel Partner — Crafting Unforgettable Journeys & Tours" />
         </motion.div>
       </div>
 
       {/* Stats bar */}
       <motion.div
-        initial={{ y: 40, opacity: 0 }}
+        initial={{ y: 30, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.7, delay: 1.1, ease: easings.premium }}
-        className="relative z-10 mx-4 sm:mx-6 md:mx-12 lg:mx-20 mb-4 sm:mb-6"
+        transition={{ duration: 0.7, delay: 0.8, ease: easings.premium }}
+        className="relative z-10 mx-4 sm:mx-8 md:mx-16 lg:mx-24 mb-2 sm:mb-4"
       >
         <div
-          className="flex items-center justify-around rounded-2xl px-3 sm:px-6 py-3 sm:py-4"
-          style={{ background: 'rgba(15,60,55,0.92)', backdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.08)' }}
+          className="flex items-center justify-around rounded-2xl px-3 sm:px-6 py-2.5 sm:py-3.5"
+          style={{ background: 'rgba(15,60,55,0.92)', backdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.1)' }}
         >
           <StatItem delay={1.3} target={100} suffix="+" label="Google Reviews" icon={
               <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white flex items-center justify-center shadow flex-shrink-0">
