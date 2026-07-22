@@ -35,11 +35,7 @@ const Footer = () => {
           {/* Brand */}
           <motion.div className="space-y-3 lg:col-span-1" initial={{ y: 20 }} whileInView={{ y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}>
             <Link to="/" className="flex items-center gap-3">
-              <img src="/trek_premi.png" alt="Trek Premi" className="h-16 w-16 object-contain rounded-full bg-white p-1" />
-              <div>
-                <span className="text-lg md:text-xl font-bold text-white font-poppins">Trek Premi</span>
-                <p className="text-[10px] md:text-xs text-[#F5B301] leading-none mt-1">Your Dream Travel Partner</p>
-              </div>
+              <img src="/nexttour.jpeg" alt="NextTour Logo" className="h-10 w-auto object-contain bg-white rounded-lg p-1.5" />
             </Link>
             <p className="text-white/55 text-xs leading-relaxed">
               Your premium adventure partner. We craft unforgettable journeys through spectacular landscapes, ensuring every trek becomes a lifetime memory.
@@ -52,7 +48,7 @@ const Footer = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={social.label}
-                  className="w-7 h-7 rounded-lg flex items-center justify-center text-white/60 hover:bg-[#F5B301] hover:text-white transition-all duration-300"
+                  className="w-7 h-7 rounded-lg flex items-center justify-center text-white/60 hover:bg-[#00C9B7] hover:text-white transition-all duration-300"
                   style={{ background: 'rgba(255,255,255,0.08)' }}
                   whileHover={{ scale: 1.1, y: -2 }}
                   whileTap={{ scale: 0.95 }}
@@ -69,8 +65,8 @@ const Footer = () => {
             <ul className="space-y-1.5">
               {quickLinks.map((link) => (
                 <li key={link.path}>
-                  <Link to={link.path} className="text-white/55 hover:text-[#F5B301] transition-colors inline-flex items-center gap-2 text-xs">
-                    <span className="w-1 h-1 bg-[#F5B301] rounded-full flex-shrink-0" />
+                  <Link to={link.path} className="text-white/55 hover:text-[#00C9B7] transition-colors inline-flex items-center gap-2 text-xs">
+                    <span className="w-1 h-1 bg-[#00C9B7] rounded-full flex-shrink-0" />
                     {link.name}
                   </Link>
                 </li>
@@ -83,21 +79,21 @@ const Footer = () => {
             <h4 className="text-xs font-bold text-white mb-3 uppercase tracking-wider">Contact Us</h4>
             <ul className="space-y-2.5">
               <li className="flex items-start gap-2.5">
-                <MapPin className="w-3.5 h-3.5 text-[#F5B301] mt-0.5 flex-shrink-0" />
+                <MapPin className="w-3.5 h-3.5 text-[#00C9B7] mt-0.5 flex-shrink-0" />
                 <p className="text-white/55 text-xs leading-relaxed">
                   Sai Vihar Colony, Near Sai Mandir, MIDC, Ranjangaon Shenpunji, Waluj, Wadgaon Kolhati, Maharashtra 431001
                 </p>
               </li>
               <li className="flex items-start gap-2.5">
-                <Phone className="w-3.5 h-3.5 text-[#F5B301] mt-0.5 flex-shrink-0" />
+                <Phone className="w-3.5 h-3.5 text-[#00C9B7] mt-0.5 flex-shrink-0" />
                 <div className="flex flex-col gap-0.5">
-                  <a href="tel:+919156434444" className="text-white/55 hover:text-[#F5B301] transition-colors text-xs">+91 9156434444</a>
-                  <a href="tel:+917758998055" className="text-white/55 hover:text-[#F5B301] transition-colors text-xs">+91 7758998055</a>
+                  <a href="tel:+919156434444" className="text-white/55 hover:text-[#00C9B7] transition-colors text-xs">+91 9156434444</a>
+                  <a href="tel:+917758998055" className="text-white/55 hover:text-[#00C9B7] transition-colors text-xs">+91 7758998055</a>
                 </div>
               </li>
               <li className="flex items-center gap-2.5">
-                <Mail className="w-3.5 h-3.5 text-[#F5B301] flex-shrink-0" />
-                <a href="mailto:trekpremi01@gmail.com" className="text-white/55 hover:text-[#F5B301] transition-colors text-xs">trekpremi01@gmail.com</a>
+                <Mail className="w-3.5 h-3.5 text-[#00C9B7] flex-shrink-0" />
+                <a href="mailto:trekpremi01@gmail.com" className="text-white/55 hover:text-[#00C9B7] transition-colors text-xs">trekpremi01@gmail.com</a>
               </li>
             </ul>
           </motion.div>
@@ -109,11 +105,11 @@ const Footer = () => {
       <div className="border-t" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
         <div className="container-custom py-4">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
-            <p className="text-white/35 text-xs">© {currentYear} Trek Premi. All rights reserved.</p>
+            <p className="text-white/35 text-xs">© {currentYear} NextTour. All rights reserved.</p>
             <div className="flex gap-5 text-xs">
-              <a href="#" className="text-white/35 hover:text-[#F5B301] transition-colors">Privacy Policy</a>
-              <a href="#" className="text-white/35 hover:text-[#F5B301] transition-colors">Terms of Service</a>
-              <a href="#" className="text-white/35 hover:text-[#F5B301] transition-colors">Cookie Policy</a>
+              <a href="#" className="text-white/35 hover:text-[#00C9B7] transition-colors">Privacy Policy</a>
+              <a href="#" className="text-white/35 hover:text-[#00C9B7] transition-colors">Terms of Service</a>
+              <a href="#" className="text-white/35 hover:text-[#00C9B7] transition-colors">Cookie Policy</a>
             </div>
           </div>
         </div>

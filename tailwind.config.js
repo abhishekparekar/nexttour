@@ -8,19 +8,27 @@ export default {
     extend: {
       colors: {
         primary: {
-          DEFAULT: '#F5B301',
-          400: '#FFC933',
-          500: '#F5B301',
-          600: '#E5A100',
+          DEFAULT: '#00C9B7',
+          50: '#E6FAF8',
+          100: '#CCF5F1',
+          200: '#99EBE3',
+          300: '#66E0D4',
+          400: '#33D6C6',
+          500: '#00C9B7',
+          600: '#00B5A5',
+          700: '#00A192',
+          800: '#008C80',
+          900: '#00786E',
         },
         dark: {
+          605: '#1e293b',
           600: '#2D3748',
           700: '#1E2533',
           800: '#151C28',
           900: '#0D1117',
         },
-        primarylight: '#F5B301',
-        primarydark: '#E5A100',
+        primarylight: '#00C9B7',
+        primarydark: '#00B5A5',
         luxury: {
           white: '#FFFFFF',
           50: '#F8F9FB',
@@ -45,7 +53,7 @@ export default {
         'premium-hover': '0 8px 30px rgba(0, 0, 0, 0.08)',
         'card': '0 2px 12px rgba(0, 0, 0, 0.04)',
         'card-hover': '0 12px 40px rgba(0, 0, 0, 0.1)',
-        'glow': '0 0 20px rgba(245, 179, 1, 0.3)',
+        'glow': '0 0 20px rgba(0, 201, 183, 0.3)',
       },
       borderRadius: {
         'premium': '16px',

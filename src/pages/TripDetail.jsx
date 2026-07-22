@@ -69,7 +69,7 @@ const TripDetail = () => {
     const url = window.location.href;
     if (navigator.share) {
       try {
-        await navigator.share({ title: trip?.title || 'Trek Premi', url: url });
+        await navigator.share({ title: trip?.title || 'NextTour', url: url });
       } catch (err) {
         console.log('User canceled share');
       }

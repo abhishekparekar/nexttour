@@ -39,7 +39,7 @@ const TestimonialsPage = () => {
           >
             <h1 className="text-3xl md:text-5xl font-bold text-white mb-2 tracking-tight drop-shadow-md">Trekker Stories</h1>
             <p className="text-base md:text-lg text-white/90 max-w-2xl mx-auto font-light drop-shadow-sm">
-              Real stories from real adventurers who traveled with Trek Premi
+              Real stories from real adventurers who traveled with NextTour
             </p>
           </motion.div>
         </div>

@@ -109,10 +109,10 @@ const Hero = () => {
           initial={{ scale: 0.5, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.1, ease: easings.premium }}
-          className="mb-6"
+          className="mb-8"
         >
-          <div className="w-32 h-32 sm:w-36 sm:h-36 md:w-40 md:h-40 mx-auto rounded-full bg-white p-2.5 shadow-[0_0_40px_rgba(245,179,1,0.4)]">
-            <img src="/trek_premi.png" alt="Trek Premi" className="w-full h-full object-contain" />
+          <div className="max-w-[280px] sm:max-w-[340px] mx-auto bg-white p-4 rounded-2xl shadow-[0_0_40px_rgba(0,201,183,0.3)] border border-gray-100/50">
+            <img src="/nexttour.jpeg" alt="NextTour" className="w-full h-auto object-contain" />
           </div>
         </motion.div>
 

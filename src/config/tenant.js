@@ -7,7 +7,7 @@ const TENANT_CONFIG = {
   TENANT_ID: import.meta.env.VITE_TENANT_ID || 'trek-premi',
   
   // Tenant display name (optional, for UI purposes)
-  TENANT_NAME: import.meta.env.VITE_TENANT_NAME || 'Trek Premi',
+  TENANT_NAME: import.meta.env.VITE_TENANT_NAME || 'NextTour',
 };
 
 /**

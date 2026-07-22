@@ -22,21 +22,21 @@ const colorMap = {
 
 const WhyChooseUs = () => {
   return (
-    <section className="py-20 md:py-28 relative overflow-hidden" style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(245,179,1,0.09) 0%, transparent 55%), radial-gradient(ellipse at 90% 100%, rgba(139,92,246,0.07) 0%, transparent 50%), linear-gradient(180deg, #FAFAFA 0%, #F2F2F7 100%)' }}>
+    <section className="py-20 md:py-28 relative overflow-hidden" style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(0,201,183,0.09) 0%, transparent 55%), radial-gradient(ellipse at 90% 100%, rgba(139,92,246,0.07) 0%, transparent 50%), linear-gradient(180deg, #FAFAFA 0%, #F2F2F7 100%)' }}>
       <div className="absolute inset-0">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-[#F5B301]/5 rounded-full blur-3xl" />
+        <div className="absolute top-20 left-10 w-72 h-72 bg-[#00C9B7]/5 rounded-full blur-3xl" />
         <div className="absolute bottom-20 right-10 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl" />
       </div>
 
       <div className="container-custom relative">
         <motion.div className="text-center mb-16" initial={{ y: 30 }} whileInView={{ y: 0 }} viewport={viewportConfig} transition={{ duration: 0.7, ease: easings.premium }}>
           <div className="inline-flex items-center gap-2 mb-6">
-            <div className="h-px w-12 bg-gradient-to-r from-transparent to-[#F5B301]/50" />
-            <Sparkles className="w-5 h-5 text-[#F5B301] animate-pulse" />
-            <div className="h-px w-12 bg-gradient-to-l from-transparent to-[#F5B301]/50" />
+            <div className="h-px w-12 bg-gradient-to-r from-transparent to-[#00C9B7]/50" />
+            <Sparkles className="w-5 h-5 text-[#00C9B7] animate-pulse" />
+            <div className="h-px w-12 bg-gradient-to-l from-transparent to-[#00C9B7]/50" />
           </div>
-          <span className="inline-block px-5 py-2 bg-white border border-[#EEEEEE] rounded-full text-sm font-medium text-[#555555] mb-6 shadow-premium">Why Trek Premi</span>
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-[#111111] mb-6 tracking-tight">The <span className="text-[#F5B301]">Premium</span> Experience</h2>
+          <span className="inline-block px-5 py-2 bg-white border border-[#EEEEEE] rounded-full text-sm font-medium text-[#555555] mb-6 shadow-premium">Why NextTour</span>
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-[#111111] mb-6 tracking-tight">The <span className="text-[#00C9B7]">Premium</span> Experience</h2>
           <p className="text-[#555555] max-w-2xl mx-auto text-lg leading-relaxed">We're not just another travel company. We craft extraordinary journeys that become cherished memories for a lifetime.</p>
         </motion.div>
 

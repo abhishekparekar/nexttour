@@ -53,13 +53,15 @@ const Sidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen, onLogout 
       {/* Logo */}
       <div className="h-16 flex items-center justify-between px-4 border-b border-gray-200">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center">
-            <Mountain className="w-6 h-6 text-white" />
-          </div>
+          <img 
+            src="/nexttour.jpeg" 
+            alt="NextTour Logo" 
+            className={`object-contain transition-all ${collapsed && !mobileOpen ? 'h-7 w-7 rounded-lg' : 'h-8 w-auto'}`} 
+          />
           {(!collapsed || mobileOpen) && (
             <div>
-              <h1 className="text-gray-900 font-bold text-lg leading-tight">Arya Cline</h1>
-              <p className="text-gray-500 text-xs">Admin Panel</p>
+              <h1 className="text-gray-900 font-bold text-sm leading-none">NextTour</h1>
+              <p className="text-gray-500 text-[10px] mt-0.5">Admin Panel</p>
             </div>
           )}
         </div>

@@ -145,13 +145,10 @@ const Navbar = () => {
           <div className="flex-shrink-0 flex items-center">
             <Link to="/" className="flex items-center gap-2">
               <img
-                src="/trek_premi.png"
-                alt="Trek Premi"
-                className="h-12 w-12 md:h-14 md:w-14 object-contain rounded-full bg-white p-0.5 shadow-sm border border-gray-100"
+                src="/nexttour.jpeg"
+                alt="NextTour Logo"
+                className="h-8 md:h-10 w-auto object-contain"
               />
-              <span className={`text-xl md:text-2xl font-bold font-poppins tracking-tight transition-colors duration-300 ${isTransparent ? 'text-white' : 'text-[#222222]'}`}>
-                Trek Premi
-              </span>
             </Link>
           </div>
 

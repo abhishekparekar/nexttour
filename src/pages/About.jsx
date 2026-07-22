@@ -27,7 +27,7 @@ const About = () => {
       <div className="relative h-[30vh] min-h-[250px] w-full overflow-hidden">
         <img 
           src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=2000&q=80" 
-          alt="About Trek Premi" 
+          alt="About NextTour" 
           className="absolute inset-0 w-full h-full object-cover" 
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/10" />
@@ -65,13 +65,13 @@ const About = () => {
             </div>
             
             <div className="text-center lg:text-left">
-              <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#F5B301]/10 text-[#F5B301] rounded-full text-xs font-bold uppercase tracking-widest mb-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#00C9B7]/10 text-[#00C9B7] rounded-full text-xs font-bold uppercase tracking-widest mb-4">
                 <Star size={14} /> Who We Are
               </div>
-              <h2 className="text-3xl lg:text-4xl font-bold text-[#111] mb-4 leading-tight">Where Adventure <br/><span className="text-[#F5B301]">Meets Excellence</span></h2>
+              <h2 className="text-3xl lg:text-4xl font-bold text-[#111] mb-4 leading-tight">Where Adventure <br/><span className="text-[#00C9B7]">Meets Excellence</span></h2>
               <div className="space-y-4 text-[#555] text-base leading-relaxed">
                 <p>
-                  Trek Premi was born from a simple belief: everyone deserves to experience the transformative power of mountain adventures. Founded by seasoned mountaineers, we've grown from a small group of passionate trekkers to one of India's most trusted adventure travel companies.
+                  NextTour was born from a simple belief: everyone deserves to experience the transformative power of mountain adventures. Founded by seasoned mountaineers, we've grown from a small group of passionate trekkers to one of India's most trusted adventure travel companies.
                 </p>
                 <p>
                   Our mission is to create unforgettable journeys that push boundaries while maintaining the highest standards of safety, sustainability, and customer satisfaction.
@@ -124,11 +124,11 @@ const About = () => {
           {/* Leadership */}
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.6 }} variants={fadeInUp}>
             <div className="bg-white rounded-[1.5rem] p-8 lg:p-10 border border-[#e5e5e5] shadow-sm relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-48 h-48 bg-[#F5B301]/5 rounded-bl-full pointer-events-none" />
+              <div className="absolute top-0 right-0 w-48 h-48 bg-[#00C9B7]/5 rounded-bl-full pointer-events-none" />
               
               <div className="text-center mb-10 relative z-10">
                 <h2 className="text-3xl font-bold text-[#111] mb-3">Meet Our Leadership</h2>
-                <p className="text-[#555] text-base max-w-xl mx-auto">The experienced team driving Trek Premi's vision and ensuring excellence in every journey.</p>
+                <p className="text-[#555] text-base max-w-xl mx-auto">The experienced team driving NextTour's vision and ensuring excellence in every journey.</p>
               </div>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 max-w-2xl mx-auto relative z-10">
@@ -138,7 +138,7 @@ const About = () => {
                 ].map((member, i) => (
                   <div key={i} className="flex flex-col items-center text-center group">
                     <div className="relative mb-4">
-                      <div className="absolute inset-0 bg-[#F5B301] rounded-full scale-105 opacity-0 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500 blur-sm" />
+                      <div className="absolute inset-0 bg-[#00C9B7] rounded-full scale-105 opacity-0 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500 blur-sm" />
                       <img
                         src={member.image}
                         alt={member.name}

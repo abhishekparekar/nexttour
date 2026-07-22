@@ -28,9 +28,9 @@
 }
 
 @layer components {
-  /* Primary Button - Premium Yellow */
+  /* Primary Button - NextTour Teal */
   .btn-primary {
-    @apply bg-[#7C3AED] text-[#111111] font-semibold px-8 py-4 rounded-[16px] transition-all duration-300 hover:shadow-[0_0_20px_rgba(124,58,237,0.3)] hover:scale-105;
+    @apply bg-[#00C9B7] text-white font-semibold px-8 py-4 rounded-[16px] transition-all duration-300 hover:shadow-[0_0_20px_rgba(0,199,183,0.3)] hover:scale-105;
   }
   
   /* Secondary Button - White with border */
@@ -40,7 +40,7 @@
   
   /* Outline Button */
   .btn-outline {
-    @apply border-2 border-[#7C3AED] text-[#111111] font-semibold px-6 py-3 rounded-[16px] transition-all duration-300 hover:bg-[#7C3AED] hover:shadow-[0_0_20px_rgba(124,58,237,0.3)];
+    @apply border-2 border-[#00C9B7] text-[#00C9B7] font-semibold px-6 py-3 rounded-[16px] transition-all duration-300 hover:bg-[#00C9B7] hover:text-white hover:shadow-[0_0_20px_rgba(0,199,183,0.3)];
   }
   
   .section-padding {
@@ -63,7 +63,7 @@
   
   /* Gradient Text */
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-[#F5B301] to-[#E5A100];
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-[#00C9B7] to-[#0b1a30];
   }
   
   /* Section Alternate Backgrounds */
@@ -133,7 +133,7 @@
 
   input:focus, select:focus, textarea:focus {
     transform: translateY(-1px);
-    box-shadow: 0 4px 14px rgba(124, 58, 237, 0.15);
+    box-shadow: 0 4px 14px rgba(0, 199, 183, 0.15);
   }
 
   /* Interactive Badges Hover Effect */
@@ -168,9 +168,9 @@
     font-variant-numeric: tabular-nums;
   }
   
-  /* Yellow accent on hover */
+  /* Teal accent on hover */
   .accent-yellow {
-    @apply transition-colors duration-300 hover:text-[#7C3AED];
+    @apply transition-colors duration-300 hover:text-[#00C9B7];
   }
 }
 
