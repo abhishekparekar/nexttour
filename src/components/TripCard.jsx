@@ -328,7 +328,7 @@ const TripCard = ({ trip }) => {
                     fontFamily:     HK,
                     fontSize:       '12px',
                     fontWeight:     '800',
-                    color:          '#F5B301',
+                    color:          '#00C9B7',
                     border:         '1px solid #dedede',
                     borderRadius:   '8px',
                     background:     '#ffffff',

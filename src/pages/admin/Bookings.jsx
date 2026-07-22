@@ -48,7 +48,7 @@ const AdminBookings = () => {
           <title>Confirmation - ${booking.id}</title>
           <style>
             body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px; color: #333; }
-            .header { border-bottom: 2px solid #F5B301; padding-bottom: 20px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; }
+            .header { border-bottom: 2px solid #00C9B7; padding-bottom: 20px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; }
             .logo { font-size: 26px; font-weight: bold; color: #111; }
             .badge { background: #e6f4ea; color: #137333; font-weight: bold; padding: 5px 15px; border-radius: 20px; font-size: 12px; }
             .grid { display: grid; grid-template-cols: 1fr 1fr; gap: 40px; margin-bottom: 40px; }

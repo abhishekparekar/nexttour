@@ -20,9 +20,9 @@ const PopularTreks = () => {
 
   if (loading) {
     return (
-      <section className="section-padding" style={{ background: 'radial-gradient(ellipse at 70% 20%, rgba(99,102,241,0.08) 0%, transparent 50%), radial-gradient(ellipse at 20% 80%, rgba(245,179,1,0.08) 0%, transparent 50%), linear-gradient(180deg, #FAFAFA 0%, #F4F4F8 100%)' }}>
+      <section className="section-padding" style={{ background: 'radial-gradient(ellipse at 70% 20%, rgba(99,102,241,0.08) 0%, transparent 50%), radial-gradient(ellipse at 20% 80%, rgba(0, 201, 183,0.08) 0%, transparent 50%), linear-gradient(180deg, #FAFAFA 0%, #F4F4F8 100%)' }}>
         <div className="container-custom flex items-center justify-center min-h-[300px]">
-          <Loader2 className="w-10 h-10 text-[#F5B301] animate-spin" />
+          <Loader2 className="w-10 h-10 text-[#00C9B7] animate-spin" />
         </div>
       </section>
     );
@@ -31,10 +31,10 @@ const PopularTreks = () => {
   if (trips.length === 0) return null;
 
   return (
-    <section className="section-padding" style={{ background: 'radial-gradient(ellipse at 70% 20%, rgba(99,102,241,0.08) 0%, transparent 50%), radial-gradient(ellipse at 20% 80%, rgba(245,179,1,0.08) 0%, transparent 50%), linear-gradient(180deg, #FAFAFA 0%, #F4F4F8 100%)' }}>
+    <section className="section-padding" style={{ background: 'radial-gradient(ellipse at 70% 20%, rgba(99,102,241,0.08) 0%, transparent 50%), radial-gradient(ellipse at 20% 80%, rgba(0, 201, 183,0.08) 0%, transparent 50%), linear-gradient(180deg, #FAFAFA 0%, #F4F4F8 100%)' }}>
       <div className="container-custom">
         <motion.div className="text-center mb-10" initial={{ y: 30 }} whileInView={{ y: 0 }} viewport={viewportConfig} transition={{ duration: 0.7, ease: easings.premium }}>
-          <span className="inline-block px-4 py-2 bg-[#F5B301]/10 text-[#F5B301] rounded-full text-sm font-medium mb-4">Popular Treks</span>
+          <span className="inline-block px-4 py-2 bg-[#00C9B7]/10 text-[#00C9B7] rounded-full text-sm font-medium mb-4">Popular Treks</span>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#111111] mb-4">Most Popular<span className="block text-gradient">Treks This Season</span></h2>
           <p className="text-[#555555] max-w-xl mx-auto">Handpicked destinations that promise unforgettable experiences</p>
         </motion.div>

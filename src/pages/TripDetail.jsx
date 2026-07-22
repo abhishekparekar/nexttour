@@ -397,7 +397,7 @@ const TripDetail = () => {
                 <ul className="mt-4 space-y-3 text-[15px] text-[#111111] font-medium pl-1">
                   {trip.highlights.map((h, i) => (
                     <li key={i} className="flex gap-3 items-start">
-                      <span className="text-[#F5B301] font-bold mt-0.5">•</span>
+                      <span className="text-[#00C9B7] font-bold mt-0.5">•</span>
                       <span>{h}</span>
                     </li>
                   ))}

@@ -205,10 +205,10 @@ const Home = () => {
       <style>{`
         @keyframes blink-caret {
           from, to { border-color: transparent }
-          50% { border-color: #F5B301; }
+          50% { border-color: #00C9B7; }
         }
         .typing-cursor {
-          border-right: 4px solid #F5B301;
+          border-right: 4px solid #00C9B7;
           animation: blink-caret 0.75s step-end infinite;
         }
       `}</style>
@@ -245,7 +245,7 @@ const Home = () => {
           <motion.div
             variants={heroItemVariants}
             whileHover={{ scale: 1.05 }}
-            className="mb-6 inline-flex items-center gap-2 px-4 py-1.5 bg-white/10 backdrop-blur-md rounded-full border border-white/25 text-xs sm:text-sm font-semibold tracking-wider text-[#F5B301] shadow-lg select-none cursor-default transition-shadow duration-300 hover:shadow-[#F5B301]/10 hover:shadow-xl"
+            className="mb-6 inline-flex items-center gap-2 px-4 py-1.5 bg-white/10 backdrop-blur-md rounded-full border border-white/25 text-xs sm:text-sm font-semibold tracking-wider text-[#00C9B7] shadow-lg select-none cursor-default transition-shadow duration-300 hover:shadow-[#00C9B7]/10 hover:shadow-xl"
           >
             🏔️ Premium Trekking & Adventures
           </motion.div>
@@ -281,7 +281,7 @@ const Home = () => {
                 initial={{ y: "100%" }}
                 animate={{ y: 0 }}
                 transition={{ duration: 1.0, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                className="inline-block text-[#F5B301] drop-shadow-[0_0_20px_rgba(245,179,1,0.45)] typing-cursor pr-2"
+                className="inline-block text-[#00C9B7] drop-shadow-[0_0_20px_rgba(0, 201, 183,0.45)] typing-cursor pr-2"
               >
                 {typedText}
               </motion.span>

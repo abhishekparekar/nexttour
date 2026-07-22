@@ -45,7 +45,7 @@ const Trips = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-white pt-24 flex items-center justify-center">
-        <Loader2 className="w-10 h-10 animate-spin text-[#F5B301]" />
+        <Loader2 className="w-10 h-10 animate-spin text-[#00C9B7]" />
       </div>
     );
   }
@@ -69,12 +69,12 @@ const Trips = () => {
             </nav>
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
               <div>
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#F5B301]/20 text-[#F5B301] rounded-full text-xs font-medium mb-2 backdrop-blur-sm">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#00C9B7]/20 text-[#00C9B7] rounded-full text-xs font-medium mb-2 backdrop-blur-sm">
                   <LayoutGrid size={10} />
                   Featured
                 </span>
                 <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white">
-                  Explore Our <span className="text-[#F5B301]">Adventures</span>
+                  Explore Our <span className="text-[#00C9B7]">Adventures</span>
                 </h1>
                 <p className="text-white/70 text-sm mt-1">Discover handpicked experiences for every skill level</p>
               </div>
@@ -108,7 +108,7 @@ const Trips = () => {
             <button
               onClick={() => setType('all')}
               className="px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all"
-              style={{ background: selectedType === 'all' ? '#F5B301' : '#F3F4F6', color: selectedType === 'all' ? '#111111' : '#555555' }}
+              style={{ background: selectedType === 'all' ? '#00C9B7' : '#F3F4F6', color: selectedType === 'all' ? '#111111' : '#555555' }}
             >
               All ({trips.length})
             </button>
@@ -138,7 +138,7 @@ const Trips = () => {
                 key={cat.id}
                 onClick={() => setCategory(cat.id)}
                 className="px-4 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all"
-                style={{ background: selectedCategory === cat.id ? '#111111' : '#F3F4F6', color: selectedCategory === cat.id ? '#F5B301' : '#555555' }}
+                style={{ background: selectedCategory === cat.id ? '#111111' : '#F3F4F6', color: selectedCategory === cat.id ? '#00C9B7' : '#555555' }}
               >
                 {cat.title}
               </button>

@@ -113,7 +113,7 @@ const AllDatesModal = ({ isOpen, onClose, trip }) => {
                             <span className="text-[12px] text-gray-500 font-medium uppercase tracking-wider mb-1">Departure</span>
                             <span className="text-[16px] font-bold text-[#111]">{formatDate(item.date)}</span>
                             <div className="flex items-center gap-1.5 mt-1 text-gray-500">
-                              <Clock size={13} className="text-[#F5B301]"/>
+                              <Clock size={13} className="text-[#00C9B7]"/>
                               <span className="text-[14px] font-medium">{item.time}</span>
                             </div>
                           </div>
@@ -121,7 +121,7 @@ const AllDatesModal = ({ isOpen, onClose, trip }) => {
                           <div className="flex flex-col">
                             <span className="text-[12px] text-gray-500 font-medium uppercase tracking-wider mb-1">Location</span>
                             <div className="flex items-start gap-1.5 text-[#111]">
-                              <MapPin size={14} className="mt-0.5 flex-shrink-0 text-[#F5B301]" />
+                              <MapPin size={14} className="mt-0.5 flex-shrink-0 text-[#00C9B7]" />
                               <div>
                                 <span className="text-[14px] font-medium">{item.location}</span>
                                 {item.address && (

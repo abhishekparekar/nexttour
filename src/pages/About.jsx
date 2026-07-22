@@ -56,7 +56,7 @@ const About = () => {
             className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center mb-16"
           >
             <div className="relative">
-              <div className="absolute -inset-3 bg-[#F5B301]/10 rounded-[2rem] transform -rotate-3" />
+              <div className="absolute -inset-3 bg-[#00C9B7]/10 rounded-[2rem] transform -rotate-3" />
               <img 
                 src="/about.png" 
                 alt="Our Journey" 
@@ -88,8 +88,8 @@ const About = () => {
                 initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.1 }} variants={fadeInUp}
                 className="bg-white rounded-xl p-3 flex items-center gap-3 border border-[#e5e5e5] shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 group"
               >
-                <div className="w-10 h-10 bg-[#F5B301]/10 rounded-lg flex-shrink-0 flex items-center justify-center group-hover:bg-[#F5B301] transition-colors duration-300">
-                  <stat.icon size={18} className="text-[#F5B301] group-hover:text-white transition-colors duration-300" strokeWidth={2} />
+                <div className="w-10 h-10 bg-[#00C9B7]/10 rounded-lg flex-shrink-0 flex items-center justify-center group-hover:bg-[#00C9B7] transition-colors duration-300">
+                  <stat.icon size={18} className="text-[#00C9B7] group-hover:text-white transition-colors duration-300" strokeWidth={2} />
                 </div>
                 <div className="text-left">
                   <div className="text-xl font-bold text-[#111] mb-1 font-poppins leading-none tracking-tight">{stat.value}</div>
@@ -102,7 +102,7 @@ const About = () => {
           {/* Core Values */}
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.6 }} variants={fadeInUp} className="mb-16">
             <div className="text-center mb-10">
-              <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#F5B301]/10 text-[#F5B301] rounded-full text-xs font-bold uppercase tracking-widest mb-3">
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#00C9B7]/10 text-[#00C9B7] rounded-full text-xs font-bold uppercase tracking-widest mb-3">
                  Our Principles
               </div>
               <h2 className="text-3xl font-bold text-[#111]">Our Core Values</h2>
@@ -110,9 +110,9 @@ const About = () => {
             
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
               {values.map((value, i) => (
-                <div key={i} className="bg-white rounded-2xl p-6 border border-[#e5e5e5] shadow-sm hover:shadow-lg hover:border-[#F5B301]/30 transition-all duration-300 flex flex-col items-center text-center">
-                  <div className="w-12 h-12 bg-[#F5B301]/10 rounded-xl flex items-center justify-center mb-4">
-                    <value.icon className="w-6 h-6 text-[#F5B301]" strokeWidth={1.5} />
+                <div key={i} className="bg-white rounded-2xl p-6 border border-[#e5e5e5] shadow-sm hover:shadow-lg hover:border-[#00C9B7]/30 transition-all duration-300 flex flex-col items-center text-center">
+                  <div className="w-12 h-12 bg-[#00C9B7]/10 rounded-xl flex items-center justify-center mb-4">
+                    <value.icon className="w-6 h-6 text-[#00C9B7]" strokeWidth={1.5} />
                   </div>
                   <h3 className="text-lg font-bold text-[#111] mb-2">{value.title}</h3>
                   <p className="text-[#555] text-sm leading-relaxed">{value.description}</p>
@@ -144,7 +144,7 @@ const About = () => {
                         alt={member.name}
                         className="w-32 h-32 rounded-full object-cover border-4 border-white shadow-md relative z-10"
                       />
-                      <div className="absolute bottom-0 right-1 w-7 h-7 bg-[#F5B301] rounded-full flex items-center justify-center shadow-md z-20 border-2 border-white">
+                      <div className="absolute bottom-0 right-1 w-7 h-7 bg-[#00C9B7] rounded-full flex items-center justify-center shadow-md z-20 border-2 border-white">
                         <Award size={14} className="text-white" />
                       </div>
                     </div>

@@ -55,10 +55,10 @@ const WhyChooseUs = () => {
                 className={`group relative p-8 rounded-premium-lg bg-white border border-[#EEEEEE] ${colors.border} transition-all duration-300 hover:shadow-card-hover`}
               >
                 <div className={`w-16 h-16 rounded-2xl ${colors.bg} border border-[#EEEEEE] flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}><Icon className={`w-8 h-8 ${colors.icon}`} /></div>
-                <h3 className="text-xl font-bold text-[#111111] mb-3 group-hover:text-[#F5B301] transition-colors duration-300">{feature.title}</h3>
+                <h3 className="text-xl font-bold text-[#111111] mb-3 group-hover:text-[#00C9B7] transition-colors duration-300">{feature.title}</h3>
                 <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full ${colors.badge} text-xs font-medium mb-4`}><Star className="w-3 h-3" />Premium</div>
                 <p className="text-[#555555] leading-relaxed group-hover:text-[#111111] transition-colors duration-300">{feature.description}</p>
-                <div className={`absolute bottom-0 left-8 right-8 h-0.5 bg-gradient-to-r from-transparent via-[#F5B301]/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-full`} />
+                <div className={`absolute bottom-0 left-8 right-8 h-0.5 bg-gradient-to-r from-transparent via-[#00C9B7]/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-full`} />
               </motion.div>
             );
           })}
@@ -66,8 +66,8 @@ const WhyChooseUs = () => {
 
         <motion.div className="mt-16 flex flex-wrap justify-center items-center gap-8 md:gap-12" initial={{ y: 30 }} whileInView={{ y: 0 }} viewport={viewportConfig} transition={{ duration: 0.6, delay: 0.4, ease: easings.premium }}>
           {[{ icon: Shield, text: 'Licensed & Insured' }, { icon: Heart, text: '5-Star Reviews' }, { icon: Award, text: 'Award Winning' }, { icon: Users, text: '10K+ Happy Clients' }].map((badge, i) => (
-            <motion.div key={i} className="flex items-center gap-3 text-[#555555]" whileHover={{ scale: 1.05, color: '#F5B301' }} transition={{ duration: 0.2 }}>
-              <div className="w-10 h-10 rounded-xl bg-white border border-[#EEEEEE] flex items-center justify-center shadow-premium"><badge.icon className="w-5 h-5 text-[#F5B301]" /></div>
+            <motion.div key={i} className="flex items-center gap-3 text-[#555555]" whileHover={{ scale: 1.05, color: '#00C9B7' }} transition={{ duration: 0.2 }}>
+              <div className="w-10 h-10 rounded-xl bg-white border border-[#EEEEEE] flex items-center justify-center shadow-premium"><badge.icon className="w-5 h-5 text-[#00C9B7]" /></div>
               <span className="text-sm font-medium">{badge.text}</span>
             </motion.div>
           ))}

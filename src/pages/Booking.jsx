@@ -198,7 +198,7 @@ const Booking = () => {
             email: formData.email
           },
           theme: {
-            color: "#F5B301"
+            color: "#00C9B7"
           },
           modal: {
             ondismiss: function() {
@@ -220,7 +220,7 @@ const Booking = () => {
     }
   };
 
-  const inputClass = "w-full bg-[#f8f9fa] border-b-2 border-[#e5e5e5] px-4 py-3.5 text-[#111111] placeholder-[#9ca3af] focus:outline-none focus:border-[#F5B301] focus:bg-[#fff9e6] transition-all duration-300 rounded-t-xl text-sm";
+  const inputClass = "w-full bg-[#f8f9fa] border-b-2 border-[#e5e5e5] px-4 py-3.5 text-[#111111] placeholder-[#9ca3af] focus:outline-none focus:border-[#00C9B7] focus:bg-[#E6FAF8] transition-all duration-300 rounded-t-xl text-sm";
   const labelClass = "block text-[#555] text-xs font-bold uppercase tracking-wider mb-2";
   const sectionClass = "bg-white rounded-3xl p-8 lg:p-10 shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-[#f0f0f0] mb-8";
 
@@ -237,7 +237,7 @@ const Booking = () => {
           </div>
           <h2 className="text-3xl font-bold text-[#111] mb-4">Booking Submitted!</h2>
           <p className="text-[#555] mb-8 leading-relaxed text-lg">Thank you for your booking request. Our experts will review your details and contact you within 24 hours to confirm your trek.</p>
-          <Link to="/" className="inline-flex items-center justify-center gap-2 bg-[#111] text-white font-bold py-4 px-10 rounded-full hover:bg-[#F5B301] hover:text-[#111] transition-all duration-300 group">
+          <Link to="/" className="inline-flex items-center justify-center gap-2 bg-[#111] text-white font-bold py-4 px-10 rounded-full hover:bg-[#00C9B7] hover:text-[#111] transition-all duration-300 group">
             Return Home <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
           </Link>
         </motion.div>
@@ -477,21 +477,21 @@ const Booking = () => {
               <div className="mt-6 border-t border-[#f0f0f0] pt-6">
                 <label className={labelClass}>Payment Option</label>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-2">
-                  <label className={`flex flex-col p-4 border-2 rounded-2xl cursor-pointer transition-all ${formData.paymentMode === 'full' ? 'border-[#F5B301] bg-[#fff9e6]' : 'border-gray-200 hover:border-gray-300'}`}>
+                  <label className={`flex flex-col p-4 border-2 rounded-2xl cursor-pointer transition-all ${formData.paymentMode === 'full' ? 'border-[#00C9B7] bg-[#E6FAF8]' : 'border-gray-200 hover:border-gray-300'}`}>
                     <input type="radio" name="paymentMode" value="full" checked={formData.paymentMode === 'full'} onChange={handleChange} className="sr-only" />
                     <span className="font-bold text-[#111] text-sm">Full Payment</span>
                     <span className="text-xs text-gray-500 mt-1">Pay 100% now</span>
                     <span className="text-lg font-black text-[#111] mt-3">₹{((trip?.price || 0) * formData.trekkers).toLocaleString()}</span>
                   </label>
 
-                  <label className={`flex flex-col p-4 border-2 rounded-2xl cursor-pointer transition-all ${formData.paymentMode === 'advance' ? 'border-[#F5B301] bg-[#fff9e6]' : 'border-gray-200 hover:border-gray-300'}`}>
+                  <label className={`flex flex-col p-4 border-2 rounded-2xl cursor-pointer transition-all ${formData.paymentMode === 'advance' ? 'border-[#00C9B7] bg-[#E6FAF8]' : 'border-gray-200 hover:border-gray-300'}`}>
                     <input type="radio" name="paymentMode" value="advance" checked={formData.paymentMode === 'advance'} onChange={handleChange} className="sr-only" />
                     <span className="font-bold text-[#111] text-sm">Pay Advance</span>
                     <span className="text-xs text-gray-500 mt-1">Pay 20% to book</span>
                     <span className="text-lg font-black text-[#111] mt-3">₹{Math.round(((trip?.price || 0) * formData.trekkers) * 0.20).toLocaleString()}</span>
                   </label>
 
-                  <label className={`flex flex-col p-4 border-2 rounded-2xl cursor-pointer transition-all ${formData.paymentMode === 'later' ? 'border-[#F5B301] bg-[#fff9e6]' : 'border-gray-200 hover:border-gray-300'}`}>
+                  <label className={`flex flex-col p-4 border-2 rounded-2xl cursor-pointer transition-all ${formData.paymentMode === 'later' ? 'border-[#00C9B7] bg-[#E6FAF8]' : 'border-gray-200 hover:border-gray-300'}`}>
                     <input type="radio" name="paymentMode" value="later" checked={formData.paymentMode === 'later'} onChange={handleChange} className="sr-only" />
                     <span className="font-bold text-[#111] text-sm">Pay Offline</span>
                     <span className="text-xs text-gray-500 mt-1">Book now, pay later</span>
@@ -510,7 +510,7 @@ const Booking = () => {
               <button 
                 type="submit" 
                 disabled={isSubmitting}
-                className="group w-full sm:w-auto flex items-center justify-center gap-3 bg-[#111] text-white font-bold py-4 px-12 rounded-full hover:bg-[#F5B301] hover:text-[#111] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0 shadow-lg hover:shadow-xl"
+                className="group w-full sm:w-auto flex items-center justify-center gap-3 bg-[#111] text-white font-bold py-4 px-12 rounded-full hover:bg-[#00C9B7] hover:text-[#111] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0 shadow-lg hover:shadow-xl"
               >
                 {isSubmitting ? 'Submitting...' : 'Confirm Booking'}
                 {!isSubmitting && <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />}

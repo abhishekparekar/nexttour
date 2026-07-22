@@ -20,7 +20,7 @@ const Gallery = () => {
     return (
       <section className="section-padding bg-[#F8F9FB]">
         <div className="container-custom flex items-center justify-center min-h-[400px]">
-          <Loader2 className="w-12 h-12 text-[#F5B301] animate-spin" />
+          <Loader2 className="w-12 h-12 text-[#00C9B7] animate-spin" />
         </div>
       </section>
     );
@@ -33,7 +33,7 @@ const Gallery = () => {
       <section className="section-padding bg-[#F8F9FB]">
         <div className="container-custom">
           <div className="text-center mb-12">
-            <span className="inline-block px-4 py-2 bg-[#F5B301]/10 text-[#F5B301] rounded-full text-sm font-medium mb-4">Gallery</span>
+            <span className="inline-block px-4 py-2 bg-[#00C9B7]/10 text-[#00C9B7] rounded-full text-sm font-medium mb-4">Gallery</span>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#111111] mb-6">
               Captured <span className="text-gradient">Moments</span>
             </h2>

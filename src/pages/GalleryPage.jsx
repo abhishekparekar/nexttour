@@ -22,7 +22,7 @@ const GalleryPage = () => {
 
   if (loading) return (
     <div className="min-h-screen bg-white flex flex-col items-center justify-center">
-      <Loader2 className="w-12 h-12 animate-spin text-[#F5B301] mb-4" />
+      <Loader2 className="w-12 h-12 animate-spin text-[#00C9B7] mb-4" />
       <p className="text-[#555] font-medium tracking-wide">Curating memories...</p>
     </div>
   );
@@ -91,7 +91,7 @@ const GalleryPage = () => {
                     <h3 className="text-white font-bold text-lg drop-shadow-md leading-tight pr-4">
                       {img.title || 'Adventure Moment'}
                     </h3>
-                    <div className="w-8 h-8 rounded-full bg-[#F5B301] flex items-center justify-center flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                    <div className="w-8 h-8 rounded-full bg-[#00C9B7] flex items-center justify-center flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform duration-300">
                       <ImageIcon size={14} className="text-[#111]" />
                     </div>
                   </div>
@@ -124,7 +124,7 @@ const GalleryPage = () => {
                 {lightboxIndex + 1} <span className="mx-2 opacity-50">/</span> {images.length}
               </div>
               <button 
-                className="w-12 h-12 bg-white/10 hover:bg-[#F5B301] hover:text-[#111] border border-white/20 rounded-full flex items-center justify-center text-white transition-all duration-300 pointer-events-auto"
+                className="w-12 h-12 bg-white/10 hover:bg-[#00C9B7] hover:text-[#111] border border-white/20 rounded-full flex items-center justify-center text-white transition-all duration-300 pointer-events-auto"
                 onClick={() => setLightboxOpen(false)}
               >
                 <X size={24} strokeWidth={2} />

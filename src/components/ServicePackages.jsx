@@ -30,10 +30,10 @@ const ServicePackages = () => {
   return (
     <>
       {/* Tour Packages Section */}
-      <section className="py-16 md:py-24 relative overflow-hidden" style={{ background: 'radial-gradient(ellipse at 80% 10%, rgba(245,179,1,0.10) 0%, transparent 50%), radial-gradient(ellipse at 10% 90%, rgba(99,102,241,0.07) 0%, transparent 50%), linear-gradient(180deg, #FAFAFA 0%, #F4F4F8 100%)' }}>
+      <section className="py-16 md:py-24 relative overflow-hidden" style={{ background: 'radial-gradient(ellipse at 80% 10%, rgba(0, 201, 183,0.10) 0%, transparent 50%), radial-gradient(ellipse at 10% 90%, rgba(99,102,241,0.07) 0%, transparent 50%), linear-gradient(180deg, #FAFAFA 0%, #F4F4F8 100%)' }}>
         <div className="container-custom relative">
           <motion.div className="text-center mb-12" initial={{ y: 30 }} whileInView={{ y: 0 }} viewport={viewportConfig} transition={{ duration: 0.7, ease: easings.premium }}>
-            <div className="inline-flex items-center gap-2 bg-[#F5B301]/10 border border-[#F5B301]/20 rounded-full px-4 py-2 mb-4"><Globe className="w-4 h-4 text-[#F5B301]" /><span className="text-[#F5B301] text-sm font-medium">Our Services</span></div>
+            <div className="inline-flex items-center gap-2 bg-[#00C9B7]/10 border border-[#00C9B7]/20 rounded-full px-4 py-2 mb-4"><Globe className="w-4 h-4 text-[#00C9B7]" /><span className="text-[#00C9B7] text-sm font-medium">Our Services</span></div>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#111111] mb-4">Explore Our <span className="text-gradient">Holiday Packages</span></h2>
             <p className="text-[#555555] max-w-2xl mx-auto text-lg">Premium travel experiences for every type of traveler.</p>
           </motion.div>
@@ -55,7 +55,7 @@ const ServicePackages = () => {
                       <h3 className="text-lg font-bold text-[#111111] mb-2">{pkg.title}</h3>
                       <p className="text-[#555555] text-sm line-clamp-2 mb-3">{pkg.description}</p>
                       <div className="flex items-center justify-between">
-                        <span className="text-[#F5B301] text-sm font-medium">{pkg.price}</span>
+                        <span className="text-[#00C9B7] text-sm font-medium">{pkg.price}</span>
                       </div>
                     </div>
                   </div>
@@ -67,12 +67,12 @@ const ServicePackages = () => {
       </section>
 
       {/* Other Services Section - Deep luxury dark */}
-      <section className="py-16 md:py-24 relative overflow-hidden" style={{ background: 'radial-gradient(ellipse at 10% 50%, rgba(245,179,1,0.12) 0%, transparent 45%), radial-gradient(ellipse at 90% 20%, rgba(99,102,241,0.10) 0%, transparent 45%), linear-gradient(160deg, #0f0f14 0%, #16161f 50%, #0d0d12 100%)' }}>
+      <section className="py-16 md:py-24 relative overflow-hidden" style={{ background: 'radial-gradient(ellipse at 10% 50%, rgba(0, 201, 183,0.12) 0%, transparent 45%), radial-gradient(ellipse at 90% 20%, rgba(99,102,241,0.10) 0%, transparent 45%), linear-gradient(160deg, #0f0f14 0%, #16161f 50%, #0d0d12 100%)' }}>
         {/* Subtle noise texture overlay */}
         <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.8) 1px, transparent 0)', backgroundSize: '32px 32px' }} />
         <div className="container-custom relative">
           <motion.div className="text-center mb-12" initial={{ y: 30 }} whileInView={{ y: 0 }} viewport={viewportConfig} transition={{ duration: 0.7, ease: easings.premium }}>
-            <div className="inline-flex items-center gap-2 bg-[#F5B301]/10 border border-[#F5B301]/20 rounded-full px-4 py-2 mb-4"><Briefcase className="w-4 h-4 text-[#F5B301]" /><span className="text-[#F5B301] text-sm font-medium">More Services</span></div>
+            <div className="inline-flex items-center gap-2 bg-[#00C9B7]/10 border border-[#00C9B7]/20 rounded-full px-4 py-2 mb-4"><Briefcase className="w-4 h-4 text-[#00C9B7]" /><span className="text-[#00C9B7] text-sm font-medium">More Services</span></div>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">Complete <span className="text-gradient">Travel Solutions</span></h2>
             <p className="text-white/50 max-w-2xl mx-auto text-lg">All your travel needs under one roof.</p>
           </motion.div>
@@ -82,17 +82,17 @@ const ServicePackages = () => {
               const Icon = service.icon;
               const colors = serviceColorMap[service.color];
               return (
-                <motion.div key={service.id} variants={cardVariants.card} whileHover={{ y: -6, scale: 1.03, transition: { type: "spring", stiffness: 150, damping: 15 } }} className="group relative rounded-2xl overflow-hidden border border-white/8 hover:border-[#F5B301]/40 transition-all duration-300 will-change-transform hover:shadow-[0_20px_60px_rgba(0,0,0,0.5)]" style={{ background: 'linear-gradient(145deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%)' }}>
+                <motion.div key={service.id} variants={cardVariants.card} whileHover={{ y: -6, scale: 1.03, transition: { type: "spring", stiffness: 150, damping: 15 } }} className="group relative rounded-2xl overflow-hidden border border-white/8 hover:border-[#00C9B7]/40 transition-all duration-300 will-change-transform hover:shadow-[0_20px_60px_rgba(0,0,0,0.5)]" style={{ background: 'linear-gradient(145deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%)' }}>
                   <div className="relative h-44 overflow-hidden">
                     <img src={service.image} alt={service.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 brightness-75" loading="lazy" />
                     <div className="absolute inset-0 bg-gradient-to-t from-[#0f0f14] via-[#0f0f14]/40 to-transparent" />
                     <div className={`absolute top-4 left-4 w-14 h-14 rounded-2xl flex items-center justify-center backdrop-blur-xl bg-white/10 border border-white/15 shadow-lg`}><Icon className={`w-7 h-7 text-white`} /></div>
                   </div>
                   <div className="p-6">
-                    <h3 className="text-xl font-bold text-white mb-3 group-hover:text-[#F5B301] transition-colors">{service.title}</h3>
+                    <h3 className="text-xl font-bold text-white mb-3 group-hover:text-[#00C9B7] transition-colors">{service.title}</h3>
                     <p className="text-white/50 text-sm leading-relaxed mb-4">{service.description}</p>
-                    <div className="grid grid-cols-2 gap-2 mb-5">{service.features.map((feature, idx) => (<div key={idx} className="flex items-center gap-2 text-xs text-white/40"><CheckCircle className={`w-3.5 h-3.5 text-[#F5B301]`} /><span>{feature}</span></div>))}</div>
-                    <Link to="/contact" className="flex items-center justify-center gap-2 w-full py-3 bg-[#F5B301] text-[#111111] rounded-xl font-semibold text-sm hover:bg-[#f0aa00] hover:shadow-[0_0_20px_rgba(245,179,1,0.4)] transition-all">Book Now <ArrowRight size={14} /></Link>
+                    <div className="grid grid-cols-2 gap-2 mb-5">{service.features.map((feature, idx) => (<div key={idx} className="flex items-center gap-2 text-xs text-white/40"><CheckCircle className={`w-3.5 h-3.5 text-[#00C9B7]`} /><span>{feature}</span></div>))}</div>
+                    <Link to="/contact" className="flex items-center justify-center gap-2 w-full py-3 bg-[#00C9B7] text-[#111111] rounded-xl font-semibold text-sm hover:bg-[#f0aa00] hover:shadow-[0_0_20px_rgba(0, 201, 183,0.4)] transition-all">Book Now <ArrowRight size={14} /></Link>
                   </div>
                 </motion.div>
               );

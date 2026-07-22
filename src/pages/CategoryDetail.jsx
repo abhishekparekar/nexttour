@@ -33,7 +33,7 @@ const CategoryDetail = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-white pt-20 flex items-center justify-center">
-        <Loader2 className="w-12 h-12 text-[#F5B301] animate-spin" />
+        <Loader2 className="w-12 h-12 text-[#00C9B7] animate-spin" />
       </div>
     );
   }
@@ -58,7 +58,7 @@ const CategoryDetail = () => {
             </nav>
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
               <div>
-                <span className="inline-block px-3 py-1 bg-[#F5B301]/20 text-[#F5B301] rounded-full text-xs font-medium mb-3 backdrop-blur-sm">
+                <span className="inline-block px-3 py-1 bg-[#00C9B7]/20 text-[#00C9B7] rounded-full text-xs font-medium mb-3 backdrop-blur-sm">
                   Featured Category
                 </span>
                 <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-2">{categoryTitle}</h1>
@@ -86,7 +86,7 @@ const CategoryDetail = () => {
       <div className="container-custom py-8 px-4">
         <p className="text-sm text-[#888888] mb-6">
           Showing <span className="text-[#111111] font-semibold">{filteredTrips.length}</span> trips in{' '}
-          <span className="text-[#F5B301]">{categoryTitle}</span>
+          <span className="text-[#00C9B7]">{categoryTitle}</span>
         </p>
 
         {filteredTrips.length > 0 ? (
@@ -104,14 +104,14 @@ const CategoryDetail = () => {
             <p className="text-[#555555] mb-6 text-sm">
               No trips available in this category yet.
             </p>
-            <Link to="/trips" className="inline-flex items-center gap-2 bg-[#F5B301] text-[#111111] font-semibold px-6 py-2.5 rounded-full hover:bg-[#E5A100] transition-colors">
+            <Link to="/trips" className="inline-flex items-center gap-2 bg-[#00C9B7] text-[#111111] font-semibold px-6 py-2.5 rounded-full hover:bg-[#00B5A5] transition-colors">
               Browse All Trips <ArrowRight size={16} />
             </Link>
           </div>
         )}
 
         <div className="text-center mt-10">
-          <Link to="/trips" className="inline-flex items-center gap-2 text-[#888888] hover:text-[#F5B301] transition-colors text-sm">
+          <Link to="/trips" className="inline-flex items-center gap-2 text-[#888888] hover:text-[#00C9B7] transition-colors text-sm">
             ← Back to All Trips
           </Link>
         </div>

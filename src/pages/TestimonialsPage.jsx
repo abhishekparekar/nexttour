@@ -15,7 +15,7 @@ const TestimonialsPage = () => {
 
   if (loading) return (
     <div className="min-h-screen bg-white flex items-center justify-center pt-20">
-      <Loader2 className="w-10 h-10 animate-spin text-[#F5B301]" />
+      <Loader2 className="w-10 h-10 animate-spin text-[#00C9B7]" />
     </div>
   );
 
@@ -71,15 +71,15 @@ const TestimonialsPage = () => {
                   className="bg-white rounded-3xl p-8 border border-[#e5e5e5] shadow-sm hover:shadow-xl transition-all duration-300 relative group flex flex-col h-full"
                 >
                   {/* Decorative background element */}
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-[#F5B301]/10 to-transparent rounded-tr-3xl rounded-bl-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-[#00C9B7]/10 to-transparent rounded-tr-3xl rounded-bl-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                   
-                  <div className="w-12 h-12 rounded-2xl bg-[#f8f9fa] group-hover:bg-[#F5B301] flex items-center justify-center mb-6 transition-colors duration-300">
-                    <Quote className="w-5 h-5 text-[#F5B301] group-hover:text-white transition-colors duration-300" fill="currentColor" />
+                  <div className="w-12 h-12 rounded-2xl bg-[#f8f9fa] group-hover:bg-[#00C9B7] flex items-center justify-center mb-6 transition-colors duration-300">
+                    <Quote className="w-5 h-5 text-[#00C9B7] group-hover:text-white transition-colors duration-300" fill="currentColor" />
                   </div>
                   
                   <div className="flex items-center gap-1 mb-4">
                     {[...Array(5)].map((_, j) => (
-                      <Star key={j} size={14} className={j < (t.rating || 5) ? 'text-[#F5B301] fill-[#F5B301]' : 'text-[#e5e5e5] fill-[#e5e5e5]'} />
+                      <Star key={j} size={14} className={j < (t.rating || 5) ? 'text-[#00C9B7] fill-[#00C9B7]' : 'text-[#e5e5e5] fill-[#e5e5e5]'} />
                     ))}
                   </div>
 
@@ -91,8 +91,8 @@ const TestimonialsPage = () => {
                     {t.image || t.avatar ? (
                       <img src={t.image || t.avatar} alt={t.name} className="w-12 h-12 rounded-full object-cover border-2 border-[#f8f9fa]" loading="lazy" />
                     ) : (
-                      <div className="w-12 h-12 rounded-full bg-[#F5B301]/20 flex items-center justify-center border-2 border-white shadow-sm">
-                        <span className="text-[#F5B301] font-bold text-lg">{t.name?.charAt(0) || 'A'}</span>
+                      <div className="w-12 h-12 rounded-full bg-[#00C9B7]/20 flex items-center justify-center border-2 border-white shadow-sm">
+                        <span className="text-[#00C9B7] font-bold text-lg">{t.name?.charAt(0) || 'A'}</span>
                       </div>
                     )}
                     <div>

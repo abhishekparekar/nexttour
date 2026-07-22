@@ -41,7 +41,7 @@ const Contact = () => {
     { icon: Clock, title: 'Working Hours', desc: 'Mon - Sat: 9AM - 8PM\nSunday: 10AM - 6PM' }
   ];
 
-  const inputClass = "w-full bg-[#f8f9fa] border-b-2 border-[#e5e5e5] px-4 py-4 text-[#111111] placeholder-[#9ca3af] focus:outline-none focus:border-[#F5B301] focus:bg-[#fff9e6] transition-all duration-300 rounded-t-xl";
+  const inputClass = "w-full bg-[#f8f9fa] border-b-2 border-[#e5e5e5] px-4 py-4 text-[#111111] placeholder-[#9ca3af] focus:outline-none focus:border-[#00C9B7] focus:bg-[#E6FAF8] transition-all duration-300 rounded-t-xl";
 
   return (
     <div className="min-h-screen bg-white">
@@ -81,7 +81,7 @@ const Contact = () => {
             className="xl:col-span-3 bg-white"
           >
             <div className="mb-6">
-              <span className="text-[#F5B301] font-bold tracking-wider uppercase text-sm mb-2 block">Send a Message</span>
+              <span className="text-[#00C9B7] font-bold tracking-wider uppercase text-sm mb-2 block">Send a Message</span>
               <h2 className="text-2xl md:text-3xl font-bold text-[#111] mb-2">We'd love to hear from you.</h2>
               <p className="text-[#555] text-sm leading-relaxed">Fill out the form below and our team will get back to you within 24 hours.</p>
             </div>
@@ -115,27 +115,27 @@ const Contact = () => {
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <input type="text" name="name" required value={formData.name} onChange={handleChange} className="w-full bg-[#f8f9fa] border-b-2 border-[#e5e5e5] px-3 py-3 text-[#111111] placeholder-[#9ca3af] focus:outline-none focus:border-[#F5B301] focus:bg-[#fff9e6] transition-all duration-300 rounded-t-lg text-sm" placeholder="Full Name *" />
+                    <input type="text" name="name" required value={formData.name} onChange={handleChange} className="w-full bg-[#f8f9fa] border-b-2 border-[#e5e5e5] px-3 py-3 text-[#111111] placeholder-[#9ca3af] focus:outline-none focus:border-[#00C9B7] focus:bg-[#E6FAF8] transition-all duration-300 rounded-t-lg text-sm" placeholder="Full Name *" />
                   </div>
                   <div>
-                    <input type="email" name="email" required value={formData.email} onChange={handleChange} className="w-full bg-[#f8f9fa] border-b-2 border-[#e5e5e5] px-3 py-3 text-[#111111] placeholder-[#9ca3af] focus:outline-none focus:border-[#F5B301] focus:bg-[#fff9e6] transition-all duration-300 rounded-t-lg text-sm" placeholder="Email Address *" />
+                    <input type="email" name="email" required value={formData.email} onChange={handleChange} className="w-full bg-[#f8f9fa] border-b-2 border-[#e5e5e5] px-3 py-3 text-[#111111] placeholder-[#9ca3af] focus:outline-none focus:border-[#00C9B7] focus:bg-[#E6FAF8] transition-all duration-300 rounded-t-lg text-sm" placeholder="Email Address *" />
                   </div>
                   <div className="md:col-span-2">
-                    <input type="tel" name="phone" value={formData.phone} onChange={handleChange} className="w-full bg-[#f8f9fa] border-b-2 border-[#e5e5e5] px-3 py-3 text-[#111111] placeholder-[#9ca3af] focus:outline-none focus:border-[#F5B301] focus:bg-[#fff9e6] transition-all duration-300 rounded-t-lg text-sm" placeholder="Phone Number" />
+                    <input type="tel" name="phone" value={formData.phone} onChange={handleChange} className="w-full bg-[#f8f9fa] border-b-2 border-[#e5e5e5] px-3 py-3 text-[#111111] placeholder-[#9ca3af] focus:outline-none focus:border-[#00C9B7] focus:bg-[#E6FAF8] transition-all duration-300 rounded-t-lg text-sm" placeholder="Phone Number" />
                   </div>
                   <div className="md:col-span-2">
-                    <input type="text" name="subject" required value={formData.subject} onChange={handleChange} className="w-full bg-[#f8f9fa] border-b-2 border-[#e5e5e5] px-3 py-3 text-[#111111] placeholder-[#9ca3af] focus:outline-none focus:border-[#F5B301] focus:bg-[#fff9e6] transition-all duration-300 rounded-t-lg text-sm" placeholder="Subject *" />
+                    <input type="text" name="subject" required value={formData.subject} onChange={handleChange} className="w-full bg-[#f8f9fa] border-b-2 border-[#e5e5e5] px-3 py-3 text-[#111111] placeholder-[#9ca3af] focus:outline-none focus:border-[#00C9B7] focus:bg-[#E6FAF8] transition-all duration-300 rounded-t-lg text-sm" placeholder="Subject *" />
                   </div>
                 </div>
                 
                 <div>
-                  <textarea name="message" required value={formData.message} onChange={handleChange} rows={4} className="w-full bg-[#f8f9fa] border-b-2 border-[#e5e5e5] px-3 py-3 text-[#111111] placeholder-[#9ca3af] focus:outline-none focus:border-[#F5B301] focus:bg-[#fff9e6] transition-all duration-300 rounded-t-lg text-sm resize-none" placeholder="How can we help you plan your next adventure? *" />
+                  <textarea name="message" required value={formData.message} onChange={handleChange} rows={4} className="w-full bg-[#f8f9fa] border-b-2 border-[#e5e5e5] px-3 py-3 text-[#111111] placeholder-[#9ca3af] focus:outline-none focus:border-[#00C9B7] focus:bg-[#E6FAF8] transition-all duration-300 rounded-t-lg text-sm resize-none" placeholder="How can we help you plan your next adventure? *" />
                 </div>
                 
                 <button 
                   type="submit" 
                   disabled={isSubmitting}
-                  className="group flex items-center justify-center gap-2 w-full md:w-auto px-8 py-3 bg-[#111] text-white font-bold rounded-full hover:bg-[#F5B301] hover:text-[#111] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                  className="group flex items-center justify-center gap-2 w-full md:w-auto px-8 py-3 bg-[#111] text-white font-bold rounded-full hover:bg-[#00C9B7] hover:text-[#111] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
                 >
                   {isSubmitting ? 'Sending...' : 'Send Message'}
                   {!isSubmitting && <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />}
@@ -174,8 +174,8 @@ const Contact = () => {
               transition={{ delay: i * 0.1, duration: 0.4 }}
               className="bg-white rounded-2xl p-5 shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-[#f0f0f0] hover:-translate-y-1 transition-transform duration-300 group flex flex-col items-center text-center"
             >
-              <div className="w-10 h-10 bg-[#F5B301]/10 rounded-xl flex items-center justify-center mb-3 group-hover:bg-[#F5B301] transition-colors duration-300">
-                <info.icon className="w-5 h-5 text-[#F5B301] group-hover:text-white transition-colors duration-300" />
+              <div className="w-10 h-10 bg-[#00C9B7]/10 rounded-xl flex items-center justify-center mb-3 group-hover:bg-[#00C9B7] transition-colors duration-300">
+                <info.icon className="w-5 h-5 text-[#00C9B7] group-hover:text-white transition-colors duration-300" />
               </div>
               <h3 className="text-[#111] font-bold text-base mb-1">{info.title}</h3>
               <p className="text-[#555] text-xs leading-relaxed whitespace-pre-line">
