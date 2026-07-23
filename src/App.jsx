@@ -1,4 +1,4 @@
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import Layout from './components/Layout';
 import ScrollProgress from './components/ScrollProgress';
@@ -77,6 +77,8 @@ function App() {
           <Route path="about" element={<AdminAboutSettings />} />
           <Route path="contact" element={<AdminContactSettings />} />
         </Route>
+        {/* Default fallback: Redirect any unmapped or missing route to Home */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
 
     </>
