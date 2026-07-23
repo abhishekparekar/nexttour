@@ -75,15 +75,17 @@ const Sidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen, onLogout 
       }`}
     >
       {/* Logo Header */}
-      <div className={`h-16 flex items-center border-b border-gray-100 flex-shrink-0 ${isCollapsed ? 'justify-center px-2' : 'justify-between px-4'}`}>
+      <div className={`h-16 flex items-center border-b border-gray-100 flex-shrink-0 ${isCollapsed ? 'justify-center px-2' : 'justify-between px-3.5'}`}>
         {isCollapsed ? (
-          <img src="/nexttour.jpeg" alt="NextTour" className="h-8 w-8 object-contain rounded-md" />
+          <img src="/nexttour.jpeg" alt="NextTour" className="h-9 w-9 object-contain rounded-lg shadow-xs" />
         ) : (
           <>
-            <img src="/nexttour.jpeg" alt="NextTour" className="h-10 w-auto object-contain rounded-md max-h-11" />
+            <div className="flex items-center">
+              <img src="/nexttour.jpeg" alt="NextTour" className="h-12 w-auto object-contain rounded-lg max-w-[180px]" />
+            </div>
             <button
               onClick={() => setMobileOpen(false)}
-              className="md:hidden p-1 text-gray-400 hover:text-gray-600 rounded-md hover:bg-gray-100"
+              className="md:hidden p-1.5 text-gray-400 hover:text-gray-600 rounded-md hover:bg-gray-100"
             >
               <X size={18} />
             </button>
