@@ -6,6 +6,9 @@ import {
   subscribeToSchedules, subscribeToExpenses 
 } from '../../firebase';
 
+import OfficeBookingModal from '../../components/admin/OfficeBookingModal';
+import { Plus, Building } from 'lucide-react';
+
 const StatCard = ({ icon: Icon, label, value, color }) => (
   <div className="bg-white rounded-xl p-3 border border-gray-100 shadow-sm flex flex-col gap-2.5">
     <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${color} flex-shrink-0`}>
@@ -25,6 +28,7 @@ const AdminDashboard = () => {
   const [schedules, setSchedules] = useState([]);
   const [expenses, setExpenses] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showOfficeModal, setShowOfficeModal] = useState(false);
 
   useEffect(() => {
     const unsubTrips = subscribeToTrips((data) => setTrips(data));
@@ -86,9 +90,19 @@ const AdminDashboard = () => {
 
   return (
     <div>
-      <div className="bg-white border-b border-gray-100 px-4 py-3">
-        <h1 className="text-base font-bold text-gray-900">Dashboard</h1>
-        <p className="text-gray-600 text-xs mt-0.5">Welcome to NextTour Admin Panel</p>
+      <div className="bg-white border-b border-gray-100 px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="text-base font-bold text-gray-900">Dashboard</h1>
+          <p className="text-gray-600 text-xs mt-0.5">Welcome to NextTour Admin Operations</p>
+        </div>
+
+        <button
+          onClick={() => setShowOfficeModal(true)}
+          className="bg-[#00C9B7] hover:bg-[#00b3a3] text-white font-bold py-2 px-4 rounded-xl text-xs transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
+        >
+          <Plus size={16} />
+          <span>New Office Booking</span>
+        </button>
       </div>
 
       <div className="p-4 space-y-4">
@@ -284,6 +298,14 @@ const AdminDashboard = () => {
           </div>
         </div>
       </div>
+
+      <OfficeBookingModal
+        isOpen={showOfficeModal}
+        onClose={() => setShowOfficeModal(false)}
+        onSuccess={(newBooking) => {
+          console.log('Office Booking Created via Dashboard:', newBooking);
+        }}
+      />
     </div>
   );
 };

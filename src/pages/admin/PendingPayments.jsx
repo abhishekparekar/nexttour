@@ -2,6 +2,9 @@ import { useState, useEffect } from 'react';
 import { subscribeToBookings } from '../../firebase';
 import { Search, Loader2, Calendar, Phone, AlertTriangle, Send } from 'lucide-react';
 
+import { sendWhatsAppNotification } from '../../utils/whatsapp';
+import { formatCurrency } from '../../utils/bookingUtils';
+
 const AdminPendingPayments = () => {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -22,15 +25,7 @@ const AdminPendingPayments = () => {
   const uniqueTrips = [...new Set(bookings.map(b => b.tripName))];
 
   const handleSendReminder = (booking) => {
-    const remaining = (booking.amount || 0) - (booking.paidAmount || 0);
-    const message = `Hello ${booking.name},\n\nThis is a friendly reminder regarding your booking for *${booking.tripName}* scheduled for *${booking.selectedDate}*.\n\n*Payment Summary:*\n- Total Amount: ₹${booking.amount?.toLocaleString()}\n- Paid Amount: ₹${(booking.paidAmount || 0).toLocaleString()}\n- *Pending Balance: ₹${remaining.toLocaleString()}*\n\nPlease process the remaining amount at your earliest convenience.\n\nThank you,\nNextTour Support`;
-    
-    // Clean phone number (remove spaces, symbols)
-    const cleanPhone = booking.phone.replace(/[^0-9]/g, '');
-    const finalPhone = cleanPhone.startsWith('91') && cleanPhone.length === 12 ? cleanPhone : `91${cleanPhone}`;
-
-    const whatsappUrl = `https://api.whatsapp.com/send?phone=${finalPhone}&text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, '_blank');
+    sendWhatsAppNotification(booking, 'reminder');
   };
 
   const filteredBookings = bookings.filter(b => {
