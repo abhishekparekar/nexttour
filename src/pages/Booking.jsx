@@ -1,8 +1,8 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useParams, Link, useSearchParams } from 'react-router-dom';
-import { CheckCircle, AlertCircle, ArrowRight, User, Map, ShieldAlert, FileText, Users } from 'lucide-react';
+import { CheckCircle, AlertCircle, ArrowRight, User, Map, ShieldAlert, FileText, Users, CreditCard, Calendar, Plus, Trash2, Contact, MapPin } from 'lucide-react';
 import { addBooking, getTripById, subscribeToBookings } from '../firebase';
-import { calculateTripSeatAvailability } from '../utils/bookingUtils';
+import { calculateTripSeatAvailability, generateBookingId, formatCurrency } from '../utils/bookingUtils';
 import { motion } from 'framer-motion';
 
 const isSaturday = (dateStr) => {
@@ -11,6 +11,20 @@ const isSaturday = (dateStr) => {
   if (parts.length !== 3) return false;
   const dateObj = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
   return dateObj.getDay() === 6;
+};
+
+const loadRazorpayScript = () => {
+  return new Promise((resolve) => {
+    if (window.Razorpay) {
+      resolve(true);
+      return;
+    }
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
 };
 
 const Booking = () => {
@@ -23,13 +37,7 @@ const Booking = () => {
   const [isCustomTrekkers, setIsCustomTrekkers] = useState(false);
   const [allBookings, setAllBookings] = useState([]);
 
-  // Subscribe to live bookings for seat capacity tracking
-  useEffect(() => {
-    const unsub = subscribeToBookings((data) => setAllBookings(data || []));
-    return () => unsub();
-  }, []);
-
-  // Initialize form data with URL params if available
+  // Form State
   const [formData, setFormData] = useState({
     fullName: '',
     phone: '',
@@ -37,14 +45,28 @@ const Booking = () => {
     email: '',
     pickupPoint: '',
     addressCity: '',
+    idProofType: 'Aadhaar Card',
+    idProofNumber: '',
     notes: '',
     date: '',
     trekkers: 1,
     paymentMode: 'later'
   });
+
+  const [passengers, setPassengers] = useState([
+    { name: '', age: '', gender: 'Male' }
+  ]);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [createdBooking, setCreatedBooking] = useState(null);
   const [error, setError] = useState(null);
+
+  // Subscribe to live bookings for seat capacity tracking
+  useEffect(() => {
+    const unsub = subscribeToBookings((data) => setAllBookings(data || []));
+    return () => unsub();
+  }, []);
 
   const seatInfo = useMemo(() => {
     if (!formData.date) return null;
@@ -101,39 +123,50 @@ const Booking = () => {
     const trekkersParam = searchParams.get('trekkers');
     if (trekkersParam) {
       const val = parseInt(trekkersParam);
-      setFormData(prev => ({
-        ...prev,
-        date: dateParam || prev.date,
-        trekkers: val
-      }));
-      if (![1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20].includes(val)) {
-        setIsCustomTrekkers(true);
-      }
-    } else {
-      setFormData(prev => ({
-        ...prev,
-        date: dateParam || prev.date
-      }));
+      handleTrekkersCountChange(val);
+    }
+    if (dateParam) {
+      setFormData(prev => ({ ...prev, date: dateParam }));
     }
   }, [searchParams]);
 
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+
+    if (name === 'fullName') {
+      setPassengers(prev => {
+        const updated = [...prev];
+        if (updated.length > 0 && !updated[0].name) {
+          updated[0].name = value;
+        }
+        return updated;
+      });
+    }
   };
 
-  const loadRazorpayScript = () => {
-    return new Promise((resolve) => {
-      if (window.Razorpay) {
-        resolve(true);
-        return;
+  const handleTrekkersCountChange = (count) => {
+    const newCount = Math.max(1, Number(count) || 1);
+    setFormData(prev => ({ ...prev, trekkers: newCount }));
+
+    setPassengers(prev => {
+      const updated = [...prev];
+      if (newCount > updated.length) {
+        for (let i = updated.length; i < newCount; i++) {
+          updated.push({ name: i === 0 ? formData.fullName : '', age: '', gender: 'Male' });
+        }
+      } else {
+        updated.splice(newCount);
       }
-      const script = document.createElement('script');
-      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-      script.async = true;
-      script.onload = () => resolve(true);
-      script.onerror = () => resolve(false);
-      document.body.appendChild(script);
+      return updated;
+    });
+  };
+
+  const handlePassengerChange = (index, field, value) => {
+    setPassengers(prev => {
+      const updated = [...prev];
+      updated[index] = { ...updated[index], [field]: value };
+      return updated;
     });
   };
 
@@ -142,30 +175,41 @@ const Booking = () => {
     setIsSubmitting(true);
     setError(null);
 
-    const totalAmount = (trip?.price || 0) * formData.trekkers;
+    const unitPrice = Number(trip?.price || trip?.discountPrice || 0);
+    const trekkersCount = Number(formData.trekkers) || 1;
+    const totalAmount = unitPrice * trekkersCount;
     const advanceAmount = Math.round(totalAmount * 0.20);
+
     const paymentToProcess = formData.paymentMode === 'full'
       ? totalAmount
       : (formData.paymentMode === 'advance' ? advanceAmount : 0);
 
-    const bookingData = {
-      name: formData.fullName,
-      phone: formData.phone,
-      whatsapp: formData.whatsappNumber || formData.phone,
-      email: formData.email || '',
-      pickupPoint: formData.pickupPoint || 'Main Pickup Point',
-      city: formData.addressCity || '',
-      notes: formData.notes || '',
+    const bookingId = generateBookingId('web');
+
+    const bookingPayload = {
+      id: bookingId,
+      name: formData.fullName.trim(),
+      phone: formData.phone.trim(),
+      whatsapp: formData.whatsappNumber.trim() || formData.phone.trim(),
+      email: formData.email.trim(),
+      city: formData.addressCity.trim(),
+      pickupPoint: formData.pickupPoint || (trip?.pickupLocations?.[0]?.location || 'Main Departure Point'),
+      idProofType: formData.idProofType,
+      idProofNumber: formData.idProofNumber.trim(),
+      notes: formData.notes.trim(),
       tripId: tripId || 'direct-booking',
-      tripName: trip?.title || 'Trek Booking',
+      tripName: trip?.title || 'Trek Adventure',
       selectedDate: formData.date,
-      travelers: formData.trekkers,
+      travelers: trekkersCount,
+      passengers: passengers,
       bookingDate: new Date().toISOString().split('T')[0],
+      createdAt: new Date().toISOString(),
       amount: totalAmount,
       paidAmount: 0,
       pendingAmount: totalAmount,
       paymentStatus: 'pending',
-      status: 'pending',
+      status: 'confirmed',
+      bookingSource: 'website',
       payments: []
     };
 
@@ -180,29 +224,29 @@ const Booking = () => {
 
         const options = {
           key: "rzp_test_SndmEhyiZ6FWtK",
-          amount: paymentToProcess * 100, // paise
+          amount: paymentToProcess * 100, // in paise
           currency: "INR",
           name: trip?.categoryName || "NextTour",
           description: `Booking for ${trip?.title || 'Trek'}`,
           handler: async function (response) {
             try {
-              bookingData.paidAmount = paymentToProcess;
-              bookingData.pendingAmount = totalAmount - paymentToProcess;
-              bookingData.paymentStatus = paymentToProcess === totalAmount ? 'paid' : 'partial';
-              bookingData.status = 'confirmed';
-              bookingData.payments = [{
-                id: response.razorpay_payment_id,
+              bookingPayload.paidAmount = paymentToProcess;
+              bookingPayload.pendingAmount = Math.max(0, totalAmount - paymentToProcess);
+              bookingPayload.paymentStatus = paymentToProcess >= totalAmount ? 'paid' : 'partial';
+              bookingPayload.payments = [{
+                id: response.razorpay_payment_id || `TXN_${Date.now()}`,
                 amount: paymentToProcess,
                 date: new Date().toISOString(),
                 mode: 'razorpay',
                 reference: response.razorpay_payment_id
               }];
 
-              await addBooking(bookingData);
+              await addBooking(bookingPayload);
+              setCreatedBooking(bookingPayload);
               setIsSubmitted(true);
             } catch (err) {
               console.error('Firestore save error after payment:', err);
-              setError('Payment was successful, but booking could not be saved: ' + response.razorpay_payment_id + '. Please contact support.');
+              setError('Payment was successful, but booking could not be saved: ' + (response.razorpay_payment_id || '') + '. Please contact support.');
             }
           },
           prefill: {
@@ -223,43 +267,77 @@ const Booking = () => {
         const rzp = new window.Razorpay(options);
         rzp.open();
       } else {
-        await addBooking(bookingData);
+        await addBooking(bookingPayload);
+        setCreatedBooking(bookingPayload);
         setIsSubmitted(true);
       }
     } catch (err) {
       console.error('Booking error:', err);
-      setError('Failed to submit booking. Please try again.');
+      setError('Failed to submit booking: ' + (err.message || 'Please try again.'));
+    } finally {
       setIsSubmitting(false);
     }
   };
 
-  const inputClass = "w-full bg-[#f8f9fa] border-b-2 border-[#e5e5e5] px-4 py-3.5 text-[#111111] placeholder-[#9ca3af] focus:outline-none focus:border-[#00C9B7] focus:bg-[#E6FAF8] transition-all duration-300 rounded-t-xl text-sm";
-  const labelClass = "block text-[#555] text-xs font-bold uppercase tracking-wider mb-2";
-  const sectionClass = "bg-white rounded-3xl p-8 lg:p-10 shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-[#f0f0f0] mb-8";
+  const inputClass = "w-full bg-[#f8f9fa] border-b-2 border-[#e5e5e5] px-4 py-3 text-[#111111] placeholder-[#9ca3af] focus:outline-none focus:border-[#00C9B7] focus:bg-[#E6FAF8] transition-all duration-300 rounded-xl text-xs font-medium";
+  const labelClass = "block text-[#555] text-xs font-bold uppercase tracking-wider mb-1.5";
 
-  if (isSubmitted) {
+  if (isSubmitted && createdBooking) {
     return (
-      <div className="min-h-screen bg-[#f8f9fa] flex items-center justify-center pt-20 px-4">
+      <div className="min-h-screen bg-[#f8f9fa] flex items-center justify-center pt-20 pb-12 px-4">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="bg-white rounded-3xl p-12 max-w-xl text-center border border-[#e5e5e5] shadow-xl"
+          className="bg-white rounded-3xl p-8 md:p-12 max-w-xl text-center border border-[#e5e5e5] shadow-xl space-y-6"
         >
-          <div className="w-24 h-24 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-8 border-[6px] border-green-100">
-            <CheckCircle className="w-12 h-12 text-green-500" />
+          <div className="w-20 h-20 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center mx-auto border-[6px] border-emerald-100 shadow-inner">
+            <CheckCircle className="w-10 h-10" />
           </div>
-          <h2 className="text-3xl font-bold text-[#111] mb-4">Booking Submitted!</h2>
-          <p className="text-[#555] mb-8 leading-relaxed text-lg">Thank you for your booking request. Our experts will review your details and contact you within 24 hours to confirm your trek.</p>
-          <Link to="/" className="inline-flex items-center justify-center gap-2 bg-[#111] text-white font-bold py-4 px-10 rounded-full hover:bg-[#00C9B7] hover:text-[#111] transition-all duration-300 group">
-            Return Home <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-          </Link>
+
+          <div>
+            <h2 className="text-2xl md:text-3xl font-black text-[#111] tracking-tight">Trip Booking Confirmed!</h2>
+            <p className="text-gray-500 text-xs mt-1">
+              Booking ID: <strong className="font-mono text-gray-900">{createdBooking.id}</strong> &bull; Customer: <strong className="text-gray-900">{createdBooking.name}</strong>
+            </p>
+          </div>
+
+          <div className="bg-gray-50 rounded-2xl p-4 border border-gray-200 text-left grid grid-cols-2 gap-3 text-xs">
+            <div>
+              <span className="text-gray-400 block text-[11px]">Tour Package:</span>
+              <span className="font-bold text-gray-900 block truncate">{createdBooking.tripName}</span>
+            </div>
+            <div>
+              <span className="text-gray-400 block text-[11px]">Departure Date:</span>
+              <span className="font-bold text-gray-900 block">{createdBooking.selectedDate}</span>
+            </div>
+            <div>
+              <span className="text-gray-400 block text-[11px]">Travelers Count:</span>
+              <span className="font-bold text-gray-900 block">{createdBooking.travelers} Pax</span>
+            </div>
+            <div>
+              <span className="text-gray-400 block text-[11px]">Payment Status:</span>
+              <span className={`font-extrabold uppercase text-[11px] ${createdBooking.paidAmount >= createdBooking.amount ? 'text-emerald-700' : 'text-amber-700'}`}>
+                {createdBooking.paidAmount >= createdBooking.amount ? 'Paid in Full' : `₹${createdBooking.paidAmount} Paid (₹${createdBooking.pendingAmount} Due)`}
+              </span>
+            </div>
+          </div>
+
+          <p className="text-gray-600 text-xs leading-relaxed">
+            Our team will contact you shortly with boarding details. Thank you for choosing NextTour!
+          </p>
+
+          <div className="pt-2">
+            <Link to="/" className="inline-flex items-center justify-center gap-2 bg-[#111] text-white font-bold py-3.5 px-8 rounded-full hover:bg-[#00C9B7] hover:text-[#111] transition-all text-xs shadow-md">
+              Return Home <ArrowRight size={16} />
+            </Link>
+          </div>
         </motion.div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#F8F9FB]">
+    <div className="bg-[#f8f9fa] min-h-screen pb-16">
       {/* Hero Banner */}
       <div className="relative h-[32vh] min-h-[240px] w-full overflow-hidden rounded-b-3xl shadow-md">
         <img
@@ -286,15 +364,14 @@ const Booking = () => {
         </div>
       </div>
 
-      <div className="max-w-[700px] mx-auto px-4 py-8 lg:py-12">
-
+      <div className="max-w-[760px] mx-auto px-4 py-8 lg:py-12">
         {error && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-8 p-5 bg-red-50 border border-red-200 rounded-2xl flex items-center gap-3 text-red-600 font-medium shadow-sm"
+            className="mb-6 p-4 bg-rose-50 border border-rose-200 rounded-2xl flex items-center gap-3 text-rose-700 text-xs font-bold shadow-xs"
           >
-            <AlertCircle size={24} className="flex-shrink-0" />
+            <AlertCircle size={20} className="flex-shrink-0" />
             {error}
           </motion.div>
         )}
@@ -303,287 +380,343 @@ const Booking = () => {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white rounded-3xl p-6 md:p-8 shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-[#f0f0f0]"
+            className="bg-white rounded-3xl p-6 md:p-8 shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-[#f0f0f0] space-y-6"
           >
-            <div className="grid grid-cols-1 gap-6">
+            {/* 1. Customer Profile Section */}
+            <div>
+              <h3 className="text-xs font-extrabold uppercase tracking-wider text-[#00C9B7] mb-3 flex items-center gap-1.5">
+                <User size={15} /> 1. Customer Contact & Profile
+              </h3>
 
-              <div>
-                <label className={labelClass}>Full Name *</label>
-                <input
-                  type="text"
-                  name="fullName"
-                  required
-                  value={formData.fullName}
-                  onChange={handleChange}
-                  className={inputClass}
-                  placeholder="Enter your full name"
-                />
-              </div>
-
-              <div>
-                <label className={labelClass}>Phone Number *</label>
-                <input
-                  type="tel"
-                  name="phone"
-                  required
-                  value={formData.phone}
-                  onChange={handleChange}
-                  className={inputClass}
-                  placeholder="+91 98765 43210"
-                />
-              </div>
-
-              <div>
-                <label className={labelClass}>WhatsApp Number</label>
-                <input
-                  type="tel"
-                  name="whatsappNumber"
-                  value={formData.whatsappNumber}
-                  onChange={handleChange}
-                  className={inputClass}
-                  placeholder="Enter WhatsApp number (optional)"
-                />
-              </div>
-
-              <div>
-                <label className={labelClass}>Email Address</label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className={inputClass}
-                  placeholder="Enter email address (optional)"
-                />
-              </div>
-
-              <div>
-                <label className={labelClass}>Address / City</label>
-                <input
-                  type="text"
-                  name="addressCity"
-                  value={formData.addressCity}
-                  onChange={handleChange}
-                  className={inputClass}
-                  placeholder="Enter your address or city (optional)"
-                />
-              </div>
-
-              <div>
-                <label className={labelClass}>Pickup Point</label>
-                {trip?.pickupLocations && trip.pickupLocations.length > 0 ? (
-                  <select
-                    name="pickupPoint"
-                    value={formData.pickupPoint}
-                    onChange={handleChange}
-                    className={`${inputClass} cursor-pointer`}
-                  >
-                    <option value="">-- Select Pickup Point --</option>
-                    {trip.pickupLocations.map((loc, idx) => (
-                      <option key={idx} value={loc.location || loc}>{loc.location || loc} {loc.time ? `(${loc.time})` : ''}</option>
-                    ))}
-                  </select>
-                ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className={labelClass}>Full Name *</label>
                   <input
                     type="text"
-                    name="pickupPoint"
-                    value={formData.pickupPoint}
+                    name="fullName"
+                    required
+                    value={formData.fullName}
                     onChange={handleChange}
                     className={inputClass}
-                    placeholder="Enter pickup point (e.g. Railway Station)"
+                    placeholder="Enter customer full name"
                   />
-                )}
-              </div>
+                </div>
 
-              <div>
-                <label className={labelClass}>Special Instructions / Notes</label>
-                <textarea
-                  name="notes"
-                  value={formData.notes}
-                  onChange={handleChange}
-                  className={`${inputClass} h-24 resize-none`}
-                  placeholder="Enter any special requests or instructions (optional)"
-                />
-              </div>
+                <div>
+                  <label className={labelClass}>Phone Number *</label>
+                  <input
+                    type="tel"
+                    name="phone"
+                    required
+                    value={formData.phone}
+                    onChange={handleChange}
+                    className={inputClass}
+                    placeholder="10 digit mobile number"
+                  />
+                </div>
 
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <label className="text-xs font-bold uppercase tracking-wider text-[#555]">Preferred Departure Date *</label>
-                  {availableBatches.length > 0 && (
-                    <button
-                      type="button"
-                      onClick={() => setUseCustomDate(!useCustomDate)}
-                      className="text-[10px] font-black text-[#0057ff] hover:underline uppercase tracking-wider"
+                <div>
+                  <label className={labelClass}>WhatsApp Number</label>
+                  <input
+                    type="tel"
+                    name="whatsappNumber"
+                    value={formData.whatsappNumber}
+                    onChange={handleChange}
+                    className={inputClass}
+                    placeholder="Same as mobile if empty"
+                  />
+                </div>
+
+                <div>
+                  <label className={labelClass}>Email Address</label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className={inputClass}
+                    placeholder="Email address (optional)"
+                  />
+                </div>
+
+                <div className="sm:col-span-2">
+                  <label className={labelClass}>Address / City</label>
+                  <input
+                    type="text"
+                    name="addressCity"
+                    value={formData.addressCity}
+                    onChange={handleChange}
+                    className={inputClass}
+                    placeholder="City or home address (optional)"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* 2. Identity Verification Section */}
+            <div className="pt-4 border-t border-gray-100">
+              <h3 className="text-xs font-extrabold uppercase tracking-wider text-[#00C9B7] mb-3 flex items-center gap-1.5">
+                <Contact size={15} /> 2. ID Verification Proof
+              </h3>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className={labelClass}>ID Proof Type</label>
+                  <select
+                    name="idProofType"
+                    value={formData.idProofType}
+                    onChange={handleChange}
+                    className={inputClass}
+                  >
+                    <option value="Aadhaar Card">Aadhaar Card</option>
+                    <option value="Driving License">Driving License</option>
+                    <option value="Passport">Passport</option>
+                    <option value="Voter ID">Voter ID</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className={labelClass}>ID Proof Number</label>
+                  <input
+                    type="text"
+                    name="idProofNumber"
+                    value={formData.idProofNumber}
+                    onChange={handleChange}
+                    className={inputClass}
+                    placeholder="Enter ID proof number"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* 3. Trip Date & Pickup Section */}
+            <div className="pt-4 border-t border-gray-100">
+              <h3 className="text-xs font-extrabold uppercase tracking-wider text-[#00C9B7] mb-3 flex items-center gap-1.5">
+                <Calendar size={15} /> 3. Departure Date & Pickup Point
+              </h3>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className={labelClass}>Preferred Departure Date *</label>
+                    {availableBatches.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => setUseCustomDate(!useCustomDate)}
+                        className="text-[10px] font-black text-[#0057ff] hover:underline uppercase"
+                      >
+                        {useCustomDate ? 'Batches' : 'Custom Date'}
+                      </button>
+                    )}
+                  </div>
+
+                  {availableBatches.length > 0 && !useCustomDate ? (
+                    <select
+                      name="date"
+                      required
+                      value={formData.date}
+                      onChange={handleChange}
+                      className={inputClass}
                     >
-                      {useCustomDate ? 'Select from Batches' : 'Pick Custom Date'}
-                    </button>
+                      <option value="">-- Select Departure Date --</option>
+                      {availableBatches.map((b, idx) => (
+                        <option key={idx} value={b.date}>
+                          {b.date} ({b.time} - {b.location})
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <input type="date" name="date" required value={formData.date} onChange={handleChange} className={inputClass} />
                   )}
                 </div>
 
-                {availableBatches.length > 0 && !useCustomDate ? (
-                  <select
-                    name="date"
-                    required
-                    value={formData.date}
-                    onChange={handleChange}
-                    className={`${inputClass} cursor-pointer appearance-none bg-no-repeat`}
-                    style={{ backgroundImage: 'url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23111%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E")', backgroundPosition: 'right 1rem top 50%', backgroundSize: '0.65rem auto' }}
-                  >
-                    <option value="">-- Select Departure Date --</option>
-                    {availableBatches.map((b, idx) => {
-                      const formattedDate = new Date(b.date).toLocaleDateString('en-IN', {
-                        weekday: 'short', day: 'numeric', month: 'short', year: 'numeric'
-                      });
-                      return (
-                        <option key={idx} value={b.date}>
-                          {formattedDate} ({b.time} - {b.location})
-                        </option>
-                      );
-                    })}
-                  </select>
-                ) : (
-                  <input type="date" name="date" required value={formData.date} onChange={handleChange} className={inputClass} />
-                )}
-
-                {/* Live Seat Availability Banner */}
-                {seatInfo && (
-                  <div className="mt-2.5 flex items-center justify-between bg-emerald-50/70 border border-emerald-200/80 p-3 rounded-2xl text-xs">
-                    <span className="text-emerald-900 font-bold flex items-center gap-1.5">
-                      <Users size={14} className="text-emerald-600" /> Seats Availability Status:
-                    </span>
-                    <span className={`font-extrabold px-3 py-1 rounded-full text-xs border ${
-                      seatInfo.isFullyBooked 
-                        ? 'bg-rose-50 text-rose-700 border-rose-200 font-black' 
-                        : seatInfo.remainingSeats <= 5
-                        ? 'bg-amber-50 text-amber-800 border-amber-200'
-                        : 'bg-emerald-100 text-emerald-800 border-emerald-300'
-                    }`}>
-                      {seatInfo.isFullyBooked ? (
-                        '🔴 FULLY BOOKED (0 Seats Left)'
-                      ) : (
-                        `🔥 ${seatInfo.remainingSeats} Seats Available (${seatInfo.bookedPassengers}/${seatInfo.totalCapacity} Booked)`
-                      )}
-                    </span>
-                  </div>
-                )}
-              </div>
-
-              <div>
-                <label className={labelClass}>Number of Trekkers *</label>
-                <select
-                  name="trekkers"
-                  value={isCustomTrekkers ? "custom" : formData.trekkers}
-                  onChange={(e) => {
-                    if (e.target.value === 'custom') {
-                      setIsCustomTrekkers(true);
-                      setFormData(prev => ({ ...prev, trekkers: 16 }));
-                    } else {
-                      setIsCustomTrekkers(false);
-                      setFormData(prev => ({ ...prev, trekkers: parseInt(e.target.value) }));
-                    }
-                  }}
-                  className={`${inputClass} cursor-pointer appearance-none bg-no-repeat`}
-                  style={{ backgroundImage: 'url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23111%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E")', backgroundPosition: 'right 1rem top 50%', backgroundSize: '0.65rem auto' }}
-                >
-                  {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20].map(n => <option key={n} value={n}>{n} {n === 1 ? 'Person' : 'People'}</option>)}
-                  <option value="custom">More than 15 (Custom)</option>
-                </select>
-
-                {isCustomTrekkers && (
-                  <div className="mt-4 animate-in fade-in slide-in-from-top-2 duration-300">
-                    <label className={labelClass}>Enter Number of Trekkers (More than 15) *</label>
-                    <input
-                      type="number"
-                      name="customTrekkers"
-                      min="16"
-                      required
-                      value={formData.trekkers}
-                      onChange={(e) => {
-                        const val = parseInt(e.target.value) || '';
-                        setFormData(prev => ({ ...prev, trekkers: val }));
-                      }}
-                      className={inputClass}
-                      placeholder="Enter count (e.g. 18)"
-                    />
-                  </div>
-                )}
-              </div>
-
-              <div className="mt-6 border-t border-[#f0f0f0] pt-6 space-y-4">
                 <div>
-                  <label className={labelClass}>Select Payment Option</label>
-                  <p className="text-xs text-gray-500 mb-3">Choose how you want to pay for your trip reservation</p>
-                  
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <label className={`flex flex-col p-4 border-2 rounded-2xl cursor-pointer transition-all ${formData.paymentMode === 'full' ? 'border-[#00C9B7] bg-[#E6FAF8] shadow-xs' : 'border-gray-200 hover:border-gray-300 bg-white'}`}>
-                      <input type="radio" name="paymentMode" value="full" checked={formData.paymentMode === 'full'} onChange={handleChange} className="sr-only" />
-                      <span className="font-bold text-[#111] text-sm">Full 100% Payment</span>
-                      <span className="text-[11px] text-gray-500 mt-0.5">Pay entire ticket price now</span>
-                      <span className="text-base font-black text-[#00C9B7] mt-2">₹{((trip?.price || 0) * formData.trekkers).toLocaleString()}</span>
-                    </label>
-
-                    <label className={`flex flex-col p-4 border-2 rounded-2xl cursor-pointer transition-all ${formData.paymentMode === 'advance' ? 'border-[#00C9B7] bg-[#E6FAF8] shadow-xs' : 'border-gray-200 hover:border-gray-300 bg-white'}`}>
-                      <input type="radio" name="paymentMode" value="advance" checked={formData.paymentMode === 'advance'} onChange={handleChange} className="sr-only" />
-                      <span className="font-bold text-[#111] text-sm">Token Advance (20%)</span>
-                      <span className="text-[11px] text-gray-500 mt-0.5">Reserve seat now, pay rest later</span>
-                      <span className="text-base font-black text-emerald-700 mt-2">₹{Math.round(((trip?.price || 0) * formData.trekkers) * 0.20).toLocaleString()}</span>
-                    </label>
-
-                    <label className={`flex flex-col p-4 border-2 rounded-2xl cursor-pointer transition-all ${formData.paymentMode === 'later' ? 'border-[#00C9B7] bg-[#E6FAF8] shadow-xs' : 'border-gray-200 hover:border-gray-300 bg-white'}`}>
-                      <input type="radio" name="paymentMode" value="later" checked={formData.paymentMode === 'later'} onChange={handleChange} className="sr-only" />
-                      <span className="font-bold text-[#111] text-sm">Pay at Pickup / Cash</span>
-                      <span className="text-[11px] text-gray-500 mt-0.5">Pay 100% on trip departure</span>
-                      <span className="text-base font-black text-gray-500 mt-2">₹0 Online</span>
-                    </label>
-                  </div>
+                  <label className={labelClass}>Boarding / Pickup Point</label>
+                  {trip?.pickupLocations && trip.pickupLocations.length > 0 ? (
+                    <select
+                      name="pickupPoint"
+                      value={formData.pickupPoint}
+                      onChange={handleChange}
+                      className={inputClass}
+                    >
+                      <option value="">-- Select Pickup Point --</option>
+                      {trip.pickupLocations.map((loc, idx) => (
+                        <option key={idx} value={loc.location || loc}>{loc.location || loc} {loc.time ? `(${loc.time})` : ''}</option>
+                      ))}
+                    </select>
+                  ) : (
+                    <input
+                      type="text"
+                      name="pickupPoint"
+                      value={formData.pickupPoint}
+                      onChange={handleChange}
+                      className={inputClass}
+                      placeholder="e.g. Railway Station / Bus Stand"
+                    />
+                  )}
                 </div>
-
-                {/* Dynamic Price Calculation Summary Box */}
-                {(() => {
-                  const unitPrice = Number(trip?.price) || 0;
-                  const trekkers = Number(formData.trekkers) || 1;
-                  const total = unitPrice * trekkers;
-                  const payNow = formData.paymentMode === 'full' 
-                    ? total 
-                    : (formData.paymentMode === 'advance' ? Math.round(total * 0.20) : 0);
-                  const payLater = total - payNow;
-
-                  return (
-                    <div className="bg-gray-50 border border-gray-200/80 rounded-2xl p-4 text-xs space-y-2">
-                      <div className="flex justify-between items-center text-gray-600">
-                        <span>Ticket Rate:</span>
-                        <span className="font-bold text-gray-900">₹{unitPrice.toLocaleString()} &times; {trekkers} Pax</span>
-                      </div>
-                      <div className="flex justify-between items-center text-gray-600">
-                        <span>Total Package Value:</span>
-                        <span className="font-bold text-gray-900">₹{total.toLocaleString()}</span>
-                      </div>
-                      <div className="flex justify-between items-center text-emerald-700 font-extrabold pt-2 border-t border-gray-200">
-                        <span>Payable Amount Now:</span>
-                        <span className="text-sm text-emerald-700">₹{payNow.toLocaleString()}</span>
-                      </div>
-                      <div className="flex justify-between items-center text-gray-500 text-[11px]">
-                        <span>Remaining Balance Due at Pickup:</span>
-                        <span className="font-bold text-rose-600">₹{payLater.toLocaleString()}</span>
-                      </div>
-                    </div>
-                  );
-                })()}
               </div>
 
+              {/* Live Seat Availability Banner */}
+              {seatInfo && (
+                <div className="mt-3 flex items-center justify-between bg-emerald-50/70 border border-emerald-200/80 p-3 rounded-2xl text-xs">
+                  <span className="text-emerald-900 font-bold flex items-center gap-1.5">
+                    <Users size={14} className="text-emerald-600" /> Live Seat Availability Status:
+                  </span>
+                  <span className={`font-extrabold px-3 py-1 rounded-full text-xs border ${
+                    seatInfo.isFullyBooked 
+                      ? 'bg-rose-50 text-rose-700 border-rose-200 font-black' 
+                      : seatInfo.remainingSeats <= 5
+                      ? 'bg-amber-50 text-amber-800 border-amber-200'
+                      : 'bg-emerald-100 text-emerald-800 border-emerald-300'
+                  }`}>
+                    {seatInfo.isFullyBooked ? (
+                      '🔴 FULLY BOOKED (0 Seats Left)'
+                    ) : (
+                      `🔥 ${seatInfo.remainingSeats} Seats Available (${seatInfo.bookedPassengers}/${seatInfo.totalCapacity} Booked)`
+                    )}
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {/* 4. Passengers Roster Section */}
+            <div className="pt-4 border-t border-gray-100">
+              <div className="flex justify-between items-center mb-3">
+                <h3 className="text-xs font-extrabold uppercase tracking-wider text-[#00C9B7] flex items-center gap-1.5">
+                  <Users size={15} /> 4. Passengers Roster ({formData.trekkers} Trekkers)
+                </h3>
+
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold text-gray-500">Count:</span>
+                  <select
+                    value={formData.trekkers}
+                    onChange={(e) => handleTrekkersCountChange(e.target.value)}
+                    className="bg-gray-50 border border-gray-300 rounded-lg px-2 py-1 text-xs font-bold text-gray-900"
+                  >
+                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20].map(n => (
+                      <option key={n} value={n}>{n} Pax</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                {passengers.map((p, idx) => (
+                  <div key={idx} className="bg-gray-50 border border-gray-200/80 rounded-2xl p-3 text-xs space-y-2">
+                    <span className="font-bold text-gray-700 text-[11px] uppercase tracking-wider">
+                      Passenger #{idx + 1} {idx === 0 ? '(Primary Traveler)' : ''}
+                    </span>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                      <input
+                        type="text"
+                        placeholder="Passenger Name"
+                        value={p.name}
+                        onChange={(e) => handlePassengerChange(idx, 'name', e.target.value)}
+                        className="bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs text-gray-900"
+                        required
+                      />
+
+                      <input
+                        type="number"
+                        placeholder="Age"
+                        value={p.age}
+                        onChange={(e) => handlePassengerChange(idx, 'age', e.target.value)}
+                        className="bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs text-gray-900"
+                      />
+
+                      <select
+                        value={p.gender}
+                        onChange={(e) => handlePassengerChange(idx, 'gender', e.target.value)}
+                        className="bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs text-gray-900 font-bold"
+                      >
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                      </select>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* 5. Payment Options & Dynamic Calculation Breakdown */}
+            <div className="pt-4 border-t border-gray-100 space-y-4">
+              <div>
+                <h3 className="text-xs font-extrabold uppercase tracking-wider text-[#00C9B7] mb-2 flex items-center gap-1.5">
+                  <CreditCard size={15} /> 5. Select Payment Option
+                </h3>
+                <p className="text-xs text-gray-500 mb-3">Choose how you want to pay for your trip reservation</p>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <label className={`flex flex-col p-4 border-2 rounded-2xl cursor-pointer transition-all ${formData.paymentMode === 'full' ? 'border-[#00C9B7] bg-[#E6FAF8] shadow-xs' : 'border-gray-200 hover:border-gray-300 bg-white'}`}>
+                    <input type="radio" name="paymentMode" value="full" checked={formData.paymentMode === 'full'} onChange={handleChange} className="sr-only" />
+                    <span className="font-bold text-[#111] text-sm">Full 100% Payment</span>
+                    <span className="text-[11px] text-gray-500 mt-0.5">Pay entire ticket price now</span>
+                    <span className="text-base font-black text-[#00C9B7] mt-2">₹{((trip?.price || 0) * formData.trekkers).toLocaleString()}</span>
+                  </label>
+
+                  <label className={`flex flex-col p-4 border-2 rounded-2xl cursor-pointer transition-all ${formData.paymentMode === 'advance' ? 'border-[#00C9B7] bg-[#E6FAF8] shadow-xs' : 'border-gray-200 hover:border-gray-300 bg-white'}`}>
+                    <input type="radio" name="paymentMode" value="advance" checked={formData.paymentMode === 'advance'} onChange={handleChange} className="sr-only" />
+                    <span className="font-bold text-[#111] text-sm">Token Advance (20%)</span>
+                    <span className="text-[11px] text-gray-500 mt-0.5">Reserve seat now, pay rest later</span>
+                    <span className="text-base font-black text-emerald-700 mt-2">₹{Math.round(((trip?.price || 0) * formData.trekkers) * 0.20).toLocaleString()}</span>
+                  </label>
+
+                  <label className={`flex flex-col p-4 border-2 rounded-2xl cursor-pointer transition-all ${formData.paymentMode === 'later' ? 'border-[#00C9B7] bg-[#E6FAF8] shadow-xs' : 'border-gray-200 hover:border-gray-300 bg-white'}`}>
+                    <input type="radio" name="paymentMode" value="later" checked={formData.paymentMode === 'later'} onChange={handleChange} className="sr-only" />
+                    <span className="font-bold text-[#111] text-sm">Pay at Pickup / Cash</span>
+                    <span className="text-[11px] text-gray-500 mt-0.5">Pay 100% on trip departure</span>
+                    <span className="text-base font-black text-gray-500 mt-2">₹0 Online</span>
+                  </label>
+                </div>
+              </div>
+
+              {/* Dynamic Price Calculation Summary Box */}
+              {(() => {
+                const unitPrice = Number(trip?.price) || 0;
+                const trekkers = Number(formData.trekkers) || 1;
+                const total = unitPrice * trekkers;
+                const payNow = formData.paymentMode === 'full' 
+                  ? total 
+                  : (formData.paymentMode === 'advance' ? Math.round(total * 0.20) : 0);
+                const payLater = total - payNow;
+
+                return (
+                  <div className="bg-gray-50 border border-gray-200/80 rounded-2xl p-4 text-xs space-y-2">
+                    <div className="flex justify-between items-center text-gray-600">
+                      <span>Ticket Rate:</span>
+                      <span className="font-bold text-gray-900">₹{unitPrice.toLocaleString()} &times; {trekkers} Pax</span>
+                    </div>
+                    <div className="flex justify-between items-center text-gray-600">
+                      <span>Total Package Value:</span>
+                      <span className="font-bold text-gray-900">₹{total.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-emerald-700 font-extrabold pt-2 border-t border-gray-200">
+                      <span>Payable Amount Now:</span>
+                      <span className="text-sm text-emerald-700">₹{payNow.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-gray-500 text-[11px]">
+                      <span>Remaining Balance Due at Pickup:</span>
+                      <span className="font-bold text-rose-600">₹{payLater.toLocaleString()}</span>
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
 
             <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-6 pt-6 border-t border-[#f0f0f0]">
               <p className="text-[#717171] text-xs text-center sm:text-left leading-relaxed">
-                By booking, you agree to our <a href="#" className="text-[#111] font-bold hover:underline">Terms of Service</a> &amp; <a href="#" className="text-[#111] font-bold hover:underline">Privacy Policy</a>.
+                By booking, you agree to our Terms of Service &amp; Privacy Policy.
               </p>
 
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="group w-full sm:w-auto flex items-center justify-center gap-3 bg-[#111] text-white font-bold py-4 px-12 rounded-full hover:bg-[#00C9B7] hover:text-[#111] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0 shadow-lg hover:shadow-xl"
+                className="group w-full sm:w-auto flex items-center justify-center gap-3 bg-[#111] text-white font-bold py-3.5 px-10 rounded-full hover:bg-[#00C9B7] hover:text-[#111] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0 shadow-lg cursor-pointer"
               >
-                {isSubmitting ? 'Submitting...' : 'Confirm Booking'}
+                {isSubmitting ? 'Processing...' : 'Confirm & Reserve Trip'}
                 {!isSubmitting && <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />}
               </button>
             </div>
