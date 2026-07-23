@@ -228,8 +228,8 @@ const Home = () => {
         }
       `}</style>
 
-      {/* Hero Section - Compact Viewport Fit */}
-      <div className="relative w-full min-h-[520px] h-[78vh] lg:h-[84vh] max-h-[750px] bg-[#0d1117] overflow-hidden flex items-center justify-center pt-16 select-none">
+      {/* Hero Section - Full Bleed Viewport Fit */}
+      <div className="relative w-full min-h-[520px] h-[80vh] lg:h-[86vh] max-h-[760px] bg-[#0d1117] overflow-hidden flex items-center justify-center pt-16 md:pt-20 select-none">
         {/* Background Images Slider - Seamless Cross-Fade + Ken Burns Effect */}
         <AnimatePresence initial={false}>
           <motion.img

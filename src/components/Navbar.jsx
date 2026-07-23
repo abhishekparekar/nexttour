@@ -122,8 +122,45 @@ const Navbar = () => {
     }
   };
 
+  const [isVisible, setIsVisible] = useState(true);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const lastScrollY = useRef(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+
+      if (currentScrollY < 20) {
+        setIsVisible(true);
+        setIsScrolled(false);
+      } else {
+        setIsScrolled(true);
+        if (currentScrollY > lastScrollY.current && currentScrollY > 80) {
+          setIsVisible(false); // Hide on scroll down
+        } else if (currentScrollY < lastScrollY.current) {
+          setIsVisible(true);  // Show on scroll up
+        }
+      }
+
+      lastScrollY.current = currentScrollY;
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const shouldShow = isVisible || isMobileMenuOpen || isSearchFocused;
+
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-b from-black/85 via-black/40 to-transparent backdrop-blur-md border-b border-white/10 shadow-md transition-all duration-300">
+    <header 
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out transform ${
+        shouldShow ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'
+      } ${
+        isScrolled 
+          ? 'bg-black/90 backdrop-blur-md border-b border-white/10 shadow-lg' 
+          : 'bg-gradient-to-b from-black/90 via-black/40 to-transparent'
+      }`}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 md:h-20 gap-3 sm:gap-6">
           
