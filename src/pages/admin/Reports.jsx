@@ -281,96 +281,86 @@ const AdminReports = () => {
         </div>
 
         {/* ── Filter Toolbar ── */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
-          <div className="flex flex-wrap items-center gap-3">
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 space-y-3">
+          {/* Search - full width always */}
+          <div className="relative w-full">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search trip name..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-9 pr-4 py-2.5 text-xs text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#00C9B7]"
+            />
+          </div>
 
-            {/* Search */}
-            <div className="relative flex-1 min-w-[200px]">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search trip name..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-9 pr-4 py-2 text-xs text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#00C9B7]"
-              />
-            </div>
-
+          {/* Dropdowns grid - 2 cols on mobile, 4 on desktop */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
             {/* Trip Filter */}
-            <div className="flex items-center gap-1.5">
-              <MapPin size={13} className="text-[#00C9B7]" />
-              <select
-                value={selectedTrip}
-                onChange={(e) => { setSelectedTrip(e.target.value); setSelectedDate('all'); }}
-                className="bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold text-gray-900 focus:outline-none focus:border-[#00C9B7] cursor-pointer"
-              >
-                <option value="all">All Trips ({uniqueTripTitles.length})</option>
-                {uniqueTripTitles.map(t => (
-                  <option key={t} value={t}>{t}</option>
-                ))}
-              </select>
-            </div>
+            <select
+              value={selectedTrip}
+              onChange={(e) => { setSelectedTrip(e.target.value); setSelectedDate('all'); }}
+              className="bg-gray-50 border border-gray-200 rounded-xl px-2 py-2 text-xs font-bold text-gray-900 focus:outline-none focus:border-[#00C9B7] cursor-pointer w-full"
+            >
+              <option value="all">All Trips ({uniqueTripTitles.length})</option>
+              {uniqueTripTitles.map(t => (
+                <option key={t} value={t}>{t}</option>
+              ))}
+            </select>
 
             {/* Departure Date Filter (only if trip selected) */}
-            {selectedTrip !== 'all' && uniqueDates.length > 0 && (
-              <div className="flex items-center gap-1.5">
-                <Calendar size={13} className="text-sky-500" />
-                <select
-                  value={selectedDate}
-                  onChange={(e) => setSelectedDate(e.target.value)}
-                  className="bg-sky-50 border border-sky-300 text-sky-900 rounded-xl px-3 py-2 text-xs font-bold focus:outline-none focus:border-[#00C9B7] cursor-pointer"
-                >
-                  <option value="all">All Departure Dates</option>
-                  {uniqueDates.map(d => (
-                    <option key={d} value={d}>{d}</option>
-                  ))}
-                </select>
-              </div>
-            )}
+            <select
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+              className="bg-sky-50 border border-sky-300 text-sky-900 rounded-xl px-2 py-2 text-xs font-bold focus:outline-none focus:border-[#00C9B7] cursor-pointer w-full"
+              disabled={selectedTrip === 'all' || uniqueDates.length === 0}
+            >
+              <option value="all">{selectedTrip === 'all' ? 'Select Trip First' : 'All Departure Dates'}</option>
+              {uniqueDates.map(d => (
+                <option key={d} value={d}>{d}</option>
+              ))}
+            </select>
 
             {/* Month Filter */}
-            <div className="flex items-center gap-1.5">
-              <BarChart2 size={13} className="text-violet-500" />
-              <select
-                value={selectedMonth}
-                onChange={(e) => setSelectedMonth(e.target.value)}
-                className="bg-violet-50 border border-violet-300 text-violet-900 rounded-xl px-3 py-2 text-xs font-bold focus:outline-none focus:border-[#00C9B7] cursor-pointer"
-              >
-                <option value="all">All Months</option>
-                {uniqueMonths.map(mk => (
-                  <option key={mk} value={mk}>{monthLabel(mk)}</option>
-                ))}
-              </select>
-            </div>
+            <select
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(e.target.value)}
+              className="bg-violet-50 border border-violet-300 text-violet-900 rounded-xl px-2 py-2 text-xs font-bold focus:outline-none focus:border-[#00C9B7] cursor-pointer w-full"
+            >
+              <option value="all">All Months</option>
+              {uniqueMonths.map(mk => (
+                <option key={mk} value={mk}>{monthLabel(mk)}</option>
+              ))}
+            </select>
 
             {/* Clear Filters */}
-            {(selectedTrip !== 'all' || selectedDate !== 'all' || selectedMonth !== 'all' || searchTerm) && (
-              <button
-                onClick={() => { setSelectedTrip('all'); setSelectedDate('all'); setSelectedMonth('all'); setSearchTerm(''); }}
-                className="flex items-center gap-1 text-xs text-rose-600 font-bold border border-rose-200 bg-rose-50 rounded-xl px-2 py-1.5 hover:bg-rose-100 cursor-pointer"
-              >
-                <X size={12} /> Clear
-              </button>
-            )}
+            <button
+              onClick={() => { setSelectedTrip('all'); setSelectedDate('all'); setSelectedMonth('all'); setSearchTerm(''); }}
+              className={`flex items-center justify-center gap-1 text-xs font-bold border rounded-xl px-2 py-2 cursor-pointer transition-all ${
+                (selectedTrip !== 'all' || selectedDate !== 'all' || selectedMonth !== 'all' || searchTerm)
+                  ? 'text-rose-600 border-rose-200 bg-rose-50 hover:bg-rose-100'
+                  : 'text-gray-400 border-gray-200 bg-gray-50 cursor-not-allowed'
+              }`}
+            >
+              <X size={12} /> Clear Filters
+            </button>
           </div>
         </div>
 
         {/* ── Tab Switcher ── */}
-        <div className="flex items-center gap-3">
-          <div className="bg-white border border-gray-100 rounded-xl p-1 flex gap-1 shadow-sm">
-            <button
-              onClick={() => setActiveTab('trip')}
-              className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${activeTab === 'trip' ? 'bg-[#00C9B7] text-white' : 'text-gray-600 hover:bg-gray-50'}`}
-            >
-              <MapPin size={13} /> Trip-wise P&L ({tripRows.length})
-            </button>
-            <button
-              onClick={() => setActiveTab('month')}
-              className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${activeTab === 'month' ? 'bg-[#00C9B7] text-white' : 'text-gray-600 hover:bg-gray-50'}`}
-            >
-              <Calendar size={13} /> Month-wise P&L ({monthRows.length})
-            </button>
-          </div>
+        <div className="bg-white border border-gray-100 rounded-xl p-1 flex gap-1 shadow-sm w-full sm:w-fit">
+          <button
+            onClick={() => setActiveTab('trip')}
+            className={`flex-1 sm:flex-none px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${activeTab === 'trip' ? 'bg-[#00C9B7] text-white' : 'text-gray-600 hover:bg-gray-50'}`}
+          >
+            <MapPin size={13} /> Trip-wise P&L ({tripRows.length})
+          </button>
+          <button
+            onClick={() => setActiveTab('month')}
+            className={`flex-1 sm:flex-none px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${activeTab === 'month' ? 'bg-[#00C9B7] text-white' : 'text-gray-600 hover:bg-gray-50'}`}
+          >
+            <Calendar size={13} /> Month-wise P&L ({monthRows.length})
+          </button>
         </div>
 
         {/* ================================================================

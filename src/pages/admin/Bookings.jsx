@@ -168,79 +168,79 @@ const AdminBookings = () => {
       <div className="p-4 space-y-4">
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
           {/* Filters Bar */}
-          <div className="p-4 border-b border-gray-100 bg-white">
-            <div className="flex flex-col md:flex-row gap-3">
-              <div className="relative flex-1">
-                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <input 
-                  type="text" 
-                  placeholder="Search by ID, customer name, phone, email, or trip package..." 
-                  value={searchTerm} 
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full bg-white border border-gray-300 rounded-xl pl-10 pr-4 py-2 text-xs text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#00C9B7]" 
-                />
-              </div>
-
-              <div className="flex flex-wrap items-center gap-2">
-                <select 
-                  value={tripFilter} 
-                  onChange={(e) => setTripFilter(e.target.value)}
-                  className="bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs font-bold text-gray-900 focus:outline-none focus:border-[#00C9B7] cursor-pointer"
-                >
-                  <option value="all">All Trip Packages ({uniqueTripTitles.length})</option>
-                  {uniqueTripTitles.map(t => (
-                    <option key={t} value={t}>{t}</option>
-                  ))}
-                </select>
-
-                <select 
-                  value={monthFilter} 
-                  onChange={(e) => setMonthFilter(e.target.value)}
-                  className="bg-sky-50 border border-sky-300 rounded-xl px-3 py-2 text-xs font-bold text-sky-900 focus:outline-none focus:border-[#00C9B7] cursor-pointer"
-                >
-                  <option value="all">Date: All Time</option>
-                  <option value="this_month">Date: This Month</option>
-                  <option value="last_month">Date: Last Month</option>
-                </select>
-
-                <select 
-                  value={statusFilter} 
-                  onChange={(e) => setStatusFilter(e.target.value)}
-                  className="bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs text-gray-900 focus:outline-none focus:border-[#00C9B7] cursor-pointer"
-                >
-                  <option value="all">All Status</option>
-                  <option value="pending">Pending</option>
-                  <option value="confirmed">Confirmed</option>
-                  <option value="completed">Completed</option>
-                  <option value="cancelled">Cancelled</option>
-                </select>
-
-                <select 
-                  value={sourceFilter} 
-                  onChange={(e) => setSourceFilter(e.target.value)}
-                  className="bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs text-gray-900 focus:outline-none focus:border-[#00C9B7] cursor-pointer"
-                >
-                  <option value="all">All Channels</option>
-                  <option value="office">Office Walk-In</option>
-                  <option value="web">Online Website</option>
-                </select>
-              </div>
-
-              {/* Active filter summary + Clear button */}
-              {hasFilters && (
-                <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-                  <span className="text-[11px] text-gray-500">
-                    Showing <strong className="text-gray-900">{filteredBookings.length}</strong> of {bookings.length} bookings
-                  </span>
-                  <button
-                    onClick={() => { setSearchTerm(''); setStatusFilter('all'); setSourceFilter('all'); setTripFilter('all'); setMonthFilter('all'); }}
-                    className="text-[11px] font-bold text-rose-600 border border-rose-200 bg-rose-50 px-2.5 py-1 rounded-xl flex items-center gap-1 hover:bg-rose-100 cursor-pointer"
-                  >
-                    <X size={11} /> Clear All Filters
-                  </button>
-                </div>
-              )}
+          <div className="p-4 border-b border-gray-100 bg-white space-y-3">
+            {/* Row 1: Search */}
+            <div className="relative w-full">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <input 
+                type="text" 
+                placeholder="Search name, phone, booking ID, trip..." 
+                value={searchTerm} 
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full bg-white border border-gray-300 rounded-xl pl-10 pr-4 py-2.5 text-xs text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#00C9B7]" 
+              />
             </div>
+
+            {/* Row 2: Dropdowns */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <select 
+                value={tripFilter} 
+                onChange={(e) => setTripFilter(e.target.value)}
+                className="bg-white border border-gray-300 rounded-xl px-2 py-2 text-xs font-bold text-gray-900 focus:outline-none focus:border-[#00C9B7] cursor-pointer w-full truncate"
+              >
+                <option value="all">All Trips ({uniqueTripTitles.length})</option>
+                {uniqueTripTitles.map(t => (
+                  <option key={t} value={t}>{t}</option>
+                ))}
+              </select>
+
+              <select 
+                value={monthFilter} 
+                onChange={(e) => setMonthFilter(e.target.value)}
+                className="bg-sky-50 border border-sky-300 rounded-xl px-2 py-2 text-xs font-bold text-sky-900 focus:outline-none focus:border-[#00C9B7] cursor-pointer w-full"
+              >
+                <option value="all">All Months</option>
+                <option value="this_month">This Month</option>
+                <option value="last_month">Last Month</option>
+              </select>
+
+              <select 
+                value={statusFilter} 
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="bg-white border border-gray-300 rounded-xl px-2 py-2 text-xs text-gray-900 focus:outline-none focus:border-[#00C9B7] cursor-pointer w-full"
+              >
+                <option value="all">All Status</option>
+                <option value="pending">Pending</option>
+                <option value="confirmed">Confirmed</option>
+                <option value="completed">Completed</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+
+              <select 
+                value={sourceFilter} 
+                onChange={(e) => setSourceFilter(e.target.value)}
+                className="bg-white border border-gray-300 rounded-xl px-2 py-2 text-xs text-gray-900 focus:outline-none focus:border-[#00C9B7] cursor-pointer w-full"
+              >
+                <option value="all">All Channels</option>
+                <option value="office">Office Walk-In</option>
+                <option value="web">Online Website</option>
+              </select>
+            </div>
+
+            {/* Row 3: Active filter summary + Clear button */}
+            {hasFilters && (
+              <div className="flex items-center justify-between pt-1 border-t border-gray-100">
+                <span className="text-[11px] text-gray-500">
+                  Showing <strong className="text-gray-900">{filteredBookings.length}</strong> of {bookings.length} bookings
+                </span>
+                <button
+                  onClick={() => { setSearchTerm(''); setStatusFilter('all'); setSourceFilter('all'); setTripFilter('all'); setMonthFilter('all'); }}
+                  className="text-[11px] font-bold text-rose-600 border border-rose-200 bg-rose-50 px-2.5 py-1 rounded-xl flex items-center gap-1 hover:bg-rose-100 cursor-pointer"
+                >
+                  <X size={11} /> Clear Filters
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Desktop Table View */}
