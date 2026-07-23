@@ -256,12 +256,18 @@ export const getBookings = async () => {
 export const addBooking = async (data) => {
   console.log('Adding booking:', data);
   try {
-    const result = await addDoc(collection(db, collections.BOOKINGS), {
+    // Use custom id (e.g. NT-OFF-xxxx / NT-WEB-xxxx) as the Firestore document ID
+    // so updateBookingPayments / updateBookingStatus can find the doc by the same id
+    const bookingId = data.id || `NT-${Date.now()}`;
+    const docRef = doc(db, collections.BOOKINGS, bookingId);
+
+    await setDoc(docRef, {
       ...data,
+      id: bookingId,
       status: data.status || 'pending',
-      createdAt: new Date().toISOString()
+      createdAt: data.createdAt || new Date().toISOString()
     });
-    
+
     // Auto save customer details in customer database
     if (data.phone && data.name) {
       await saveCustomer(data.phone, {
@@ -272,9 +278,9 @@ export const addBooking = async (data) => {
         updatedAt: new Date().toISOString()
       });
     }
-    
-    console.log('Booking added with ID:', result.id);
-    return result;
+
+    console.log('Booking added with ID:', bookingId);
+    return { id: bookingId };
   } catch (error) {
     console.error('Error adding booking:', error);
     throw error;
