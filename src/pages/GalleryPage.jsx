@@ -29,24 +29,25 @@ const GalleryPage = () => {
 
   return (
     <div className="min-h-screen bg-[#F8F9FB]">
-      {/* Hero Banner */}
-      <div className="relative h-[32vh] min-h-[240px] w-full overflow-hidden rounded-b-3xl shadow-md">
-        <img 
-          src="https://images.unsplash.com/photo-1522199755839-a2bacb67c546?q=80&w=2000" 
-          alt="Gallery Banner" 
-          className="absolute inset-0 w-full h-full object-cover"
+      {/* Hero Banner - Full Bleed Navbar Alignment */}
+      <div className="relative h-[36vh] sm:h-[40vh] min-h-[280px] w-full overflow-hidden shadow-md bg-[#0d1117] flex items-center justify-center pt-16 md:pt-20 select-none">
+        <img
+          src="https://images.unsplash.com/photo-1522199755839-a2bacb67c546?q=80&w=2000"
+          alt="Gallery Banner"
+          className="absolute inset-0 w-full h-full object-cover object-center"
+          onError={(e) => { e.target.onerror = null; e.target.src = '/herobg1.png'; }}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/50 to-black/20" />
-        
-        <div className="absolute inset-0 flex flex-col items-center justify-center px-4">
-          <motion.div 
+        <div className="absolute inset-0 bg-gradient-to-b from-black/85 via-black/45 to-black/85 pointer-events-none" />
+
+        <div className="relative z-10 flex flex-col items-center justify-center px-4 text-center">
+          <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.1, ease: 'easeOut' }}
-            className="text-center"
+            className="text-center max-w-3xl"
           >
-            <h1 className="text-3xl md:text-5xl font-black text-white mb-2 tracking-tight drop-shadow-md">Captured Moments</h1>
-            <p className="text-base md:text-lg text-gray-200 max-w-2xl mx-auto font-medium drop-shadow-sm">
+            <h1 className="text-3xl md:text-5xl lg:text-6xl font-black text-white mb-3 tracking-tight drop-shadow-md">Captured Moments</h1>
+            <p className="text-sm md:text-base lg:text-lg text-gray-200 font-medium drop-shadow-sm leading-relaxed">
               Explore the raw beauty of our expeditions, unfiltered and unforgettable.
             </p>
           </motion.div>
@@ -56,7 +57,7 @@ const GalleryPage = () => {
       {/* Grid Layout */}
       <div className="bg-[#f8f9fa] w-full pt-12 pb-24">
         <div className="max-w-[1400px] mx-auto px-4 lg:px-8">
-          
+
           {images.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-32 bg-white rounded-3xl border border-[#ebebeb] shadow-sm">
               <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-4">
@@ -66,7 +67,7 @@ const GalleryPage = () => {
               <p className="text-[#555]">We are still gathering our best shots.</p>
             </div>
           ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {images.map((img, i) => (
                 <motion.div
                   key={img.id}
@@ -85,7 +86,7 @@ const GalleryPage = () => {
                   />
                   {/* Subtle Gradient Overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  
+
                   {/* Clean Title Overlay */}
                   <div className="absolute inset-x-0 bottom-0 p-5 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 ease-out flex items-end justify-between">
                     <h3 className="text-white font-bold text-lg drop-shadow-md leading-tight pr-4">
@@ -113,9 +114,9 @@ const GalleryPage = () => {
             transition={{ duration: 0.3 }}
           >
             {/* Blurry Backdrop */}
-            <div 
-              className="absolute inset-0 bg-black/90 backdrop-blur-xl cursor-pointer" 
-              onClick={() => setLightboxOpen(false)} 
+            <div
+              className="absolute inset-0 bg-black/90 backdrop-blur-xl cursor-pointer"
+              onClick={() => setLightboxOpen(false)}
             />
 
             {/* Top Bar */}
@@ -123,7 +124,7 @@ const GalleryPage = () => {
               <div className="text-white/80 font-medium tracking-widest text-xs uppercase px-4 py-2 bg-white/10 rounded-full backdrop-blur-md">
                 {lightboxIndex + 1} <span className="mx-2 opacity-50">/</span> {images.length}
               </div>
-              <button 
+              <button
                 className="w-12 h-12 bg-white/10 hover:bg-[#00C9B7] hover:text-[#111] border border-white/20 rounded-full flex items-center justify-center text-white transition-all duration-300 pointer-events-auto"
                 onClick={() => setLightboxOpen(false)}
               >
@@ -134,14 +135,14 @@ const GalleryPage = () => {
             {/* Navigation Buttons */}
             {images.length > 1 && (
               <>
-                <button 
-                  className="absolute left-6 top-1/2 -translate-y-1/2 w-14 h-14 bg-white/5 hover:bg-white/20 border border-white/10 rounded-full flex items-center justify-center text-white backdrop-blur-md transition-all duration-300 z-10 hidden md:flex" 
+                <button
+                  className="absolute left-6 top-1/2 -translate-y-1/2 w-14 h-14 bg-white/5 hover:bg-white/20 border border-white/10 rounded-full flex items-center justify-center text-white backdrop-blur-md transition-all duration-300 z-10 hidden md:flex"
                   onClick={prev}
                 >
                   <ChevronLeft size={30} strokeWidth={1.5} />
                 </button>
-                <button 
-                  className="absolute right-6 top-1/2 -translate-y-1/2 w-14 h-14 bg-white/5 hover:bg-white/20 border border-white/10 rounded-full flex items-center justify-center text-white backdrop-blur-md transition-all duration-300 z-10 hidden md:flex" 
+                <button
+                  className="absolute right-6 top-1/2 -translate-y-1/2 w-14 h-14 bg-white/5 hover:bg-white/20 border border-white/10 rounded-full flex items-center justify-center text-white backdrop-blur-md transition-all duration-300 z-10 hidden md:flex"
                   onClick={next}
                 >
                   <ChevronRight size={30} strokeWidth={1.5} />
@@ -162,9 +163,9 @@ const GalleryPage = () => {
                 exit={{ opacity: 0, scale: 0.95, filter: 'blur(10px)' }}
                 transition={{ duration: 0.4, ease: "easeOut" }}
               />
-              
+
               {/* Image Title */}
-              <motion.div 
+              <motion.div
                 key={`title-${lightboxIndex}`}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -176,7 +177,7 @@ const GalleryPage = () => {
                 </h3>
               </motion.div>
             </div>
-            
+
             {/* Mobile Nav Tap Zones */}
             <div className="absolute inset-y-0 left-0 w-1/3 md:hidden z-0" onClick={prev} />
             <div className="absolute inset-y-0 right-0 w-1/3 md:hidden z-0" onClick={next} />

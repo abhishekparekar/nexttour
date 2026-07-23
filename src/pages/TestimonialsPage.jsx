@@ -21,24 +21,25 @@ const TestimonialsPage = () => {
 
   return (
     <div className="min-h-screen bg-[#F8F9FB]">
-      {/* Hero Banner */}
-      <div className="relative h-[32vh] min-h-[240px] w-full overflow-hidden rounded-b-3xl shadow-md">
-        <img 
-          src="https://images.unsplash.com/photo-1522199755839-a2bacb67c546?q=80&w=2000" 
-          alt="Testimonials Banner" 
-          className="absolute inset-0 w-full h-full object-cover"
+      {/* Hero Banner - Full Bleed Navbar Alignment */}
+      <div className="relative h-[36vh] sm:h-[40vh] min-h-[280px] w-full overflow-hidden shadow-md bg-[#0d1117] flex items-center justify-center pt-16 md:pt-20 select-none">
+        <img
+          src="https://images.unsplash.com/photo-1522199755839-a2bacb67c546?q=80&w=2000"
+          alt="Testimonials Banner"
+          className="absolute inset-0 w-full h-full object-cover object-center"
+          onError={(e) => { e.target.onerror = null; e.target.src = '/herobg2.jpg'; }}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/50 to-black/20" />
-        
-        <div className="absolute inset-0 flex flex-col items-center justify-center px-4">
-          <motion.div 
+        <div className="absolute inset-0 bg-gradient-to-b from-black/85 via-black/45 to-black/85 pointer-events-none" />
+
+        <div className="relative z-10 flex flex-col items-center justify-center px-4 text-center">
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: 'easeOut' }}
-            className="text-center"
+            className="text-center max-w-3xl"
           >
-            <h1 className="text-3xl md:text-5xl font-black text-white mb-2 tracking-tight drop-shadow-md">Trekker Stories</h1>
-            <p className="text-base md:text-lg text-gray-200 max-w-2xl mx-auto font-medium drop-shadow-sm">
+            <h1 className="text-3xl md:text-5xl lg:text-6xl font-black text-white mb-3 tracking-tight drop-shadow-md">Trekker Stories</h1>
+            <p className="text-sm md:text-base lg:text-lg text-gray-200 font-medium drop-shadow-sm leading-relaxed">
               Real stories from real adventurers who traveled with NextTour
             </p>
           </motion.div>
@@ -47,7 +48,7 @@ const TestimonialsPage = () => {
 
       <div className="max-w-[1200px] mx-auto px-4 lg:px-8 py-6 lg:py-12">
         {active.length === 0 ? (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }}
             className="text-center py-24 bg-white rounded-3xl border border-[#e5e5e5] shadow-sm max-w-2xl mx-auto"
           >
@@ -72,11 +73,11 @@ const TestimonialsPage = () => {
                 >
                   {/* Decorative background element */}
                   <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-[#00C9B7]/10 to-transparent rounded-tr-3xl rounded-bl-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  
+
                   <div className="w-12 h-12 rounded-2xl bg-[#f8f9fa] group-hover:bg-[#00C9B7] flex items-center justify-center mb-6 transition-colors duration-300">
                     <Quote className="w-5 h-5 text-[#00C9B7] group-hover:text-white transition-colors duration-300" fill="currentColor" />
                   </div>
-                  
+
                   <div className="flex items-center gap-1 mb-4">
                     {[...Array(5)].map((_, j) => (
                       <Star key={j} size={14} className={j < (t.rating || 5) ? 'text-[#00C9B7] fill-[#00C9B7]' : 'text-[#e5e5e5] fill-[#e5e5e5]'} />
@@ -86,7 +87,7 @@ const TestimonialsPage = () => {
                   <p className="text-[#444] leading-relaxed mb-8 flex-grow relative z-10 text-[15px]">
                     "{t.text || t.message || t.content || 'Great experience!'}"
                   </p>
-                  
+
                   <div className="flex items-center gap-4 pt-5 border-t border-[#f0f0f0]">
                     {t.image || t.avatar ? (
                       <img src={t.image || t.avatar} alt={t.name} className="w-12 h-12 rounded-full object-cover border-2 border-[#f8f9fa]" loading="lazy" />

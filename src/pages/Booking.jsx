@@ -15,7 +15,7 @@ const isSaturday = (dateStr) => {
 const Booking = () => {
   const { tripId } = useParams();
   const [searchParams] = useSearchParams();
-  
+
   const [trip, setTrip] = useState(null);
   const [availableBatches, setAvailableBatches] = useState([]);
   const [useCustomDate, setUseCustomDate] = useState(false);
@@ -49,7 +49,7 @@ const Booking = () => {
             const now = new Date();
             now.setHours(0, 0, 0, 0);
             const defaultPickup = (tripData.pickupLocations && tripData.pickupLocations.length > 0) ? tripData.pickupLocations[0] : null;
-            
+
             const batches = [
               ...(tripData.availableDates || []).map(d => ({
                 date: d,
@@ -62,11 +62,11 @@ const Booking = () => {
                 location: p.location || 'Departure Point'
               }))
             ]
-            .filter(item => {
-              const d = new Date(item.date);
-              return !isNaN(d.getTime()) && d >= now;
-            })
-            .sort((a, b) => new Date(a.date) - new Date(b.date));
+              .filter(item => {
+                const d = new Date(item.date);
+                return !isNaN(d.getTime()) && d >= now;
+              })
+              .sort((a, b) => new Date(a.date) - new Date(b.date));
 
             setAvailableBatches(batches);
             const dateParam = searchParams.get('date');
@@ -93,7 +93,7 @@ const Booking = () => {
         date: dateParam || prev.date,
         trekkers: val
       }));
-      if (![1,2,3,4,5,6,7,8,9,10,15,20].includes(val)) {
+      if (![1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20].includes(val)) {
         setIsCustomTrekkers(true);
       }
     } else {
@@ -131,8 +131,8 @@ const Booking = () => {
 
     const totalAmount = (trip?.price || 0) * formData.trekkers;
     const advanceAmount = Math.round(totalAmount * 0.20);
-    const paymentToProcess = formData.paymentMode === 'full' 
-      ? totalAmount 
+    const paymentToProcess = formData.paymentMode === 'full'
+      ? totalAmount
       : (formData.paymentMode === 'advance' ? advanceAmount : 0);
 
     const bookingData = {
@@ -201,7 +201,7 @@ const Booking = () => {
             color: "#00C9B7"
           },
           modal: {
-            ondismiss: function() {
+            ondismiss: function () {
               setIsSubmitting(false);
             }
           }
@@ -227,7 +227,7 @@ const Booking = () => {
   if (isSubmitted) {
     return (
       <div className="min-h-screen bg-[#f8f9fa] flex items-center justify-center pt-20 px-4">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           className="bg-white rounded-3xl p-12 max-w-xl text-center border border-[#e5e5e5] shadow-xl"
@@ -249,15 +249,15 @@ const Booking = () => {
     <div className="min-h-screen bg-[#F8F9FB]">
       {/* Hero Banner */}
       <div className="relative h-[32vh] min-h-[240px] w-full overflow-hidden rounded-b-3xl shadow-md">
-        <img 
-          src={trip?.image || "https://images.unsplash.com/photo-1551632811-561732d1e306?q=80&w=2000"} 
-          alt="Booking Banner" 
+        <img
+          src={trip?.image || "https://images.unsplash.com/photo-1551632811-561732d1e306?q=80&w=2000"}
+          alt="Booking Banner"
           className="absolute inset-0 w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/50 to-black/20" />
-        
+
         <div className="absolute inset-0 flex flex-col items-center justify-center px-4">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: 'easeOut' }}
@@ -274,9 +274,9 @@ const Booking = () => {
       </div>
 
       <div className="max-w-[700px] mx-auto px-4 py-8 lg:py-12">
-        
+
         {error && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             className="mb-8 p-5 bg-red-50 border border-red-200 rounded-2xl flex items-center gap-3 text-red-600 font-medium shadow-sm"
@@ -287,82 +287,82 @@ const Booking = () => {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }} 
-            animate={{ opacity: 1, y: 0 }} 
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
             className="bg-white rounded-3xl p-6 md:p-8 shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-[#f0f0f0]"
           >
             <div className="grid grid-cols-1 gap-6">
-              
+
               <div>
                 <label className={labelClass}>Full Name *</label>
-                <input 
-                  type="text" 
-                  name="fullName" 
-                  required 
-                  value={formData.fullName} 
-                  onChange={handleChange} 
-                  className={inputClass} 
-                  placeholder="Enter your full name" 
+                <input
+                  type="text"
+                  name="fullName"
+                  required
+                  value={formData.fullName}
+                  onChange={handleChange}
+                  className={inputClass}
+                  placeholder="Enter your full name"
                 />
               </div>
 
               <div>
                 <label className={labelClass}>Phone Number *</label>
-                <input 
-                  type="tel" 
-                  name="phone" 
-                  required 
-                  value={formData.phone} 
-                  onChange={handleChange} 
-                  className={inputClass} 
-                  placeholder="+91 98765 43210" 
+                <input
+                  type="tel"
+                  name="phone"
+                  required
+                  value={formData.phone}
+                  onChange={handleChange}
+                  className={inputClass}
+                  placeholder="+91 98765 43210"
                 />
               </div>
 
               <div>
                 <label className={labelClass}>WhatsApp Number</label>
-                <input 
-                  type="tel" 
-                  name="whatsappNumber" 
-                  value={formData.whatsappNumber} 
-                  onChange={handleChange} 
-                  className={inputClass} 
-                  placeholder="Enter WhatsApp number (optional)" 
+                <input
+                  type="tel"
+                  name="whatsappNumber"
+                  value={formData.whatsappNumber}
+                  onChange={handleChange}
+                  className={inputClass}
+                  placeholder="Enter WhatsApp number (optional)"
                 />
               </div>
 
               <div>
                 <label className={labelClass}>Email Address</label>
-                <input 
-                  type="email" 
-                  name="email" 
-                  value={formData.email} 
-                  onChange={handleChange} 
-                  className={inputClass} 
-                  placeholder="Enter email address (optional)" 
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className={inputClass}
+                  placeholder="Enter email address (optional)"
                 />
               </div>
 
               <div>
                 <label className={labelClass}>Address / City</label>
-                <input 
-                  type="text" 
-                  name="addressCity" 
-                  value={formData.addressCity} 
-                  onChange={handleChange} 
-                  className={inputClass} 
-                  placeholder="Enter your address or city (optional)" 
+                <input
+                  type="text"
+                  name="addressCity"
+                  value={formData.addressCity}
+                  onChange={handleChange}
+                  className={inputClass}
+                  placeholder="Enter your address or city (optional)"
                 />
               </div>
 
               <div>
                 <label className={labelClass}>Pickup Point</label>
                 {trip?.pickupLocations && trip.pickupLocations.length > 0 ? (
-                  <select 
-                    name="pickupPoint" 
-                    value={formData.pickupPoint} 
-                    onChange={handleChange} 
+                  <select
+                    name="pickupPoint"
+                    value={formData.pickupPoint}
+                    onChange={handleChange}
                     className={`${inputClass} cursor-pointer`}
                   >
                     <option value="">-- Select Pickup Point --</option>
@@ -371,24 +371,24 @@ const Booking = () => {
                     ))}
                   </select>
                 ) : (
-                  <input 
-                    type="text" 
-                    name="pickupPoint" 
-                    value={formData.pickupPoint} 
-                    onChange={handleChange} 
-                    className={inputClass} 
-                    placeholder="Enter pickup point (e.g. Railway Station)" 
+                  <input
+                    type="text"
+                    name="pickupPoint"
+                    value={formData.pickupPoint}
+                    onChange={handleChange}
+                    className={inputClass}
+                    placeholder="Enter pickup point (e.g. Railway Station)"
                   />
                 )}
               </div>
 
               <div>
                 <label className={labelClass}>Special Instructions / Notes</label>
-                <textarea 
-                  name="notes" 
-                  value={formData.notes} 
-                  onChange={handleChange} 
-                  className={`${inputClass} h-24 resize-none`} 
+                <textarea
+                  name="notes"
+                  value={formData.notes}
+                  onChange={handleChange}
+                  className={`${inputClass} h-24 resize-none`}
                   placeholder="Enter any special requests or instructions (optional)"
                 />
               </div>
@@ -435,9 +435,9 @@ const Booking = () => {
 
               <div>
                 <label className={labelClass}>Number of Trekkers *</label>
-                <select 
-                  name="trekkers" 
-                  value={isCustomTrekkers ? "custom" : formData.trekkers} 
+                <select
+                  name="trekkers"
+                  value={isCustomTrekkers ? "custom" : formData.trekkers}
                   onChange={(e) => {
                     if (e.target.value === 'custom') {
                       setIsCustomTrekkers(true);
@@ -446,29 +446,29 @@ const Booking = () => {
                       setIsCustomTrekkers(false);
                       setFormData(prev => ({ ...prev, trekkers: parseInt(e.target.value) }));
                     }
-                  }} 
-                  className={`${inputClass} cursor-pointer appearance-none bg-no-repeat`} 
+                  }}
+                  className={`${inputClass} cursor-pointer appearance-none bg-no-repeat`}
                   style={{ backgroundImage: 'url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23111%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E")', backgroundPosition: 'right 1rem top 50%', backgroundSize: '0.65rem auto' }}
                 >
-                  {[1,2,3,4,5,6,7,8,9,10,15,20].map(n => <option key={n} value={n}>{n} {n === 1 ? 'Person' : 'People'}</option>)}
+                  {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20].map(n => <option key={n} value={n}>{n} {n === 1 ? 'Person' : 'People'}</option>)}
                   <option value="custom">More than 15 (Custom)</option>
                 </select>
 
                 {isCustomTrekkers && (
                   <div className="mt-4 animate-in fade-in slide-in-from-top-2 duration-300">
                     <label className={labelClass}>Enter Number of Trekkers (More than 15) *</label>
-                    <input 
-                      type="number" 
+                    <input
+                      type="number"
                       name="customTrekkers"
                       min="16"
-                      required 
-                      value={formData.trekkers} 
+                      required
+                      value={formData.trekkers}
                       onChange={(e) => {
                         const val = parseInt(e.target.value) || '';
                         setFormData(prev => ({ ...prev, trekkers: val }));
-                      }} 
-                      className={inputClass} 
-                      placeholder="Enter count (e.g. 18)" 
+                      }}
+                      className={inputClass}
+                      placeholder="Enter count (e.g. 18)"
                     />
                   </div>
                 )}
@@ -506,9 +506,9 @@ const Booking = () => {
               <p className="text-[#717171] text-xs text-center sm:text-left leading-relaxed">
                 By booking, you agree to our <a href="#" className="text-[#111] font-bold hover:underline">Terms of Service</a> &amp; <a href="#" className="text-[#111] font-bold hover:underline">Privacy Policy</a>.
               </p>
-              
-              <button 
-                type="submit" 
+
+              <button
+                type="submit"
                 disabled={isSubmitting}
                 className="group w-full sm:w-auto flex items-center justify-center gap-3 bg-[#111] text-white font-bold py-4 px-12 rounded-full hover:bg-[#00C9B7] hover:text-[#111] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0 shadow-lg hover:shadow-xl"
               >

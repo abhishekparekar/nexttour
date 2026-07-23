@@ -35,14 +35,14 @@ const Navbar = () => {
 
     const type = () => {
       if (!isActive) return;
-      
+
       const fullText = trips[currentIndex]?.title || 'Manali Adventure Tour';
       if (!fullText) {
         currentIndex = (currentIndex + 1) % trips.length;
         timeout = setTimeout(type, 100);
         return;
       }
-      
+
       if (isDeleting) {
         currentText = fullText.substring(0, currentText.length - 1);
         typingSpeed = 30;
@@ -50,10 +50,10 @@ const Navbar = () => {
         currentText = fullText.substring(0, currentText.length + 1);
         typingSpeed = 60 + Math.random() * 40;
       }
-      
+
       if (desktopInputRef.current) desktopInputRef.current.placeholder = currentText || 'Search destinations, treks...';
       if (mobileInputRef.current) mobileInputRef.current.placeholder = currentText || 'Search destinations, treks...';
-      
+
       if (!isDeleting && currentText === fullText) {
         typingSpeed = 2000;
         isDeleting = true;
@@ -62,7 +62,7 @@ const Navbar = () => {
         currentIndex = (currentIndex + 1) % trips.length;
         typingSpeed = 500;
       }
-      
+
       timeout = setTimeout(type, typingSpeed);
     };
 
@@ -86,8 +86,8 @@ const Navbar = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  useEffect(() => { 
-    setIsMobileMenuOpen(false); 
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
   }, [location]);
 
   const navLinks = [
@@ -106,11 +106,11 @@ const Navbar = () => {
     return location.pathname === path;
   };
 
-  const searchResults = searchQuery.trim() 
-    ? trips.filter(t => 
-        t.title?.toLowerCase().includes(searchQuery.toLowerCase()) || 
-        t.location?.toLowerCase().includes(searchQuery.toLowerCase())
-      ).slice(0, 5)
+  const searchResults = searchQuery.trim()
+    ? trips.filter(t =>
+      t.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      t.location?.toLowerCase().includes(searchQuery.toLowerCase())
+    ).slice(0, 5)
     : [];
 
   const handleSearchSubmit = (e) => {
@@ -152,18 +152,16 @@ const Navbar = () => {
   const shouldShow = isVisible || isMobileMenuOpen || isSearchFocused;
 
   return (
-    <header 
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out transform ${
-        shouldShow ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'
-      } ${
-        isScrolled 
-          ? 'bg-black/90 backdrop-blur-md border-b border-white/10 shadow-lg' 
+    <header
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out transform ${shouldShow ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'
+        } ${isScrolled
+          ? 'bg-black/90 backdrop-blur-md border-b border-white/10 shadow-lg'
           : 'bg-gradient-to-b from-black/90 via-black/40 to-transparent'
-      }`}
+        }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 md:h-20 gap-3 sm:gap-6">
-          
+
           {/* 3D Transparent Display Logo - No White Box */}
           <div className="flex-shrink-0 flex items-center">
             <Link to="/" className="flex items-center gap-2 group">
@@ -199,7 +197,7 @@ const Navbar = () => {
                 <div className="absolute top-[calc(100%+10px)] left-0 right-0 bg-white/98 backdrop-blur-2xl rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-[100] py-2 animate-in fade-in slide-in-from-top-2 duration-200">
                   {searchResults.length > 0 ? (
                     searchResults.map(trip => (
-                      <Link 
+                      <Link
                         key={trip.id}
                         to={`/trip/${trip.id}`}
                         onClick={() => {
@@ -237,11 +235,10 @@ const Navbar = () => {
                 <Link
                   key={link.path}
                   to={link.path}
-                  className={`relative text-sm font-bold transition-all duration-200 py-1 drop-shadow-md ${
-                    active
+                  className={`relative text-sm font-bold transition-all duration-200 py-1 drop-shadow-md ${active
                       ? 'text-[#00C9B7] font-extrabold'
                       : 'text-gray-100 hover:text-white'
-                  }`}
+                    }`}
                 >
                   {link.name}
                   {active && (
@@ -277,12 +274,12 @@ const Navbar = () => {
         {/* Mobile Search Bar */}
         <div ref={mobileSearchContainerRef} className="pb-3 pt-1 block lg:hidden relative">
           <form onSubmit={handleSearchSubmit} className="relative flex items-center w-full h-10 rounded-full bg-white shadow-md pl-4 pr-1.5 border border-gray-100">
-            <input 
+            <input
               ref={mobileInputRef}
-              id="searchInput" 
-              className="flex-1 w-full bg-transparent border-none focus:outline-none text-xs text-gray-800 placeholder:text-gray-400 font-medium" 
-              placeholder="Search destinations, treks..." 
-              type="text" 
+              id="searchInput"
+              className="flex-1 w-full bg-transparent border-none focus:outline-none text-xs text-gray-800 placeholder:text-gray-400 font-medium"
+              placeholder="Search destinations, treks..."
+              type="text"
               value={searchQuery}
               onFocus={() => setIsSearchFocused(true)}
               onChange={(e) => {
@@ -300,7 +297,7 @@ const Navbar = () => {
             <div className="absolute top-[calc(100%+4px)] left-0 right-0 bg-white rounded-xl border border-gray-100 shadow-2xl overflow-hidden z-[100] py-2">
               {searchResults.length > 0 ? (
                 searchResults.map(trip => (
-                  <Link 
+                  <Link
                     key={trip.id}
                     to={`/trip/${trip.id}`}
                     onClick={() => {
@@ -338,11 +335,10 @@ const Navbar = () => {
               key={link.path}
               to={link.path}
               onClick={() => setIsMobileMenuOpen(false)}
-              className={`block px-4 py-3 rounded-xl text-sm font-bold transition-all ${
-                isActive(link.path) 
-                  ? 'text-[#00C9B7] bg-white/10 border-l-4 border-[#00C9B7]' 
+              className={`block px-4 py-3 rounded-xl text-sm font-bold transition-all ${isActive(link.path)
+                  ? 'text-[#00C9B7] bg-white/10 border-l-4 border-[#00C9B7]'
                   : 'text-gray-200 hover:bg-white/5 hover:text-white'
-              }`}
+                }`}
             >
               {link.name}
             </Link>

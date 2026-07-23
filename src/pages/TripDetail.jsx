@@ -311,7 +311,7 @@ const TripDetail = () => {
 
   return (
     <div className="min-h-screen bg-[#F8F9FB]" id="trip-content-for-pdf">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 md:pt-6 pb-24">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 md:pt-24 pb-24">
 
         {/* Breadcrumbs & Actions */}
         <div className="flex items-center justify-between gap-3 mb-6 pt-3 sm:pt-0">

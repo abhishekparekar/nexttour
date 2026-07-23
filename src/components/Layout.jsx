@@ -9,7 +9,7 @@ const Layout = () => {
   return (
     <div className="min-h-screen flex flex-col bg-[#F8F9FB] selection:bg-[#00C9B7] selection:text-white">
       <Navbar />
-      <main className={`flex-1 ${isHome ? 'pt-0' : 'pt-16 md:pt-20 lg:pt-22'}`}>
+      <main className="flex-1 pt-0">
         <Outlet />
       </main>
       <Footer />

@@ -14,8 +14,8 @@ const CategoryDetail = () => {
   useEffect(() => {
     let currentCat = null;
     const unsubscribeCat = useCachedCategories((categories) => {
-      const found = categories.find(c => 
-        String(c.id).toLowerCase() === String(id).toLowerCase() || 
+      const found = categories.find(c =>
+        String(c.id).toLowerCase() === String(id).toLowerCase() ||
         String(c.name || c.title || '').toLowerCase() === String(id).toLowerCase()
       );
       if (found) {
@@ -26,7 +26,7 @@ const CategoryDetail = () => {
     const unsubscribeTrips = useCachedTrips((allTrips) => {
       const catId = String(id).toLowerCase();
       const catTitle = currentCat ? (currentCat.title || currentCat.name || '').toLowerCase() : '';
-      
+
       const matchedTrips = allTrips.filter(trip => {
         const tripCatId = String(trip.categoryId || '').toLowerCase();
         const tripCatName = String(trip.categoryName || '').toLowerCase();
@@ -43,11 +43,11 @@ const CategoryDetail = () => {
   }, [id]);
 
   const filteredTrips = trips.sort((a, b) => {
-      if (sortBy === 'price-low') return (a.price || 0) - (b.price || 0);
-      if (sortBy === 'price-high') return (b.price || 0) - (a.price || 0);
-      if (sortBy === 'rating') return (b.rating || 0) - (a.rating || 0);
-      return (b.featured ? 1 : 0) - (a.featured ? 1 : 0);
-    });
+    if (sortBy === 'price-low') return (a.price || 0) - (b.price || 0);
+    if (sortBy === 'price-high') return (b.price || 0) - (a.price || 0);
+    if (sortBy === 'rating') return (b.rating || 0) - (a.rating || 0);
+    return (b.featured ? 1 : 0) - (a.featured ? 1 : 0);
+  });
 
   if (loading) {
     return (
@@ -64,7 +64,7 @@ const CategoryDetail = () => {
     <div className="min-h-screen bg-[#F8F9FB]">
       {/* Hero Banner */}
       <div className="relative h-[40vh] min-h-[300px] overflow-hidden rounded-b-3xl shadow-md">
-        <img src={headerImage} alt={categoryTitle} className="w-full h-full object-cover"  loading="lazy"/>
+        <img src={headerImage} alt={categoryTitle} className="w-full h-full object-cover" loading="lazy" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/50 to-black/20" />
         <div className="absolute inset-0 flex items-end">
           <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 pb-8">

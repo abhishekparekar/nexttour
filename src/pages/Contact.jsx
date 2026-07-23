@@ -25,7 +25,7 @@ const Contact = () => {
     e.preventDefault();
     setIsSubmitting(true);
     setError(null);
-    
+
     try {
       const contactPath = getTenantPath('contacts');
       await addDoc(collection(db, contactPath), {
@@ -53,38 +53,38 @@ const Contact = () => {
 
   return (
     <div className="min-h-screen bg-[#F8F9FB]">
-      {/* Hero Banner */}
-      <div className="relative h-[32vh] min-h-[240px] w-full overflow-hidden rounded-b-3xl shadow-md">
-        <img 
-          src={contactData.heroImage || 'https://images.unsplash.com/photo-1454496522488-7a8e488e8606?q=80&w=2000'} 
-          alt="Contact Us" 
-          className="absolute inset-0 w-full h-full object-cover"
+      {/* Hero Banner - Full Bleed Navbar Alignment */}
+      <div className="relative h-[36vh] sm:h-[40vh] min-h-[280px] w-full overflow-hidden shadow-md bg-[#0d1117] flex items-center justify-center pt-16 md:pt-20 select-none">
+        <img
+          src={contactData.heroImage || 'https://images.unsplash.com/photo-1454496522488-7a8e488e8606?q=80&w=2000'}
+          alt="Contact Us"
+          className="absolute inset-0 w-full h-full object-cover object-center"
           onError={(e) => { e.target.onerror = null; e.target.src = '/herobg2.jpg'; }}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/50 to-black/20" />
-        <div className="absolute inset-0 flex items-center justify-center">
-          <motion.div 
+        <div className="absolute inset-0 bg-gradient-to-b from-black/85 via-black/45 to-black/85 pointer-events-none" />
+        <div className="relative z-10 flex items-center justify-center text-center px-4">
+          <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: 'easeOut' }}
-            className="text-center px-4"
+            className="text-center max-w-3xl"
           >
-            <h1 className="text-3xl md:text-5xl font-black text-white mb-3 tracking-tight">
+            <h1 className="text-3xl md:text-5xl lg:text-6xl font-black text-white mb-3 tracking-tight">
               {contactData.heroTitle || "Let's Talk Adventure"}
             </h1>
-            <p className="text-base md:text-lg text-gray-200 max-w-2xl mx-auto font-medium">
-              {contactData.heroSubtitle || 'Got a trek in mind? We are here to guide you every step of the way. Reach out to our experts.'}
+            <p className="text-sm md:text-base lg:text-lg text-gray-200 font-medium leading-relaxed">
+              {contactData.heroSubtitle || 'Have questions about a trek or want to plan a custom trip? We are here to help.'}
             </p>
           </motion.div>
         </div>
       </div>
 
       <div className="max-w-[1200px] mx-auto px-4 lg:px-8 py-10 lg:py-12">
-        
+
         <div className="grid grid-cols-1 xl:grid-cols-5 gap-8 lg:gap-12 items-start">
-          
+
           {/* Form Section */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
@@ -98,7 +98,7 @@ const Contact = () => {
             </div>
 
             {isSubmitted ? (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 className="bg-[#f8fffa] border border-[#d1fae5] rounded-3xl p-10 md:p-16 text-center"
@@ -108,7 +108,7 @@ const Contact = () => {
                 </div>
                 <h3 className="text-2xl font-bold text-[#111] mb-3">Message Received!</h3>
                 <p className="text-[#555] max-w-sm mx-auto">Thank you for reaching out. A member of our team will contact you shortly.</p>
-                <button 
+                <button
                   onClick={() => setIsSubmitted(false)}
                   className="mt-8 text-green-600 font-semibold hover:underline"
                 >
@@ -123,7 +123,7 @@ const Contact = () => {
                     {error}
                   </div>
                 )}
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <input type="text" name="name" required value={formData.name} onChange={handleChange} className="w-full bg-[#f8f9fa] border-b-2 border-[#e5e5e5] px-3 py-3 text-[#111111] placeholder-[#9ca3af] focus:outline-none focus:border-[#00C9B7] focus:bg-[#E6FAF8] transition-all duration-300 rounded-t-lg text-sm" placeholder="Full Name *" />
@@ -138,13 +138,13 @@ const Contact = () => {
                     <input type="text" name="subject" required value={formData.subject} onChange={handleChange} className="w-full bg-[#f8f9fa] border-b-2 border-[#e5e5e5] px-3 py-3 text-[#111111] placeholder-[#9ca3af] focus:outline-none focus:border-[#00C9B7] focus:bg-[#E6FAF8] transition-all duration-300 rounded-t-lg text-sm" placeholder="Subject *" />
                   </div>
                 </div>
-                
+
                 <div>
                   <textarea name="message" required value={formData.message} onChange={handleChange} rows={4} className="w-full bg-[#f8f9fa] border-b-2 border-[#e5e5e5] px-3 py-3 text-[#111111] placeholder-[#9ca3af] focus:outline-none focus:border-[#00C9B7] focus:bg-[#E6FAF8] transition-all duration-300 rounded-t-lg text-sm resize-none" placeholder="How can we help you plan your next adventure? *" />
                 </div>
-                
-                <button 
-                  type="submit" 
+
+                <button
+                  type="submit"
                   disabled={isSubmitting}
                   className="group flex items-center justify-center gap-2 w-full md:w-auto px-8 py-3 bg-[#111] text-white font-bold rounded-full hover:bg-[#00C9B7] hover:text-[#111] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
                 >
@@ -156,18 +156,18 @@ const Contact = () => {
           </motion.div>
 
           {/* Map Section */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
             className="xl:col-span-2 h-full min-h-[300px] rounded-2xl overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.06)] relative border border-[#f0f0f0]"
           >
-            <iframe 
-              src={contactData.mapUrl || DEFAULT_CONTACT_SETTINGS.mapUrl} 
+            <iframe
+              src={contactData.mapUrl || DEFAULT_CONTACT_SETTINGS.mapUrl}
               className="absolute inset-0 w-full h-full border-0"
-              allowFullScreen="" 
-              loading="lazy" 
+              allowFullScreen=""
+              loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
             ></iframe>
           </motion.div>
@@ -177,7 +177,7 @@ const Contact = () => {
         {/* Contact Info Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-12">
           {contactInfo.map((info, i) => (
-            <motion.div 
+            <motion.div
               key={i}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
