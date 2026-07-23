@@ -63,11 +63,18 @@ export const calculateBookingFinances = (booking = {}) => {
 export const calculateTripFinances = (schedule, bookings = [], expenses = []) => {
   if (!schedule) return null;
 
-  // Filter bookings for this schedule
-  const scheduleBookings = bookings.filter(b => 
-    (b.scheduleId && b.scheduleId === schedule.id) || 
-    (b.tripId === schedule.tripId && b.selectedDate === schedule.departureDate)
-  );
+  const schedTitle = (schedule.tripTitle || schedule.title || '').toLowerCase();
+  const schedDate = schedule.departureDate || schedule.date || '';
+
+  // Filter bookings for this schedule or trip departure
+  const scheduleBookings = bookings.filter(b => {
+    if (b.scheduleId && String(b.scheduleId) === String(schedule.id)) return true;
+    if (schedule.tripId && String(b.tripId) === String(schedule.tripId) && b.selectedDate === schedDate) return true;
+    const bName = (b.tripName || '').toLowerCase();
+    if (schedTitle && bName && (bName.includes(schedTitle) || schedTitle.includes(bName)) && b.selectedDate === schedDate) return true;
+    if (schedTitle && bName && !schedDate && (bName.includes(schedTitle) || schedTitle.includes(bName))) return true;
+    return false;
+  });
 
   const bookingsCount = scheduleBookings.length;
   const travelersCount = scheduleBookings.reduce((sum, b) => sum + (Number(b.travelers) || 1), 0);
@@ -76,7 +83,12 @@ export const calculateTripFinances = (schedule, bookings = [], expenses = []) =>
   const pendingReceivables = totalBookedValue - passengerRevenueCollection;
 
   // Expenses logged under this schedule
-  const scheduleExpenses = expenses.filter(e => e.scheduleId === schedule.id);
+  const scheduleExpenses = expenses.filter(e => {
+    if (e.scheduleId && String(e.scheduleId) === String(schedule.id)) return true;
+    const expTitle = (e.tripTitle || '').toLowerCase();
+    if (schedTitle && expTitle && (expTitle.includes(schedTitle) || schedTitle.includes(expTitle))) return true;
+    return false;
+  });
   const totalExpenses = scheduleExpenses.reduce((sum, e) => sum + (Number(e.amount) || 0), 0);
 
   // Category-wise expense breakdown

@@ -1,12 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Plus, Edit2, Trash2, Search, X, Loader2, Calendar, CreditCard, AlertCircle, TrendingUp, TrendingDown, Printer, FileText, ArrowRightLeft, MapPin } from 'lucide-react';
 import { subscribeToExpenses, addExpense, updateExpense, deleteExpense, subscribeToSchedules, subscribeToBookings } from '../../firebase';
+import { useCachedTrips } from '../../firebaseCache';
 import { EXPENSE_CATEGORIES, getCategoryLabel, calculateTripFinances, formatCurrency } from '../../utils/bookingUtils';
 import { printTripFinancialReport } from '../../utils/printTemplates';
 
 const AdminExpenses = () => {
   const [expenses, setExpenses] = useState([]);
   const [schedules, setSchedules] = useState([]);
+  const [tourPackages, setTourPackages] = useState([]);
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -25,13 +27,11 @@ const AdminExpenses = () => {
   });
 
   useEffect(() => {
-    const unsubExpenses = subscribeToExpenses((data) => setExpenses(data));
-    const unsubBookings = subscribeToBookings((data) => setBookings(data));
-    const unsubSchedules = subscribeToSchedules((data) => {
-      setSchedules(data);
-      if (data && data.length > 0 && selectedScheduleFilter === 'all') {
-        // Default to first active schedule for live audit widget if none selected
-      }
+    const unsubExpenses = subscribeToExpenses((data) => setExpenses(data || []));
+    const unsubBookings = subscribeToBookings((data) => setBookings(data || []));
+    const unsubSchedules = subscribeToSchedules((data) => setSchedules(data || []));
+    const unsubTrips = useCachedTrips((data) => {
+      setTourPackages(data || []);
       setLoading(false);
     });
 
@@ -39,13 +39,71 @@ const AdminExpenses = () => {
       unsubExpenses();
       unsubBookings();
       unsubSchedules();
+      unsubTrips();
     };
   }, []);
+
+  // Merge all available trips (Schedules + Tour Packages + Booked Trips) into a unified list
+  const allAvailableTrips = useMemo(() => {
+    const map = new Map();
+
+    // 1. Add explicitly created departure schedules
+    schedules.forEach(s => {
+      const id = String(s.id);
+      map.set(id, {
+        id: s.id,
+        tripId: s.tripId || s.id,
+        tripTitle: s.tripTitle || s.title || 'Tour Departure',
+        departureDate: s.departureDate || s.date || 'Active Departure',
+        label: `${s.tripTitle || s.title} (${s.departureDate || s.date || 'Active'})`
+      });
+    });
+
+    // 2. Add Tour Packages (if not already covered by schedule)
+    tourPackages.forEach(t => {
+      const id = `TRIP_${t.id}`;
+      if (!map.has(id)) {
+        map.set(id, {
+          id: id,
+          tripId: t.id,
+          tripTitle: t.title || t.name || 'Tour Package',
+          departureDate: (t.upcomingDates && t.upcomingDates[0]) || 'All Departures',
+          label: `${t.title || t.name} (Tour Package)`
+        });
+      }
+    });
+
+    // 3. Add any trip registered in Bookings
+    bookings.forEach(b => {
+      if (b.tripName) {
+        const id = b.scheduleId || `BOOKING_TRIP_${b.tripId || b.tripName}`;
+        if (!map.has(id)) {
+          map.set(id, {
+            id: id,
+            tripId: b.tripId || id,
+            tripTitle: b.tripName,
+            departureDate: b.selectedDate || 'Booked Departure',
+            label: `${b.tripName} (${b.selectedDate || 'Booked'})`
+          });
+        }
+      }
+    });
+
+    return Array.from(map.values());
+  }, [schedules, tourPackages, bookings]);
+
+  // Set default active trip filter if none selected
+  const activeTripObj = useMemo(() => {
+    if (selectedScheduleFilter !== 'all') {
+      return allAvailableTrips.find(t => String(t.id) === String(selectedScheduleFilter)) || allAvailableTrips[0];
+    }
+    return allAvailableTrips[0];
+  }, [allAvailableTrips, selectedScheduleFilter]);
 
   const handleOpenAdd = () => {
     setEditingExpense(null);
     setFormData({
-      scheduleId: selectedScheduleFilter !== 'all' ? selectedScheduleFilter : (schedules[0]?.id || ''),
+      scheduleId: activeTripObj?.id || (allAvailableTrips[0]?.id || ''),
       category: 'diesel',
       amount: '',
       date: new Date().toISOString().split('T')[0],
@@ -58,7 +116,7 @@ const AdminExpenses = () => {
   const handleOpenEdit = (expense) => {
     setEditingExpense(expense);
     setFormData({
-      scheduleId: expense.scheduleId || (schedules[0]?.id || ''),
+      scheduleId: expense.scheduleId || (allAvailableTrips[0]?.id || ''),
       category: expense.category || 'diesel',
       amount: expense.amount || '',
       date: expense.date || '',
@@ -83,16 +141,16 @@ const AdminExpenses = () => {
     setError(null);
 
     if (!formData.scheduleId || !formData.amount || !formData.date) {
-      setError('Trip departure schedule, Amount, and Date are required.');
+      setError('Trip departure selection, Amount, and Date are required.');
       return;
     }
 
     try {
-      const selectedSchedule = schedules.find(s => s.id === formData.scheduleId);
+      const selectedTrip = allAvailableTrips.find(t => String(t.id) === String(formData.scheduleId));
       const data = {
         ...formData,
         scheduleId: formData.scheduleId,
-        tripTitle: selectedSchedule ? `${selectedSchedule.tripTitle} (${selectedSchedule.departureDate})` : 'Unknown Trip',
+        tripTitle: selectedTrip ? selectedTrip.label : 'Unknown Trip',
         amount: Number(formData.amount)
       };
 
@@ -113,13 +171,12 @@ const AdminExpenses = () => {
       e.tripTitle?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       e.notes?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = categoryFilter === 'all' || e.category === categoryFilter;
-    const matchesSchedule = selectedScheduleFilter === 'all' || e.scheduleId === selectedScheduleFilter;
+    const matchesSchedule = selectedScheduleFilter === 'all' || String(e.scheduleId) === String(selectedScheduleFilter);
     return matchesSearch && matchesCategory && matchesSchedule;
   });
 
   // Calculate current selected trip profitability audit
-  const activeScheduleObj = schedules.find(s => s.id === selectedScheduleFilter) || schedules[0];
-  const activeTripFinances = activeScheduleObj ? calculateTripFinances(activeScheduleObj, bookings, expenses) : null;
+  const activeTripFinances = activeTripObj ? calculateTripFinances(activeTripObj, bookings, expenses) : null;
 
   // Global total expense
   const grandTotalExpenses = expenses.reduce((sum, e) => sum + (Number(e.amount) || 0), 0);
@@ -144,7 +201,7 @@ const AdminExpenses = () => {
         </div>
         <button
           onClick={handleOpenAdd}
-          disabled={schedules.length === 0}
+          disabled={allAvailableTrips.length === 0}
           className="flex items-center gap-1.5 bg-[#00C9B7] hover:bg-[#00b3a3] text-white font-bold py-2 px-4 rounded-xl text-xs transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
         >
           <Plus size={16} /> Record Expense for Trip
@@ -152,12 +209,12 @@ const AdminExpenses = () => {
       </div>
 
       <div className="p-4 space-y-4">
-        {schedules.length === 0 && (
+        {allAvailableTrips.length === 0 && (
           <div className="p-4 bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-2xl flex items-center gap-3 text-xs font-semibold">
             <AlertCircle size={20} className="flex-shrink-0 text-yellow-600" />
             <div>
-              <h4 className="font-bold">No departure schedules active!</h4>
-              <p className="text-gray-600 mt-0.5">Please create a scheduled trip departure under "Schedules" before logging expenses.</p>
+              <h4 className="font-bold">No trips or departures active!</h4>
+              <p className="text-gray-600 mt-0.5">Please create a tour package or scheduled trip departure before logging expenses.</p>
             </div>
           </div>
         )}
@@ -170,18 +227,18 @@ const AdminExpenses = () => {
               <div className="flex flex-wrap items-center gap-2">
                 <span className="text-xs font-extrabold uppercase tracking-wider text-gray-400">SELECT TRIP DEPARTURE AUDIT:</span>
                 <select
-                  value={activeScheduleObj?.id || ''}
+                  value={activeTripObj?.id || ''}
                   onChange={(e) => setSelectedScheduleFilter(e.target.value)}
                   className="bg-gray-50 border border-gray-300 text-gray-900 font-bold text-xs rounded-xl px-3 py-1.5 focus:outline-none focus:border-[#00C9B7] cursor-pointer"
                 >
-                  {schedules.map(s => (
-                    <option key={s.id} value={s.id}>{s.tripTitle} ({s.departureDate})</option>
+                  {allAvailableTrips.map(t => (
+                    <option key={t.id} value={t.id}>{t.label}</option>
                   ))}
                 </select>
               </div>
 
               <button
-                onClick={() => printTripFinancialReport(activeScheduleObj, activeTripFinances)}
+                onClick={() => printTripFinancialReport(activeTripObj, activeTripFinances)}
                 className="flex items-center gap-1.5 bg-gray-50 hover:bg-gray-100 text-gray-700 font-bold py-1.5 px-3 rounded-lg text-xs border border-gray-200 transition-all cursor-pointer"
               >
                 <Printer size={14} /> Download Trip Profit Audit PDF
@@ -247,9 +304,9 @@ const AdminExpenses = () => {
               onChange={(e) => setSelectedScheduleFilter(e.target.value)}
               className="bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs text-gray-900 focus:outline-none focus:border-[#00C9B7] font-semibold cursor-pointer"
             >
-              <option value="all">Filter: All Trip Departures</option>
-              {schedules.map(s => (
-                <option key={s.id} value={s.id}>{s.tripTitle} ({s.departureDate})</option>
+              <option value="all">Filter: All Trips & Departures</option>
+              {allAvailableTrips.map(t => (
+                <option key={t.id} value={t.id}>{t.label}</option>
               ))}
             </select>
 
@@ -422,8 +479,8 @@ const AdminExpenses = () => {
                   onChange={(e) => setFormData({ ...formData, scheduleId: e.target.value })}
                   className="w-full bg-white border border-sky-300 rounded-xl px-3 py-2 text-xs text-gray-900 font-bold focus:outline-none focus:border-[#00C9B7] cursor-pointer shadow-xs"
                 >
-                  {schedules.map(s => (
-                    <option key={s.id} value={s.id}>{s.tripTitle} — {s.departureDate}</option>
+                  {allAvailableTrips.map(t => (
+                    <option key={t.id} value={t.id}>{t.label}</option>
                   ))}
                 </select>
                 <span className="text-[10px] text-sky-700 block">
