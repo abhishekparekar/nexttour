@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useParams, Link, useSearchParams } from 'react-router-dom';
 import { CheckCircle, AlertCircle, ArrowRight, User, Map, ShieldAlert, FileText, Users } from 'lucide-react';
 import { addBooking, getTripById, subscribeToBookings } from '../firebase';
@@ -45,6 +45,11 @@ const Booking = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState(null);
+
+  const seatInfo = useMemo(() => {
+    if (!formData.date) return null;
+    return calculateTripSeatAvailability({ ...trip, departureDate: formData.date }, allBookings);
+  }, [trip, formData.date, allBookings]);
 
   // Fetch Trip details and batches
   useEffect(() => {
@@ -441,30 +446,25 @@ const Booking = () => {
                 )}
 
                 {/* Live Seat Availability Banner */}
-                {formData.date && (
-                  (() => {
-                    const seatInfo = calculateTripSeatAvailability({ ...trip, departureDate: formData.date }, allBookings);
-                    return (
-                      <div className="mt-2.5 flex items-center justify-between bg-emerald-50/70 border border-emerald-200/80 p-3 rounded-2xl text-xs">
-                        <span className="text-emerald-900 font-bold flex items-center gap-1.5">
-                          <Users size={14} className="text-emerald-600" /> Seats Availability Status:
-                        </span>
-                        <span className={`font-extrabold px-3 py-1 rounded-full text-xs border ${
-                          seatInfo.isFullyBooked 
-                            ? 'bg-rose-50 text-rose-700 border-rose-200 font-black' 
-                            : seatInfo.remainingSeats <= 5
-                            ? 'bg-amber-50 text-amber-800 border-amber-200'
-                            : 'bg-emerald-100 text-emerald-800 border-emerald-300'
-                        }`}>
-                          {seatInfo.isFullyBooked ? (
-                            '🔴 FULLY BOOKED (0 Seats Left)'
-                          ) : (
-                            `🔥 ${seatInfo.remainingSeats} Seats Available (${seatInfo.bookedPassengers}/${seatInfo.totalCapacity} Booked)`
-                          )}
-                        </span>
-                      </div>
-                    );
-                  })()
+                {seatInfo && (
+                  <div className="mt-2.5 flex items-center justify-between bg-emerald-50/70 border border-emerald-200/80 p-3 rounded-2xl text-xs">
+                    <span className="text-emerald-900 font-bold flex items-center gap-1.5">
+                      <Users size={14} className="text-emerald-600" /> Seats Availability Status:
+                    </span>
+                    <span className={`font-extrabold px-3 py-1 rounded-full text-xs border ${
+                      seatInfo.isFullyBooked 
+                        ? 'bg-rose-50 text-rose-700 border-rose-200 font-black' 
+                        : seatInfo.remainingSeats <= 5
+                        ? 'bg-amber-50 text-amber-800 border-amber-200'
+                        : 'bg-emerald-100 text-emerald-800 border-emerald-300'
+                    }`}>
+                      {seatInfo.isFullyBooked ? (
+                        '🔴 FULLY BOOKED (0 Seats Left)'
+                      ) : (
+                        `🔥 ${seatInfo.remainingSeats} Seats Available (${seatInfo.bookedPassengers}/${seatInfo.totalCapacity} Booked)`
+                      )}
+                    </span>
+                  </div>
                 )}
               </div>
 
