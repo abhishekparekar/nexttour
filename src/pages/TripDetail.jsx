@@ -29,7 +29,7 @@ const TripDetail = () => {
 
   // New States for Redesign
   const [activeTab, setActiveTab] = useState('About');
-  const [showHighlights, setShowHighlights] = useState(false);
+  const [showHighlights, setShowHighlights] = useState(true);
   const [showGallery, setShowGallery] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLeadModalOpen, setIsLeadModalOpen] = useState(false);
@@ -314,21 +314,23 @@ const TripDetail = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 md:pt-6 pb-24">
 
         {/* Breadcrumbs & Actions */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-          <nav className="flex items-center gap-2 text-sm text-gray-500 font-semibold">
-            <Link to="/" className="hover:text-[#00C9B7] transition-colors">Home</Link>
-            <ChevronRight size={14} />
-            <Link to="/trips" className="hover:text-[#00C9B7] transition-colors">Trips</Link>
-            <ChevronRight size={14} />
-            <span className="text-gray-900 line-clamp-1">{trip.title}</span>
+        <div className="flex items-center justify-between gap-3 mb-6 pt-3 sm:pt-0">
+          <nav className="flex items-center gap-1.5 text-xs sm:text-sm text-gray-500 font-semibold truncate min-w-0">
+            <Link to="/" className="hover:text-[#00C9B7] transition-colors flex-shrink-0">Home</Link>
+            <ChevronRight size={14} className="flex-shrink-0" />
+            <Link to="/trips" className="hover:text-[#00C9B7] transition-colors flex-shrink-0">Trips</Link>
+            <ChevronRight size={14} className="flex-shrink-0" />
+            <span className="text-gray-900 truncate font-bold">{trip.title}</span>
           </nav>
 
-          <div className="flex gap-3">
+          <div className="flex items-center gap-2 flex-shrink-0">
             <button
               onClick={handleShare}
-              className="flex items-center gap-2 text-xs font-bold text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 px-3.5 py-2 rounded-xl transition-all shadow-2xs"
+              className="flex items-center gap-1.5 text-xs font-bold text-gray-800 bg-white border border-gray-300 hover:border-[#00C9B7] hover:text-[#00C9B7] px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl transition-all shadow-xs active:scale-95 cursor-pointer"
+              title="Share this trip"
             >
-              <Share2 size={15} className="text-[#00C9B7]" /> Share
+              <Share2 size={14} className="text-[#00C9B7]" />
+              <span>Share</span>
             </button>
           </div>
         </div>
@@ -362,7 +364,16 @@ const TripDetail = () => {
             {/* Header Info */}
             <div className="mb-3 flex flex-col md:flex-row md:items-center justify-between gap-3" style={{ fontFamily: 'Lato, sans-serif' }}>
               <div className="min-w-0">
-                <h1 className="text-xl sm:text-[22px] leading-[1.3] font-black text-[#000000] mb-0.5">{trip.title}</h1>
+                <div className="flex items-center justify-between gap-2 mb-1">
+                  <h1 className="text-xl sm:text-[22px] leading-[1.3] font-black text-[#000000]">{trip.title}</h1>
+                  <button
+                    onClick={handleShare}
+                    className="md:hidden flex items-center gap-1 text-xs font-bold text-[#00C9B7] bg-teal-50 border border-teal-200 px-2.5 py-1 rounded-lg flex-shrink-0"
+                  >
+                    <Share2 size={13} />
+                    <span>Share</span>
+                  </button>
+                </div>
                 <div className="text-[18px] font-black text-[#000000]">₹ {trip.price?.toLocaleString()}</div>
               </div>
 
@@ -384,28 +395,39 @@ const TripDetail = () => {
               )}
             </div>
 
-            <hr className="my-5 border-[#ebebeb]" />
+            <hr className="my-4 border-[#ebebeb]" />
 
-            {/* Highlights Accordion */}
-            <div className="mb-2">
-              <button
-                onClick={() => setShowHighlights(!showHighlights)}
-                className="w-full flex justify-between items-center text-lg font-bold text-[#111] hover:text-gray-700 transition-colors py-2"
-              >
-                Highlights
-                {showHighlights ? <Minus className="w-5 h-5 text-[#717171]" /> : <Plus className="w-5 h-5 text-[#717171]" />}
-              </button>
-              {showHighlights && trip.highlights && (
-                <ul className="mt-4 space-y-3 text-[15px] text-[#111111] font-medium pl-1">
-                  {trip.highlights.map((h, i) => (
-                    <li key={i} className="flex gap-3 items-start">
-                      <span className="text-[#00C9B7] font-bold mt-0.5">•</span>
-                      <span>{h}</span>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
+            {/* Prominent Highlights Display (Open by Default) */}
+            {trip.highlights && trip.highlights.length > 0 && (
+              <div className="mb-5 bg-white rounded-2xl p-5 border border-gray-200 shadow-sm">
+                <div className="flex items-center justify-between mb-3 border-b border-gray-100 pb-2.5">
+                  <h3 className="text-base font-black text-[#111] flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#00C9B7] shadow-[0_0_8px_#00C9B7]" />
+                    Trip Highlights
+                  </h3>
+                  <button
+                    onClick={() => setShowHighlights(!showHighlights)}
+                    className="p-1 text-gray-400 hover:text-gray-600 rounded-lg"
+                    aria-label="Toggle Highlights"
+                  >
+                    {showHighlights ? <Minus size={16} /> : <Plus size={16} />}
+                  </button>
+                </div>
+
+                {showHighlights && (
+                  <ul className="space-y-2.5 text-xs sm:text-sm text-gray-800 font-medium pt-1">
+                    {trip.highlights.map((h, i) => (
+                      <li key={i} className="flex gap-2.5 items-start">
+                        <span className="w-5 h-5 rounded-full bg-teal-50 text-[#00C9B7] flex items-center justify-center flex-shrink-0 font-bold text-xs mt-0.5 border border-teal-100">
+                          ✓
+                        </span>
+                        <span className="leading-relaxed">{h}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
 
             <hr className="my-5 border-[#ebebeb]" />
 
