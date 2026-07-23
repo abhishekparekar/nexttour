@@ -27,8 +27,6 @@ import AdminDrivers from './pages/admin/Drivers';
 import AdminSchedules from './pages/admin/Schedules';
 import AdminExpenses from './pages/admin/Expenses';
 import AdminPayments from './pages/admin/Payments';
-import AdminPendingPayments from './pages/admin/PendingPayments';
-import AdminCustomers from './pages/admin/Customers';
 import AdminReports from './pages/admin/Reports';
 import AdminFooterSettings from './pages/admin/FooterSettings';
 import AdminAboutSettings from './pages/admin/AboutSettings';
@@ -70,8 +68,6 @@ function App() {
           <Route path="schedules" element={<AdminSchedules />} />
           <Route path="expenses" element={<AdminExpenses />} />
           <Route path="payments" element={<AdminPayments />} />
-          <Route path="pending-payments" element={<AdminPendingPayments />} />
-          <Route path="customers" element={<AdminCustomers />} />
           <Route path="reports" element={<AdminReports />} />
           <Route path="footer" element={<AdminFooterSettings />} />
           <Route path="about" element={<AdminAboutSettings />} />

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { subscribeToBookings, updateBookingPayments } from '../../firebase';
 import { calculateBookingFinances, formatCurrency } from '../../utils/bookingUtils';
 import { printPaymentReceipt, printBookingConfirmation } from '../../utils/printTemplates';
+import { sendWhatsAppNotification } from '../../utils/whatsapp';
 import { Search, CreditCard, Plus, X, Loader2, DollarSign, Calendar, MessageSquare, AlertCircle, Phone, ArrowUpRight, Printer } from 'lucide-react';
 
 const AdminPayments = () => {
@@ -223,12 +224,21 @@ const AdminPayments = () => {
                       <td className="px-4 py-3 align-middle">
                         <div className="flex items-center gap-1.5">
                           {remainingBalance > 0 && (
-                            <button
-                              onClick={() => handleOpenPaymentModal(booking)}
-                              className="bg-[#00C9B7] hover:bg-[#00b3a3] text-white font-bold py-1 px-2.5 rounded-lg text-[11px] transition-all cursor-pointer flex items-center gap-1 shadow-xs"
-                            >
-                              <Plus size={12} /> Collect Balance
-                            </button>
+                            <>
+                              <button
+                                onClick={() => handleOpenPaymentModal(booking)}
+                                className="bg-[#00C9B7] hover:bg-[#00b3a3] text-white font-bold py-1 px-2.5 rounded-lg text-[11px] transition-all cursor-pointer flex items-center gap-1 shadow-xs"
+                              >
+                                <Plus size={12} /> Collect Balance
+                              </button>
+                              <button
+                                onClick={() => sendWhatsAppNotification(booking, 'reminder')}
+                                className="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 font-bold py-1 px-2 rounded-lg text-[11px] transition-all cursor-pointer flex items-center gap-1"
+                                title="Send WhatsApp Payment Reminder"
+                              >
+                                <MessageSquare size={12} /> WA Due Alert
+                              </button>
+                            </>
                           )}
                           <button
                             onClick={() => printPaymentReceipt(booking)}

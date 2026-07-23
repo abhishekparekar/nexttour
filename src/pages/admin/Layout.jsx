@@ -36,11 +36,9 @@ const Sidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen, onLogout 
       stepBadge: '2',
       items: [
         { path: '/admin/bookings', icon: Calendar, label: '1. Reservations & Office' },
-        { path: '/admin/payments', icon: CreditCard, label: '2. Balance Collection' },
-        { path: '/admin/pending-payments', icon: AlertCircle, label: '3. Pending Dues' },
-        { path: '/admin/leads', icon: FileDown, label: '4. Customer Leads' },
-        { path: '/admin/inquiries', icon: MessageSquare, label: '5. Web Inquiries' },
-        { path: '/admin/customers', icon: Users, label: '6. Customer Directory' }
+        { path: '/admin/payments', icon: CreditCard, label: '2. Payment & Balance Manager' },
+        { path: '/admin/leads', icon: FileDown, label: '3. Customer Leads' },
+        { path: '/admin/inquiries', icon: MessageSquare, label: '4. Web Inquiries' }
       ]
     },
     {
