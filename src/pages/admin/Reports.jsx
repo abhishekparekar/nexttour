@@ -1,9 +1,9 @@
 import { useState, useEffect, useMemo } from 'react';
 import { subscribeToBookings, subscribeToExpenses, subscribeToSchedules } from '../../firebase';
 import { useCachedTrips } from '../../firebaseCache';
-import { calculateTripFinances, formatCurrency, exportToCSV, EXPENSE_CATEGORIES, getCategoryLabel } from '../../utils/bookingUtils';
+import { calculateTripFinances, formatCurrency, exportToCSV, EXPENSE_CATEGORIES, getCategoryLabel, calculateTripSeatAvailability } from '../../utils/bookingUtils';
 import { printTripFinancialReport } from '../../utils/printTemplates';
-import { Loader2, TrendingUp, TrendingDown, DollarSign, Wallet, FileText, ArrowUpRight, BarChart3, Calendar, Download, Printer, Filter, Search, X, CheckCircle, AlertCircle, Eye, MapPin, ChevronDown } from 'lucide-react';
+import { Loader2, TrendingUp, TrendingDown, DollarSign, Wallet, FileText, Calendar, Download, Printer, Search, X, Eye, MapPin, Users, Phone, UserCheck } from 'lucide-react';
 
 const AdminReports = () => {
   const [bookings, setBookings] = useState([]);
@@ -19,6 +19,7 @@ const AdminReports = () => {
   const [dateRangePreset, setDateRangePreset] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedAuditTrip, setSelectedAuditTrip] = useState(null);
+  const [showPassengerModal, setShowPassengerModal] = useState(null);
 
   useEffect(() => {
     const unsubBookings = subscribeToBookings((data) => setBookings(data || []));
@@ -81,6 +82,12 @@ const AdminReports = () => {
       .map(spotTitle => {
         const titleLower = spotTitle.toLowerCase();
 
+        // Find matching schedule for capacity
+        const scheduleObj = schedules.find(s => {
+          const sTitle = (s.tripTitle || s.title || '').toLowerCase();
+          return sTitle.includes(titleLower) || titleLower.includes(sTitle);
+        });
+
         // Match bookings for this spot & selected date
         const spotBookings = filteredBookings.filter(b => {
           const bTitle = (b.tripName || '').toLowerCase();
@@ -97,6 +104,8 @@ const AdminReports = () => {
           return matchesSpot && matchesDate;
         });
 
+        const seatInfo = calculateTripSeatAvailability(scheduleObj || { tripTitle: spotTitle, capacity: 15 }, spotBookings);
+
         const bookingsCount = spotBookings.length;
         const travelersCount = spotBookings.reduce((sum, b) => sum + (Number(b.travelers) || 1), 0);
         const totalBookedValue = spotBookings.reduce((sum, b) => sum + (Number(b.amount) || 0), 0);
@@ -112,6 +121,7 @@ const AdminReports = () => {
 
         return {
           spotTitle,
+          seatInfo,
           finances: {
             spotTitle,
             departureDate: selectedDateFilter === 'all' ? 'All Departures' : selectedDateFilter,
@@ -133,7 +143,7 @@ const AdminReports = () => {
         const q = searchTerm.toLowerCase();
         return item.spotTitle.toLowerCase().includes(q);
       });
-  }, [uniqueTourSpots, selectedSpotFilter, selectedDateFilter, filteredBookings, filteredExpenses, searchTerm]);
+  }, [uniqueTourSpots, selectedSpotFilter, selectedDateFilter, filteredBookings, filteredExpenses, schedules, searchTerm]);
 
   // Global Financial Statistics
   const globalTotalBooked = filteredBookings.reduce((sum, b) => sum + (Number(b.amount) || 0), 0);
@@ -153,11 +163,12 @@ const AdminReports = () => {
 
   // Export CSV Report Handlers
   const handleExportTripReportCSV = () => {
-    const rows = spotReports.map(({ spotTitle, finances }) => ({
+    const rows = spotReports.map(({ spotTitle, finances, seatInfo }) => ({
       'Tour Spot / Package': spotTitle,
       'Departure Date Filter': finances.departureDate,
       'Total Bookings': finances.bookingsCount,
       'Passengers Count': finances.travelersCount,
+      'Remaining Seats': seatInfo.remainingSeats,
       'Total Booked Value (INR)': finances.totalBookedValue,
       'Revenue Collected (INR)': finances.passengerRevenueCollection,
       'Pending Receivables (INR)': finances.pendingReceivables,
@@ -172,6 +183,7 @@ const AdminReports = () => {
       'Departure Date Filter',
       'Total Bookings',
       'Passengers Count',
+      'Remaining Seats',
       'Total Booked Value (INR)',
       'Revenue Collected (INR)',
       'Pending Receivables (INR)',
@@ -212,7 +224,7 @@ const AdminReports = () => {
       <div className="bg-white border-b border-gray-100 px-4 py-3 flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-base font-bold text-gray-900">Financial Reports & Profitability Analytics</h1>
-          <p className="text-gray-600 text-xs mt-0.5">Unique Tour Spots & Departures Profit/Loss Audit</p>
+          <p className="text-gray-600 text-xs mt-0.5">Clear Profit & Loss Audit by Trip, Seats, Passengers & Expenses</p>
         </div>
 
         <div className="flex items-center gap-2">
@@ -294,7 +306,7 @@ const AdminReports = () => {
               </div>
             </div>
             <p className="text-[11px] font-bold text-gray-600 mt-2">
-              Formula: Revenue Collected - Trip Expenses
+              Revenue Collected - Trip Expenses
             </p>
           </div>
         </div>
@@ -346,23 +358,6 @@ const AdminReports = () => {
               </select>
             </div>
           </div>
-
-          {/* Quick Date Reset Chip if Date Active */}
-          {selectedDateFilter !== 'all' && (
-            <div className="flex items-center gap-2 text-xs pt-2 border-t border-gray-100">
-              <span className="text-gray-500">Filtered for Date:</span>
-              <span className="bg-sky-100 text-sky-800 font-bold px-2.5 py-0.5 rounded-full border border-sky-200 flex items-center gap-1">
-                {selectedDateFilter}
-                <button onClick={() => setSelectedDateFilter('all')} className="hover:text-red-600"><X size={12} /></button>
-              </span>
-              <button
-                onClick={() => setSelectedDateFilter('all')}
-                className="text-xs text-red-600 font-bold hover:underline"
-              >
-                Show All Dates
-              </button>
-            </div>
-          )}
         </div>
 
         {/* Tab Navigation */}
@@ -373,7 +368,7 @@ const AdminReports = () => {
               activeReportTab === 'trips' ? 'bg-[#00C9B7] text-white shadow-xs' : 'text-gray-600 hover:bg-gray-50'
             }`}
           >
-            Tour Spot Profitability Ledger ({spotReports.length} Spots)
+            Trip Profitability Ledger ({spotReports.length} Spots)
           </button>
           <button
             onClick={() => setActiveReportTab('expenses')}
@@ -385,58 +380,77 @@ const AdminReports = () => {
           </button>
         </div>
 
-        {/* TAB 1: Unique Spot Profitability Table (No Repetition) */}
+        {/* TAB 1: Unique Spot Profitability Table (Sequential Flow: Trip -- Bookings / Seats -- Passengers -- Expenses -- Profit/Loss) */}
         {activeReportTab === 'trips' && (
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
             <div className="px-4 py-3 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
-              <h3 className="text-xs font-extrabold uppercase tracking-wider text-gray-700">Tour Spot Profitability Audit Ledger</h3>
-              <span className="text-[11px] text-gray-500 font-medium">Passenger Collections - Expenses = Net Profit/Loss</span>
+              <h3 className="text-xs font-extrabold uppercase tracking-wider text-gray-700">Trip & Departure Profit/Loss Ledger</h3>
+              <span className="text-[11px] text-gray-500 font-medium">Revenue Collected - Itemized Expenses = Net Profit/Loss</span>
             </div>
 
             <div className="hidden lg:block overflow-x-auto">
               <table className="w-full text-left">
                 <thead>
                   <tr className="text-gray-600 text-xs font-bold uppercase tracking-wide border-b border-gray-200 bg-gray-50/50">
-                    <th className="px-4 py-3">Tour Spot / Package</th>
-                    <th className="px-4 py-3 text-center">Departure Date Filter</th>
-                    <th className="px-4 py-3 text-center">Travelers / Bookings</th>
-                    <th className="px-4 py-3 text-right">Booked Value</th>
+                    <th className="px-4 py-3">Trip / Package</th>
+                    <th className="px-4 py-3 text-center">Total Bookings / Seats Capacity</th>
+                    <th className="px-4 py-3 text-center">Passengers History</th>
                     <th className="px-4 py-3 text-right text-emerald-700">Revenue Collection</th>
-                    <th className="px-4 py-3 text-right text-rose-600">Total Expenses</th>
+                    <th className="px-4 py-3 text-right text-rose-600">Trip Expenses</th>
                     <th className="px-4 py-3 text-right">Net Profit / Loss</th>
-                    <th className="px-4 py-3 text-center">Action</th>
+                    <th className="px-4 py-3 text-center">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {spotReports.map(({ spotTitle, finances }) => (
+                  {spotReports.map(({ spotTitle, finances, seatInfo }) => (
                     <tr key={spotTitle} className="border-b border-gray-100 last:border-0 hover:bg-gray-50/80 transition-colors">
-                      <td className="px-4 py-3 align-middle font-bold text-gray-900 text-xs flex items-center gap-1.5">
-                        <MapPin size={14} className="text-[#00C9B7]" />
-                        {spotTitle}
+                      {/* 1. Trip & Departure Date */}
+                      <td className="px-4 py-3 align-middle font-bold text-gray-900 text-xs">
+                        <div className="flex items-center gap-1.5">
+                          <MapPin size={14} className="text-[#00C9B7]" />
+                          {spotTitle}
+                        </div>
+                        <div className="text-gray-500 text-[11px] mt-0.5">Date: {finances.departureDate}</div>
                       </td>
 
+                      {/* 2. Total Bookings / Seats Capacity */}
                       <td className="px-4 py-3 align-middle text-center">
-                        <span className="bg-sky-50 text-sky-800 border border-sky-200 text-[11px] font-bold px-2 py-0.5 rounded-full">
-                          {finances.departureDate}
+                        <div className="text-xs font-bold text-gray-800">
+                          {finances.travelersCount} Pax ({finances.bookingsCount} Bookings)
+                        </div>
+                        <span className={`mt-1 inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full border ${
+                          seatInfo.isFullyBooked 
+                            ? 'bg-rose-50 text-rose-700 border-rose-200 font-black' 
+                            : 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                        }`}>
+                          <Users size={11} />
+                          {seatInfo.isFullyBooked ? 'FULL (0 Left)' : `${seatInfo.remainingSeats} Seats Left (${seatInfo.bookedPassengers}/${seatInfo.totalCapacity})`}
                         </span>
                       </td>
 
-                      <td className="px-4 py-3 align-middle text-center text-xs font-bold text-gray-800">
-                        {finances.travelersCount} Pax ({finances.bookingsCount} Bks)
+                      {/* 3. Passengers History Roster Button */}
+                      <td className="px-4 py-3 align-middle text-center">
+                        <button
+                          onClick={() => setShowPassengerModal({ spotTitle, bookings: finances.scheduleBookings })}
+                          className="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 font-bold py-1 px-2.5 rounded-xl text-[11px] transition-colors flex items-center justify-center gap-1.5 mx-auto cursor-pointer"
+                        >
+                          <UserCheck size={13} /> {finances.scheduleBookings.length} Customers Roster
+                        </button>
                       </td>
 
-                      <td className="px-4 py-3 align-middle text-right text-xs font-bold text-gray-700">
-                        {formatCurrency(finances.totalBookedValue)}
-                      </td>
-
+                      {/* 4. Revenue Collection */}
                       <td className="px-4 py-3 align-middle text-right text-xs font-black text-emerald-700">
                         {formatCurrency(finances.passengerRevenueCollection)}
+                        <div className="text-[10px] text-gray-400 font-normal">Booked: {formatCurrency(finances.totalBookedValue)}</div>
                       </td>
 
+                      {/* 5. Trip Expenses */}
                       <td className="px-4 py-3 align-middle text-right text-xs font-black text-rose-600">
                         {formatCurrency(finances.totalExpenses)}
+                        <div className="text-[10px] text-gray-400 font-normal">{finances.scheduleExpenses.length} Expense Logs</div>
                       </td>
 
+                      {/* 6. Net Profit / Loss */}
                       <td className="px-4 py-3 align-middle text-right">
                         <span className={`inline-flex items-center gap-1 text-xs font-black px-2.5 py-1 rounded-lg ${
                           finances.isProfit 
@@ -445,8 +459,10 @@ const AdminReports = () => {
                         }`}>
                           {finances.isProfit ? '+' : ''}{formatCurrency(finances.netProfitLoss)}
                         </span>
+                        <div className="text-[10px] text-gray-500 font-semibold mt-0.5">{finances.profitMarginPercent}% Margin</div>
                       </td>
 
+                      {/* Actions */}
                       <td className="px-4 py-3 align-middle text-center">
                         <div className="flex items-center justify-center gap-1">
                           <button
@@ -470,59 +486,6 @@ const AdminReports = () => {
                 </tbody>
               </table>
             </div>
-
-            {/* Mobile View */}
-            <div className="block lg:hidden divide-y divide-gray-100">
-              {spotReports.map(({ spotTitle, finances }) => (
-                <div key={spotTitle} className="p-4 space-y-2">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h4 className="font-bold text-gray-900 text-xs flex items-center gap-1">
-                        <MapPin size={12} className="text-[#00C9B7]" />
-                        {spotTitle}
-                      </h4>
-                      <p className="text-gray-500 text-[11px]">Departure: {finances.departureDate}</p>
-                    </div>
-                    <span className={`px-2.5 py-1 rounded-lg text-xs font-black border ${
-                      finances.isProfit 
-                        ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
-                        : 'bg-rose-50 text-rose-700 border-rose-200'
-                    }`}>
-                      {finances.isProfit ? '+' : ''}{formatCurrency(finances.netProfitLoss)}
-                    </span>
-                  </div>
-
-                  <div className="bg-gray-50 rounded-xl p-3 text-xs space-y-1 border border-gray-100">
-                    <div className="flex justify-between"><span className="text-gray-500">Travelers Count:</span><span className="font-bold">{finances.travelersCount} Pax ({finances.bookingsCount} Bks)</span></div>
-                    <div className="flex justify-between"><span className="text-gray-500">Total Booked Value:</span><span className="font-bold">{formatCurrency(finances.totalBookedValue)}</span></div>
-                    <div className="flex justify-between"><span className="text-gray-500">Revenue Collection:</span><span className="text-emerald-700 font-black">{formatCurrency(finances.passengerRevenueCollection)}</span></div>
-                    <div className="flex justify-between"><span className="text-gray-500">Trip Expenses:</span><span className="text-rose-600 font-black">{formatCurrency(finances.totalExpenses)}</span></div>
-                  </div>
-
-                  <div className="flex gap-2 pt-1">
-                    <button
-                      onClick={() => setSelectedAuditTrip({ trip: { tripTitle: spotTitle, departureDate: finances.departureDate }, finances })}
-                      className="flex-1 bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200 font-bold py-1.5 rounded-xl text-xs flex items-center justify-center gap-1"
-                    >
-                      <Eye size={13} /> Deep Audit
-                    </button>
-                    <button
-                      onClick={() => printTripFinancialReport({ tripTitle: spotTitle, departureDate: finances.departureDate }, finances)}
-                      className="flex-1 bg-gray-50 hover:bg-gray-100 text-gray-700 border border-gray-200 font-bold py-1.5 rounded-xl text-xs flex items-center justify-center gap-1"
-                    >
-                      <Printer size={13} /> PDF Report
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {spotReports.length === 0 && (
-              <div className="text-center py-12">
-                <FileText className="w-10 h-10 text-gray-300 mx-auto mb-2" />
-                <h4 className="text-gray-700 font-bold text-xs">No tour spot profitability records found</h4>
-              </div>
-            )}
           </div>
         )}
 
@@ -559,24 +522,58 @@ const AdminReports = () => {
                 <div className="font-mono bg-white p-2 rounded border border-gray-200 text-green-700 font-bold">
                   Net Profit = Passenger Revenue Collected - Total Trip Expenses
                 </div>
-                <div className="text-[11px] text-gray-500">
-                  Note: Total Booked value represents expected revenue. Net Profit is calculated strictly on actual collected cash/online payments received from travelers.
-                </div>
-              </div>
-
-              <div className="bg-gray-50 border border-gray-100 rounded-xl p-3 text-xs text-gray-700 space-y-2">
-                <div className="font-bold text-gray-900">2. Tracked Expense Categories:</div>
-                <ul className="list-disc list-inside text-gray-600 text-[11px] space-y-1">
-                  <li><strong>Diesel & Petrol:</strong> Vehicle fuel expenses logged for the trip.</li>
-                  <li><strong>Water & Medical:</strong> Mineral water crates, first-aid oxygen, emergency supplies.</li>
-                  <li><strong>Tickets & Permits:</strong> Entry passes, permit fees, monument tickets.</li>
-                  <li><strong>Transport & Guide:</strong> Vehicle rental costs, driver allowances, guide fees.</li>
-                </ul>
               </div>
             </div>
           </div>
         )}
       </div>
+
+      {/* Passengers History Roster Modal */}
+      {showPassengerModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl w-full max-w-xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 my-auto">
+            <div className="px-6 py-4 border-b border-gray-150 flex items-center justify-between bg-gray-50">
+              <div>
+                <h3 className="font-bold text-gray-900 text-sm">Passengers Roster & History</h3>
+                <p className="text-gray-500 text-xs">{showPassengerModal.spotTitle}</p>
+              </div>
+              <button onClick={() => setShowPassengerModal(null)} className="p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg">
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-3 max-h-[70vh] overflow-y-auto text-xs">
+              {showPassengerModal.bookings.map(b => (
+                <div key={b.id} className="bg-gray-50 border border-gray-200/80 rounded-2xl p-3.5 flex justify-between items-center">
+                  <div>
+                    <div className="font-bold text-gray-900 text-xs flex items-center gap-1.5">
+                      <UserCheck size={14} className="text-[#00C9B7]" />
+                      {b.name} ({b.travelers || 1} Pax)
+                    </div>
+                    <div className="text-gray-500 text-[11px] mt-0.5 flex items-center gap-2">
+                      <span className="flex items-center gap-1"><Phone size={11} /> {b.phone}</span>
+                      <span>&bull; Date: {b.selectedDate || 'Active'}</span>
+                    </div>
+                  </div>
+
+                  <div className="text-right">
+                    <span className="font-black text-emerald-700 text-xs block">{formatCurrency(b.paidAmount)} Paid</span>
+                    {b.amount - b.paidAmount > 0 && (
+                      <span className="text-rose-600 text-[10px] font-bold block">Pending: {formatCurrency(b.amount - b.paidAmount)}</span>
+                    )}
+                  </div>
+                </div>
+              ))}
+
+              {showPassengerModal.bookings.length === 0 && (
+                <div className="text-center py-6 text-gray-400 italic">
+                  No passenger history registered for this spot yet.
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Deep Audit Modal for a Selected Trip */}
       {selectedAuditTrip && (
@@ -634,12 +631,6 @@ const AdminReports = () => {
                       <span className="font-black text-rose-600 text-xs">{formatCurrency(exp.amount)}</span>
                     </div>
                   ))}
-
-                  {selectedAuditTrip.finances.scheduleExpenses.length === 0 && (
-                    <div className="text-gray-400 italic text-center py-3 bg-gray-50 rounded-xl border border-gray-100">
-                      No expenses logged for this tour spot yet.
-                    </div>
-                  )}
                 </div>
               </div>
 

@@ -509,30 +509,66 @@ const Booking = () => {
                 )}
               </div>
 
-              <div className="mt-6 border-t border-[#f0f0f0] pt-6">
-                <label className={labelClass}>Payment Option</label>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-2">
-                  <label className={`flex flex-col p-4 border-2 rounded-2xl cursor-pointer transition-all ${formData.paymentMode === 'full' ? 'border-[#00C9B7] bg-[#E6FAF8]' : 'border-gray-200 hover:border-gray-300'}`}>
-                    <input type="radio" name="paymentMode" value="full" checked={formData.paymentMode === 'full'} onChange={handleChange} className="sr-only" />
-                    <span className="font-bold text-[#111] text-sm">Full Payment</span>
-                    <span className="text-xs text-gray-500 mt-1">Pay 100% now</span>
-                    <span className="text-lg font-black text-[#111] mt-3">₹{((trip?.price || 0) * formData.trekkers).toLocaleString()}</span>
-                  </label>
+              <div className="mt-6 border-t border-[#f0f0f0] pt-6 space-y-4">
+                <div>
+                  <label className={labelClass}>Select Payment Option</label>
+                  <p className="text-xs text-gray-500 mb-3">Choose how you want to pay for your trip reservation</p>
+                  
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <label className={`flex flex-col p-4 border-2 rounded-2xl cursor-pointer transition-all ${formData.paymentMode === 'full' ? 'border-[#00C9B7] bg-[#E6FAF8] shadow-xs' : 'border-gray-200 hover:border-gray-300 bg-white'}`}>
+                      <input type="radio" name="paymentMode" value="full" checked={formData.paymentMode === 'full'} onChange={handleChange} className="sr-only" />
+                      <span className="font-bold text-[#111] text-sm">Full 100% Payment</span>
+                      <span className="text-[11px] text-gray-500 mt-0.5">Pay entire ticket price now</span>
+                      <span className="text-base font-black text-[#00C9B7] mt-2">₹{((trip?.price || 0) * formData.trekkers).toLocaleString()}</span>
+                    </label>
 
-                  <label className={`flex flex-col p-4 border-2 rounded-2xl cursor-pointer transition-all ${formData.paymentMode === 'advance' ? 'border-[#00C9B7] bg-[#E6FAF8]' : 'border-gray-200 hover:border-gray-300'}`}>
-                    <input type="radio" name="paymentMode" value="advance" checked={formData.paymentMode === 'advance'} onChange={handleChange} className="sr-only" />
-                    <span className="font-bold text-[#111] text-sm">Pay Advance</span>
-                    <span className="text-xs text-gray-500 mt-1">Pay 20% to book</span>
-                    <span className="text-lg font-black text-[#111] mt-3">₹{Math.round(((trip?.price || 0) * formData.trekkers) * 0.20).toLocaleString()}</span>
-                  </label>
+                    <label className={`flex flex-col p-4 border-2 rounded-2xl cursor-pointer transition-all ${formData.paymentMode === 'advance' ? 'border-[#00C9B7] bg-[#E6FAF8] shadow-xs' : 'border-gray-200 hover:border-gray-300 bg-white'}`}>
+                      <input type="radio" name="paymentMode" value="advance" checked={formData.paymentMode === 'advance'} onChange={handleChange} className="sr-only" />
+                      <span className="font-bold text-[#111] text-sm">Token Advance (20%)</span>
+                      <span className="text-[11px] text-gray-500 mt-0.5">Reserve seat now, pay rest later</span>
+                      <span className="text-base font-black text-emerald-700 mt-2">₹{Math.round(((trip?.price || 0) * formData.trekkers) * 0.20).toLocaleString()}</span>
+                    </label>
 
-                  <label className={`flex flex-col p-4 border-2 rounded-2xl cursor-pointer transition-all ${formData.paymentMode === 'later' ? 'border-[#00C9B7] bg-[#E6FAF8]' : 'border-gray-200 hover:border-gray-300'}`}>
-                    <input type="radio" name="paymentMode" value="later" checked={formData.paymentMode === 'later'} onChange={handleChange} className="sr-only" />
-                    <span className="font-bold text-[#111] text-sm">Pay Offline</span>
-                    <span className="text-xs text-gray-500 mt-1">Book now, pay later</span>
-                    <span className="text-lg font-black text-gray-400 mt-3">₹0</span>
-                  </label>
+                    <label className={`flex flex-col p-4 border-2 rounded-2xl cursor-pointer transition-all ${formData.paymentMode === 'later' ? 'border-[#00C9B7] bg-[#E6FAF8] shadow-xs' : 'border-gray-200 hover:border-gray-300 bg-white'}`}>
+                      <input type="radio" name="paymentMode" value="later" checked={formData.paymentMode === 'later'} onChange={handleChange} className="sr-only" />
+                      <span className="font-bold text-[#111] text-sm">Pay at Pickup / Cash</span>
+                      <span className="text-[11px] text-gray-500 mt-0.5">Pay 100% on trip departure</span>
+                      <span className="text-base font-black text-gray-500 mt-2">₹0 Online</span>
+                    </label>
+                  </div>
                 </div>
+
+                {/* Dynamic Price Calculation Summary Box */}
+                {(() => {
+                  const unitPrice = Number(trip?.price) || 0;
+                  const trekkers = Number(formData.trekkers) || 1;
+                  const total = unitPrice * trekkers;
+                  const payNow = formData.paymentMode === 'full' 
+                    ? total 
+                    : (formData.paymentMode === 'advance' ? Math.round(total * 0.20) : 0);
+                  const payLater = total - payNow;
+
+                  return (
+                    <div className="bg-gray-50 border border-gray-200/80 rounded-2xl p-4 text-xs space-y-2">
+                      <div className="flex justify-between items-center text-gray-600">
+                        <span>Ticket Rate:</span>
+                        <span className="font-bold text-gray-900">₹{unitPrice.toLocaleString()} &times; {trekkers} Pax</span>
+                      </div>
+                      <div className="flex justify-between items-center text-gray-600">
+                        <span>Total Package Value:</span>
+                        <span className="font-bold text-gray-900">₹{total.toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between items-center text-emerald-700 font-extrabold pt-2 border-t border-gray-200">
+                        <span>Payable Amount Now:</span>
+                        <span className="text-sm text-emerald-700">₹{payNow.toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between items-center text-gray-500 text-[11px]">
+                        <span>Remaining Balance Due at Pickup:</span>
+                        <span className="font-bold text-rose-600">₹{payLater.toLocaleString()}</span>
+                      </div>
+                    </div>
+                  );
+                })()}
               </div>
 
             </div>
