@@ -13,6 +13,7 @@ const AdminReports = () => {
   const [loading, setLoading] = useState(true);
   const [activeReportTab, setActiveReportTab] = useState('trips');
   const [dateFilter, setDateFilter] = useState('all');
+  const [selectedTripFilter, setSelectedTripFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedAuditTrip, setSelectedAuditTrip] = useState(null);
 
@@ -101,22 +102,24 @@ const AdminReports = () => {
 
   // 1. Dynamic Trip Profitability Calculations for all trips
   const tripReports = useMemo(() => {
-    return unifiedTripsList.map(trip => {
-      const finances = calculateTripFinances(trip, filteredBookings, filteredExpenses);
-      return {
-        trip,
-        finances
-      };
-    })
-    .filter(item => item.finances !== null)
-    .filter(item => {
-      const q = searchTerm.toLowerCase();
-      return (
-        item.trip.tripTitle?.toLowerCase().includes(q) ||
-        item.trip.departureDate?.toLowerCase().includes(q)
-      );
-    });
-  }, [unifiedTripsList, filteredBookings, filteredExpenses, searchTerm]);
+    return unifiedTripsList
+      .filter(trip => selectedTripFilter === 'all' || String(trip.id) === String(selectedTripFilter))
+      .map(trip => {
+        const finances = calculateTripFinances(trip, filteredBookings, filteredExpenses);
+        return {
+          trip,
+          finances
+        };
+      })
+      .filter(item => item.finances !== null)
+      .filter(item => {
+        const q = searchTerm.toLowerCase();
+        return (
+          item.trip.tripTitle?.toLowerCase().includes(q) ||
+          item.trip.departureDate?.toLowerCase().includes(q)
+        );
+      });
+  }, [unifiedTripsList, filteredBookings, filteredExpenses, searchTerm, selectedTripFilter]);
 
   // Global Financial Statistics
   const globalTotalBooked = filteredBookings.reduce((sum, b) => sum + (Number(b.amount) || 0), 0);
@@ -282,17 +285,30 @@ const AdminReports = () => {
           </div>
         </div>
 
-        {/* Search & Tab Navigation */}
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex flex-col sm:flex-row justify-between items-center gap-3">
-          <div className="relative w-full sm:w-72">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search reports by trip name or date..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-white border border-gray-300 rounded-xl pl-10 pr-4 py-2 text-xs text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#00C9B7]"
-            />
+        {/* Search, Trip Filter & Tab Navigation */}
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex flex-col lg:flex-row justify-between items-center gap-3">
+          <div className="flex flex-col sm:flex-row items-center gap-2.5 w-full lg:w-auto">
+            <div className="relative w-full sm:w-64">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search reports by trip name or date..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full bg-white border border-gray-300 rounded-xl pl-10 pr-4 py-2 text-xs text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#00C9B7]"
+              />
+            </div>
+
+            <select
+              value={selectedTripFilter}
+              onChange={(e) => setSelectedTripFilter(e.target.value)}
+              className="w-full sm:w-auto bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs text-gray-900 font-bold focus:outline-none focus:border-[#00C9B7] cursor-pointer"
+            >
+              <option value="all">Filter: All Trips ({unifiedTripsList.length})</option>
+              {unifiedTripsList.map(t => (
+                <option key={t.id} value={t.id}>{t.tripTitle} ({t.departureDate})</option>
+              ))}
+            </select>
           </div>
 
           <div className="bg-gray-100 border border-gray-200 rounded-xl p-1 flex gap-1 shadow-xs">
