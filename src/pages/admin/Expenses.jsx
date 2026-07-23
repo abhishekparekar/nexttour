@@ -43,32 +43,38 @@ const AdminExpenses = () => {
     };
   }, []);
 
-  // Merge all available trips (Schedules + Tour Packages + Booked Trips) into a unified list
+  // Merge all available trips (Schedules + Tour Packages + Booked Trips) into a unified list (Deduplicated by title & date)
   const allAvailableTrips = useMemo(() => {
     const map = new Map();
 
     // 1. Add explicitly created departure schedules
     schedules.forEach(s => {
-      const id = String(s.id);
-      map.set(id, {
-        id: s.id,
-        tripId: s.tripId || s.id,
-        tripTitle: s.tripTitle || s.title || 'Tour Departure',
-        departureDate: s.departureDate || s.date || 'Active Departure',
-        label: `${s.tripTitle || s.title} (${s.departureDate || s.date || 'Active'})`
-      });
+      const title = s.tripTitle || s.title || 'Tour Departure';
+      const date = s.departureDate || s.date || 'Active Departure';
+      const key = `${title.toLowerCase()}_${date}`;
+      if (!map.has(key)) {
+        map.set(key, {
+          id: s.id,
+          tripId: s.tripId || s.id,
+          tripTitle: title,
+          departureDate: date,
+          label: `${title} (${date})`
+        });
+      }
     });
 
     // 2. Add Tour Packages (if not already covered by schedule)
     tourPackages.forEach(t => {
-      const id = `TRIP_${t.id}`;
-      if (!map.has(id)) {
-        map.set(id, {
-          id: id,
+      const title = t.title || t.name || 'Tour Package';
+      const date = (t.upcomingDates && t.upcomingDates[0]) || 'All Departures';
+      const key = `${title.toLowerCase()}_${date}`;
+      if (!map.has(key)) {
+        map.set(key, {
+          id: `TRIP_${t.id}`,
           tripId: t.id,
-          tripTitle: t.title || t.name || 'Tour Package',
-          departureDate: (t.upcomingDates && t.upcomingDates[0]) || 'All Departures',
-          label: `${t.title || t.name} (Tour Package)`
+          tripTitle: title,
+          departureDate: date,
+          label: `${title} (${date})`
         });
       }
     });
@@ -76,14 +82,16 @@ const AdminExpenses = () => {
     // 3. Add any trip registered in Bookings
     bookings.forEach(b => {
       if (b.tripName) {
-        const id = b.scheduleId || `BOOKING_TRIP_${b.tripId || b.tripName}`;
-        if (!map.has(id)) {
-          map.set(id, {
-            id: id,
-            tripId: b.tripId || id,
-            tripTitle: b.tripName,
-            departureDate: b.selectedDate || 'Booked Departure',
-            label: `${b.tripName} (${b.selectedDate || 'Booked'})`
+        const title = b.tripName;
+        const date = b.selectedDate || 'Booked Departure';
+        const key = `${title.toLowerCase()}_${date}`;
+        if (!map.has(key)) {
+          map.set(key, {
+            id: b.scheduleId || `BOOKING_${key}`,
+            tripId: b.tripId || key,
+            tripTitle: title,
+            departureDate: date,
+            label: `${title} (${date})`
           });
         }
       }

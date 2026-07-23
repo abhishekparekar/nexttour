@@ -3,7 +3,7 @@ import { subscribeToBookings, subscribeToExpenses, subscribeToSchedules } from '
 import { useCachedTrips } from '../../firebaseCache';
 import { calculateTripFinances, formatCurrency, exportToCSV, EXPENSE_CATEGORIES, getCategoryLabel } from '../../utils/bookingUtils';
 import { printTripFinancialReport } from '../../utils/printTemplates';
-import { Loader2, TrendingUp, TrendingDown, DollarSign, Wallet, FileText, ArrowUpRight, BarChart3, Calendar, Download, Printer, Filter, Search, X, CheckCircle, AlertCircle, Eye } from 'lucide-react';
+import { Loader2, TrendingUp, TrendingDown, DollarSign, Wallet, FileText, ArrowUpRight, BarChart3, Calendar, Download, Printer, Filter, Search, X, CheckCircle, AlertCircle, Eye, MapPin, ChevronDown } from 'lucide-react';
 
 const AdminReports = () => {
   const [bookings, setBookings] = useState([]);
@@ -12,8 +12,11 @@ const AdminReports = () => {
   const [tourPackages, setTourPackages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeReportTab, setActiveReportTab] = useState('trips');
-  const [dateFilter, setDateFilter] = useState('all');
-  const [selectedTripFilter, setSelectedTripFilter] = useState('all');
+
+  // Filter States
+  const [selectedSpotFilter, setSelectedSpotFilter] = useState('all');
+  const [selectedDateFilter, setSelectedDateFilter] = useState('all');
+  const [dateRangePreset, setDateRangePreset] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedAuditTrip, setSelectedAuditTrip] = useState(null);
 
@@ -34,92 +37,103 @@ const AdminReports = () => {
     };
   }, []);
 
-  // Filter items by date range if needed
-  const filterByDate = (dateString) => {
-    if (dateFilter === 'all' || !dateString) return true;
+  // Filter by date range preset (All Time, This Month, Last Month)
+  const filterByPreset = (dateString) => {
+    if (dateRangePreset === 'all' || !dateString) return true;
     const itemDate = new Date(dateString);
     const now = new Date();
     
-    if (dateFilter === 'this_month') {
+    if (dateRangePreset === 'this_month') {
       return itemDate.getMonth() === now.getMonth() && itemDate.getFullYear() === now.getFullYear();
     }
-    if (dateFilter === 'last_month') {
+    if (dateRangePreset === 'last_month') {
       const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
       return itemDate.getMonth() === lastMonth.getMonth() && itemDate.getFullYear() === lastMonth.getFullYear();
     }
     return true;
   };
 
-  const filteredBookings = useMemo(() => bookings.filter(b => filterByDate(b.createdAt || b.selectedDate)), [bookings, dateFilter]);
-  const filteredExpenses = useMemo(() => expenses.filter(e => filterByDate(e.date || e.createdAt)), [expenses, dateFilter]);
-  const filteredSchedules = useMemo(() => schedules.filter(s => filterByDate(s.departureDate)), [schedules, dateFilter]);
+  const filteredBookings = useMemo(() => bookings.filter(b => filterByPreset(b.createdAt || b.selectedDate)), [bookings, dateRangePreset]);
+  const filteredExpenses = useMemo(() => expenses.filter(e => filterByPreset(e.date || e.createdAt)), [expenses, dateRangePreset]);
 
-  // Unified Trips List combining Schedules + Tour Packages + Customer Booked Trips
-  const unifiedTripsList = useMemo(() => {
-    const map = new Map();
+  // Extract unique Tour / Spot Titles (No Repetition)
+  const uniqueTourSpots = useMemo(() => {
+    const spots = new Set();
+    tourPackages.forEach(t => { if (t.title || t.name) spots.add(t.title || t.name); });
+    schedules.forEach(s => { if (s.tripTitle || s.title) spots.add(s.tripTitle || s.title); });
+    bookings.forEach(b => { if (b.tripName) spots.add(b.tripName); });
+    return Array.from(spots).sort();
+  }, [tourPackages, schedules, bookings]);
 
-    // 1. Schedules
-    filteredSchedules.forEach(s => {
-      const id = String(s.id);
-      map.set(id, {
-        id: s.id,
-        tripId: s.tripId || s.id,
-        tripTitle: s.tripTitle || s.title || 'Tour Departure',
-        departureDate: s.departureDate || s.date || 'Active Departure'
-      });
-    });
+  // Extract unique Departure Dates for filtering
+  const uniqueDepartureDates = useMemo(() => {
+    const dates = new Set();
+    schedules.forEach(s => { if (s.departureDate) dates.add(s.departureDate); });
+    bookings.forEach(b => { if (b.selectedDate) dates.add(b.selectedDate); });
+    expenses.forEach(e => { if (e.date) dates.add(e.date); });
+    return Array.from(dates).filter(Boolean).sort();
+  }, [schedules, bookings, expenses]);
 
-    // 2. Tour Packages
-    tourPackages.forEach(t => {
-      const id = `TRIP_${t.id}`;
-      if (!map.has(id)) {
-        map.set(id, {
-          id: id,
-          tripId: t.id,
-          tripTitle: t.title || t.name || 'Tour Package',
-          departureDate: (t.upcomingDates && t.upcomingDates[0]) || 'All Departures'
+  // Group & Aggregate Profitability per Unique Tour Spot (Non-Repeated)
+  const spotReports = useMemo(() => {
+    return uniqueTourSpots
+      .filter(spotTitle => selectedSpotFilter === 'all' || spotTitle === selectedSpotFilter)
+      .map(spotTitle => {
+        const titleLower = spotTitle.toLowerCase();
+
+        // Match bookings for this spot & selected date
+        const spotBookings = filteredBookings.filter(b => {
+          const bTitle = (b.tripName || '').toLowerCase();
+          const matchesSpot = bTitle.includes(titleLower) || titleLower.includes(bTitle);
+          const matchesDate = selectedDateFilter === 'all' || b.selectedDate === selectedDateFilter;
+          return matchesSpot && matchesDate;
         });
-      }
-    });
 
-    // 3. Customer Booked Trips
-    filteredBookings.forEach(b => {
-      if (b.tripName) {
-        const id = b.scheduleId || `BOOKING_TRIP_${b.tripId || b.tripName}`;
-        if (!map.has(id)) {
-          map.set(id, {
-            id: id,
-            tripId: b.tripId || id,
-            tripTitle: b.tripName,
-            departureDate: b.selectedDate || 'Booked Departure'
-          });
-        }
-      }
-    });
+        // Match expenses for this spot & selected date
+        const spotExpenses = filteredExpenses.filter(e => {
+          const eTitle = (e.tripTitle || '').toLowerCase();
+          const matchesSpot = eTitle.includes(titleLower) || titleLower.includes(eTitle);
+          const matchesDate = selectedDateFilter === 'all' || e.date === selectedDateFilter;
+          return matchesSpot && matchesDate;
+        });
 
-    return Array.from(map.values());
-  }, [filteredSchedules, tourPackages, filteredBookings]);
+        const bookingsCount = spotBookings.length;
+        const travelersCount = spotBookings.reduce((sum, b) => sum + (Number(b.travelers) || 1), 0);
+        const totalBookedValue = spotBookings.reduce((sum, b) => sum + (Number(b.amount) || 0), 0);
+        const passengerRevenueCollection = spotBookings.reduce((sum, b) => sum + (Number(b.paidAmount) || 0), 0);
+        const pendingReceivables = totalBookedValue - passengerRevenueCollection;
+        const totalExpenses = spotExpenses.reduce((sum, e) => sum + (Number(e.amount) || 0), 0);
 
-  // 1. Dynamic Trip Profitability Calculations for all trips
-  const tripReports = useMemo(() => {
-    return unifiedTripsList
-      .filter(trip => selectedTripFilter === 'all' || String(trip.id) === String(selectedTripFilter))
-      .map(trip => {
-        const finances = calculateTripFinances(trip, filteredBookings, filteredExpenses);
+        const netProfitLoss = passengerRevenueCollection - totalExpenses;
+        const isProfit = netProfitLoss >= 0;
+        const profitMarginPercent = passengerRevenueCollection > 0 
+          ? ((netProfitLoss / passengerRevenueCollection) * 100).toFixed(1)
+          : 0;
+
         return {
-          trip,
-          finances
+          spotTitle,
+          finances: {
+            spotTitle,
+            departureDate: selectedDateFilter === 'all' ? 'All Departures' : selectedDateFilter,
+            bookingsCount,
+            travelersCount,
+            totalBookedValue,
+            passengerRevenueCollection,
+            pendingReceivables,
+            totalExpenses,
+            netProfitLoss,
+            isProfit,
+            profitMarginPercent,
+            scheduleExpenses: spotExpenses,
+            scheduleBookings: spotBookings
+          }
         };
       })
-      .filter(item => item.finances !== null)
       .filter(item => {
         const q = searchTerm.toLowerCase();
-        return (
-          item.trip.tripTitle?.toLowerCase().includes(q) ||
-          item.trip.departureDate?.toLowerCase().includes(q)
-        );
+        return item.spotTitle.toLowerCase().includes(q);
       });
-  }, [unifiedTripsList, filteredBookings, filteredExpenses, searchTerm, selectedTripFilter]);
+  }, [uniqueTourSpots, selectedSpotFilter, selectedDateFilter, filteredBookings, filteredExpenses, searchTerm]);
 
   // Global Financial Statistics
   const globalTotalBooked = filteredBookings.reduce((sum, b) => sum + (Number(b.amount) || 0), 0);
@@ -139,9 +153,9 @@ const AdminReports = () => {
 
   // Export CSV Report Handlers
   const handleExportTripReportCSV = () => {
-    const rows = tripReports.map(({ trip, finances }) => ({
-      'Trip Title': trip.tripTitle,
-      'Departure Date': trip.departureDate,
+    const rows = spotReports.map(({ spotTitle, finances }) => ({
+      'Tour Spot / Package': spotTitle,
+      'Departure Date Filter': finances.departureDate,
       'Total Bookings': finances.bookingsCount,
       'Passengers Count': finances.travelersCount,
       'Total Booked Value (INR)': finances.totalBookedValue,
@@ -154,8 +168,8 @@ const AdminReports = () => {
     }));
 
     const headers = [
-      'Trip Title',
-      'Departure Date',
+      'Tour Spot / Package',
+      'Departure Date Filter',
       'Total Bookings',
       'Passengers Count',
       'Total Booked Value (INR)',
@@ -167,7 +181,7 @@ const AdminReports = () => {
       'Status'
     ];
 
-    exportToCSV(`NextTour_Trip_Profitability_Report_${Date.now()}.csv`, rows, headers);
+    exportToCSV(`NextTour_Spot_Profitability_Report_${Date.now()}.csv`, rows, headers);
   };
 
   const handleExportExpensesCSV = () => {
@@ -198,18 +212,18 @@ const AdminReports = () => {
       <div className="bg-white border-b border-gray-100 px-4 py-3 flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-base font-bold text-gray-900">Financial Reports & Profitability Analytics</h1>
-          <p className="text-gray-600 text-xs mt-0.5">Live dynamic audit of trip revenues, passenger collections, expenses, and net profit/loss</p>
+          <p className="text-gray-600 text-xs mt-0.5">Unique Tour Spots & Departures Profit/Loss Audit</p>
         </div>
 
         <div className="flex items-center gap-2">
           <select
-            value={dateFilter}
-            onChange={(e) => setDateFilter(e.target.value)}
+            value={dateRangePreset}
+            onChange={(e) => setDateRangePreset(e.target.value)}
             className="bg-white border border-gray-300 rounded-xl px-3 py-1.5 text-xs text-gray-800 font-bold focus:outline-none focus:border-[#00C9B7] cursor-pointer"
           >
-            <option value="all">Filter: All Time</option>
-            <option value="this_month">Filter: This Month</option>
-            <option value="last_month">Filter: Last Month</option>
+            <option value="all">Preset: All Time</option>
+            <option value="this_month">Preset: This Month</option>
+            <option value="last_month">Preset: Last Month</option>
           </select>
 
           <button
@@ -285,67 +299,108 @@ const AdminReports = () => {
           </div>
         </div>
 
-        {/* Search, Trip Filter & Tab Navigation */}
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex flex-col lg:flex-row justify-between items-center gap-3">
-          <div className="flex flex-col sm:flex-row items-center gap-2.5 w-full lg:w-auto">
-            <div className="relative w-full sm:w-64">
+        {/* Filters Toolbar: Tour Spot Selector + Departure Date Selector */}
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 space-y-3">
+          <div className="flex flex-col lg:flex-row justify-between items-center gap-3">
+            {/* Search Input */}
+            <div className="relative w-full lg:w-64">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search reports by trip name or date..."
+                placeholder="Search tour spot name..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full bg-white border border-gray-300 rounded-xl pl-10 pr-4 py-2 text-xs text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#00C9B7]"
               />
             </div>
 
-            <select
-              value={selectedTripFilter}
-              onChange={(e) => setSelectedTripFilter(e.target.value)}
-              className="w-full sm:w-auto bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs text-gray-900 font-bold focus:outline-none focus:border-[#00C9B7] cursor-pointer"
-            >
-              <option value="all">Filter: All Trips ({unifiedTripsList.length})</option>
-              {unifiedTripsList.map(t => (
-                <option key={t.id} value={t.id}>{t.tripTitle} ({t.departureDate})</option>
-              ))}
-            </select>
+            {/* Unique Spot Filter (No Repetition) */}
+            <div className="flex items-center gap-2 w-full lg:w-auto">
+              <span className="text-xs font-bold text-gray-500 whitespace-nowrap hidden sm:inline">Tour Spot:</span>
+              <select
+                value={selectedSpotFilter}
+                onChange={(e) => setSelectedSpotFilter(e.target.value)}
+                className="w-full sm:w-auto bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 text-xs text-gray-900 font-bold focus:outline-none focus:border-[#00C9B7] cursor-pointer"
+              >
+                <option value="all">All Tour Spots ({uniqueTourSpots.length} Unique Packages)</option>
+                {uniqueTourSpots.map(spot => (
+                  <option key={spot} value={spot}>{spot}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Dedicated Date Filter Button / Dropdown */}
+            <div className="flex items-center gap-2 w-full lg:w-auto">
+              <span className="text-xs font-bold text-gray-500 whitespace-nowrap flex items-center gap-1">
+                <Calendar size={13} className="text-[#00C9B7]" /> Departure Date:
+              </span>
+              <select
+                value={selectedDateFilter}
+                onChange={(e) => setSelectedDateFilter(e.target.value)}
+                className="w-full sm:w-auto bg-sky-50 border border-sky-300 text-sky-900 rounded-xl px-3 py-2 text-xs font-bold focus:outline-none focus:border-[#00C9B7] cursor-pointer shadow-xs"
+              >
+                <option value="all">All Departure Dates</option>
+                {uniqueDepartureDates.map(d => (
+                  <option key={d} value={d}>{d}</option>
+                ))}
+              </select>
+            </div>
           </div>
 
-          <div className="bg-gray-100 border border-gray-200 rounded-xl p-1 flex gap-1 shadow-xs">
-            <button
-              onClick={() => setActiveReportTab('trips')}
-              className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                activeReportTab === 'trips' ? 'bg-[#00C9B7] text-white shadow-xs' : 'text-gray-600 hover:bg-gray-200'
-              }`}
-            >
-              Trip Profitability Ledger ({tripReports.length} Trips)
-            </button>
-            <button
-              onClick={() => setActiveReportTab('expenses')}
-              className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                activeReportTab === 'expenses' ? 'bg-[#00C9B7] text-white shadow-xs' : 'text-gray-600 hover:bg-gray-200'
-              }`}
-            >
-              Expense Categories Breakdown
-            </button>
-          </div>
+          {/* Quick Date Reset Chip if Date Active */}
+          {selectedDateFilter !== 'all' && (
+            <div className="flex items-center gap-2 text-xs pt-2 border-t border-gray-100">
+              <span className="text-gray-500">Filtered for Date:</span>
+              <span className="bg-sky-100 text-sky-800 font-bold px-2.5 py-0.5 rounded-full border border-sky-200 flex items-center gap-1">
+                {selectedDateFilter}
+                <button onClick={() => setSelectedDateFilter('all')} className="hover:text-red-600"><X size={12} /></button>
+              </span>
+              <button
+                onClick={() => setSelectedDateFilter('all')}
+                className="text-xs text-red-600 font-bold hover:underline"
+              >
+                Show All Dates
+              </button>
+            </div>
+          )}
         </div>
 
-        {/* TAB 1: Trip Profitability Table */}
+        {/* Tab Navigation */}
+        <div className="bg-white border border-gray-100 rounded-xl p-1 flex gap-1 w-fit shadow-xs">
+          <button
+            onClick={() => setActiveReportTab('trips')}
+            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+              activeReportTab === 'trips' ? 'bg-[#00C9B7] text-white shadow-xs' : 'text-gray-600 hover:bg-gray-50'
+            }`}
+          >
+            Tour Spot Profitability Ledger ({spotReports.length} Spots)
+          </button>
+          <button
+            onClick={() => setActiveReportTab('expenses')}
+            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+              activeReportTab === 'expenses' ? 'bg-[#00C9B7] text-white shadow-xs' : 'text-gray-600 hover:bg-gray-50'
+            }`}
+          >
+            Expense Breakdown By Category
+          </button>
+        </div>
+
+        {/* TAB 1: Unique Spot Profitability Table (No Repetition) */}
         {activeReportTab === 'trips' && (
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
             <div className="px-4 py-3 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
-              <h3 className="text-xs font-extrabold uppercase tracking-wider text-gray-700">Trip-Wise Revenue vs Expense Audit Ledger</h3>
-              <span className="text-[11px] text-gray-500 font-medium">Passenger Collections - Expenses = Profit / Loss</span>
+              <h3 className="text-xs font-extrabold uppercase tracking-wider text-gray-700">Tour Spot Profitability Audit Ledger</h3>
+              <span className="text-[11px] text-gray-500 font-medium">Passenger Collections - Expenses = Net Profit/Loss</span>
             </div>
 
             <div className="hidden lg:block overflow-x-auto">
               <table className="w-full text-left">
                 <thead>
                   <tr className="text-gray-600 text-xs font-bold uppercase tracking-wide border-b border-gray-200 bg-gray-50/50">
-                    <th className="px-4 py-3">Trip Departure</th>
+                    <th className="px-4 py-3">Tour Spot / Package</th>
+                    <th className="px-4 py-3 text-center">Departure Date Filter</th>
                     <th className="px-4 py-3 text-center">Travelers / Bookings</th>
-                    <th className="px-4 py-3 text-right">Total Booked Value</th>
+                    <th className="px-4 py-3 text-right">Booked Value</th>
                     <th className="px-4 py-3 text-right text-emerald-700">Revenue Collection</th>
                     <th className="px-4 py-3 text-right text-rose-600">Total Expenses</th>
                     <th className="px-4 py-3 text-right">Net Profit / Loss</th>
@@ -353,13 +408,17 @@ const AdminReports = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {tripReports.map(({ trip, finances }) => (
-                    <tr key={trip.id} className="border-b border-gray-100 last:border-0 hover:bg-gray-50/80 transition-colors">
-                      <td className="px-4 py-3 align-middle">
-                        <div className="font-bold text-gray-900 text-xs">{trip.tripTitle}</div>
-                        <div className="text-gray-500 text-[11px] flex items-center gap-1">
-                          <Calendar size={11} /> Departure: {trip.departureDate}
-                        </div>
+                  {spotReports.map(({ spotTitle, finances }) => (
+                    <tr key={spotTitle} className="border-b border-gray-100 last:border-0 hover:bg-gray-50/80 transition-colors">
+                      <td className="px-4 py-3 align-middle font-bold text-gray-900 text-xs flex items-center gap-1.5">
+                        <MapPin size={14} className="text-[#00C9B7]" />
+                        {spotTitle}
+                      </td>
+
+                      <td className="px-4 py-3 align-middle text-center">
+                        <span className="bg-sky-50 text-sky-800 border border-sky-200 text-[11px] font-bold px-2 py-0.5 rounded-full">
+                          {finances.departureDate}
+                        </span>
                       </td>
 
                       <td className="px-4 py-3 align-middle text-center text-xs font-bold text-gray-800">
@@ -391,14 +450,14 @@ const AdminReports = () => {
                       <td className="px-4 py-3 align-middle text-center">
                         <div className="flex items-center justify-center gap-1">
                           <button
-                            onClick={() => setSelectedAuditTrip({ trip, finances })}
+                            onClick={() => setSelectedAuditTrip({ trip: { tripTitle: spotTitle, departureDate: finances.departureDate }, finances })}
                             className="bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200 font-bold py-1 px-2.5 rounded-lg text-[11px] transition-colors flex items-center gap-1 cursor-pointer"
                             title="View Deep Audit Breakdown"
                           >
                             <Eye size={12} /> Audit
                           </button>
                           <button
-                            onClick={() => printTripFinancialReport(trip, finances)}
+                            onClick={() => printTripFinancialReport({ tripTitle: spotTitle, departureDate: finances.departureDate }, finances)}
                             className="bg-gray-50 hover:bg-gray-100 text-gray-700 border border-gray-200 font-bold py-1 px-2.5 rounded-lg text-[11px] transition-colors flex items-center gap-1 cursor-pointer"
                             title="Download PDF Report"
                           >
@@ -414,12 +473,15 @@ const AdminReports = () => {
 
             {/* Mobile View */}
             <div className="block lg:hidden divide-y divide-gray-100">
-              {tripReports.map(({ trip, finances }) => (
-                <div key={trip.id} className="p-4 space-y-2">
+              {spotReports.map(({ spotTitle, finances }) => (
+                <div key={spotTitle} className="p-4 space-y-2">
                   <div className="flex justify-between items-start">
                     <div>
-                      <h4 className="font-bold text-gray-900 text-xs">{trip.tripTitle}</h4>
-                      <p className="text-gray-500 text-[11px]">Departure: {trip.departureDate}</p>
+                      <h4 className="font-bold text-gray-900 text-xs flex items-center gap-1">
+                        <MapPin size={12} className="text-[#00C9B7]" />
+                        {spotTitle}
+                      </h4>
+                      <p className="text-gray-500 text-[11px]">Departure: {finances.departureDate}</p>
                     </div>
                     <span className={`px-2.5 py-1 rounded-lg text-xs font-black border ${
                       finances.isProfit 
@@ -439,13 +501,13 @@ const AdminReports = () => {
 
                   <div className="flex gap-2 pt-1">
                     <button
-                      onClick={() => setSelectedAuditTrip({ trip, finances })}
+                      onClick={() => setSelectedAuditTrip({ trip: { tripTitle: spotTitle, departureDate: finances.departureDate }, finances })}
                       className="flex-1 bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200 font-bold py-1.5 rounded-xl text-xs flex items-center justify-center gap-1"
                     >
                       <Eye size={13} /> Deep Audit
                     </button>
                     <button
-                      onClick={() => printTripFinancialReport(trip, finances)}
+                      onClick={() => printTripFinancialReport({ tripTitle: spotTitle, departureDate: finances.departureDate }, finances)}
                       className="flex-1 bg-gray-50 hover:bg-gray-100 text-gray-700 border border-gray-200 font-bold py-1.5 rounded-xl text-xs flex items-center justify-center gap-1"
                     >
                       <Printer size={13} /> PDF Report
@@ -455,10 +517,10 @@ const AdminReports = () => {
               ))}
             </div>
 
-            {tripReports.length === 0 && (
+            {spotReports.length === 0 && (
               <div className="text-center py-12">
                 <FileText className="w-10 h-10 text-gray-300 mx-auto mb-2" />
-                <h4 className="text-gray-700 font-bold text-xs">No trip profitability records found</h4>
+                <h4 className="text-gray-700 font-bold text-xs">No tour spot profitability records found</h4>
               </div>
             )}
           </div>
@@ -522,8 +584,8 @@ const AdminReports = () => {
           <div className="bg-white rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 my-auto">
             <div className="px-6 py-4 border-b border-gray-150 flex items-center justify-between bg-gray-50/50">
               <div>
-                <h3 className="font-bold text-gray-900 text-sm">Trip Financial Audit Report</h3>
-                <p className="text-gray-500 text-xs">{selectedAuditTrip.trip.tripTitle} ({selectedAuditTrip.trip.departureDate})</p>
+                <h3 className="font-bold text-gray-900 text-sm">Tour Spot Financial Audit Report</h3>
+                <p className="text-gray-500 text-xs">{selectedAuditTrip.trip.tripTitle} ({selectedAuditTrip.finances.departureDate})</p>
               </div>
               <button onClick={() => setSelectedAuditTrip(null)} className="p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all">
                 <X size={18} />
@@ -575,7 +637,7 @@ const AdminReports = () => {
 
                   {selectedAuditTrip.finances.scheduleExpenses.length === 0 && (
                     <div className="text-gray-400 italic text-center py-3 bg-gray-50 rounded-xl border border-gray-100">
-                      No expenses logged for this trip yet.
+                      No expenses logged for this tour spot yet.
                     </div>
                   )}
                 </div>
