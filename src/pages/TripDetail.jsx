@@ -311,10 +311,10 @@ const TripDetail = () => {
 
   return (
     <div className="min-h-screen bg-[#F8F9FB]" id="trip-content-for-pdf">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 md:pt-24 pb-24">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 sm:pt-24 lg:pt-28 pb-24">
 
         {/* Breadcrumbs & Actions */}
-        <div className="flex items-center justify-between gap-3 mb-6 pt-3 sm:pt-0">
+        <div className="flex items-center justify-between gap-3 mb-6">
           <nav className="flex items-center gap-1.5 text-xs sm:text-sm text-gray-500 font-semibold truncate min-w-0">
             <Link to="/" className="hover:text-[#00C9B7] transition-colors flex-shrink-0">Home</Link>
             <ChevronRight size={14} className="flex-shrink-0" />
@@ -335,24 +335,23 @@ const TripDetail = () => {
           </div>
         </div>
 
-        {/* 2-Column Split Layout */}
-        <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
+        {/* 2-Column Responsive Layout */}
+        <div className="flex flex-col lg:flex-row gap-6 lg:gap-12">
 
-          {/* Left Column - Sticky Image */}
+          {/* Image Column */}
           <div className="lg:w-[45%] xl:w-[42%] flex-shrink-0">
-            <div className="sticky top-28 w-full h-[400px] lg:h-[500px] rounded-[32px] overflow-hidden shadow-lg relative group bg-[#f8f9fa] flex items-center justify-center">
+            <div className="relative w-full h-[280px] sm:h-[380px] lg:h-[480px] rounded-2xl sm:rounded-[32px] overflow-hidden shadow-lg group bg-[#f8f9fa] flex items-center justify-center">
               <img
                 src={trip.images?.[0] || '/placeholder.jpg'}
                 alt={trip.title}
                 className="absolute inset-0 w-full h-full object-cover !transform-none"
                 onError={(e) => { e.target.onerror = null; e.target.src = '/placeholder.jpg'; }}
               />
-              {/* Optional blurred backdrop effect if image doesn't perfectly fit */}
-              <div className="absolute inset-0 ring-1 ring-inset ring-black/10 rounded-[32px]"></div>
+              <div className="absolute inset-0 ring-1 ring-inset ring-black/10 rounded-2xl sm:rounded-[32px]" />
 
               <button
                 onClick={() => setShowGallery(true)}
-                className="absolute bottom-5 right-5 bg-white/90 backdrop-blur-md border border-white/20 text-[#222222] font-semibold text-sm px-5 py-2.5 rounded-xl flex items-center gap-2 hover:bg-white transition-colors shadow-[0_8px_16px_rgba(0,0,0,0.1)]"
+                className="absolute bottom-4 right-4 sm:bottom-5 sm:right-5 bg-white/90 backdrop-blur-md border border-white/20 text-[#222222] font-semibold text-xs sm:text-sm px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl flex items-center gap-2 hover:bg-white transition-colors shadow-md"
               >
                 View All Photos
               </button>
@@ -826,16 +825,16 @@ const TripDetail = () => {
       />
 
       {/* Sticky Bottom Action Bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-[#ebebeb] p-3 px-6 shadow-[0_-4px_16px_rgba(0,0,0,0.05)] z-40 flex items-center justify-end gap-4" data-html2canvas-ignore>
+      <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-gray-200 p-3 px-4 sm:px-8 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] z-40 flex items-center justify-between sm:justify-end gap-3" data-html2canvas-ignore>
         <button
           onClick={handleDownloadPDF}
-          className="flex items-center gap-2 px-5 py-2.5 border border-[#d0d0d0] rounded-lg text-[#111] font-bold text-[15px] hover:bg-gray-50 transition-colors"
+          className="flex items-center gap-1.5 px-4 py-2.5 sm:px-5 sm:py-2.5 border border-gray-300 rounded-xl text-[#111] font-bold text-xs sm:text-sm hover:bg-gray-50 transition-colors shadow-2xs"
         >
-          PDF <Download size={16} strokeWidth={2.5} />
+          <span>PDF</span> <Download size={15} strokeWidth={2.5} />
         </button>
         <button
           onClick={handleBooking}
-          className="bg-[#10b981] hover:bg-[#059669] text-white px-8 py-2.5 rounded-lg font-bold text-[15px] transition-colors shadow-sm"
+          className="bg-[#00C9B7] hover:bg-[#00b3a3] text-white px-6 py-2.5 sm:px-8 sm:py-2.5 rounded-xl font-bold text-xs sm:text-sm transition-all shadow-md active:scale-95"
         >
           Book Now
         </button>
