@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Edit2, Trash2, Search, X, Loader2, Calendar, CreditCard, AlertCircle, TrendingUp, TrendingDown, Printer, FileText } from 'lucide-react';
+import { Plus, Edit2, Trash2, Search, X, Loader2, Calendar, CreditCard, AlertCircle, TrendingUp, TrendingDown, Printer, FileText, ArrowRightLeft, MapPin } from 'lucide-react';
 import { subscribeToExpenses, addExpense, updateExpense, deleteExpense, subscribeToSchedules, subscribeToBookings } from '../../firebase';
 import { EXPENSE_CATEGORIES, getCategoryLabel, calculateTripFinances, formatCurrency } from '../../utils/bookingUtils';
 import { printTripFinancialReport } from '../../utils/printTemplates';
@@ -29,6 +29,9 @@ const AdminExpenses = () => {
     const unsubBookings = subscribeToBookings((data) => setBookings(data));
     const unsubSchedules = subscribeToSchedules((data) => {
       setSchedules(data);
+      if (data && data.length > 0 && selectedScheduleFilter === 'all') {
+        // Default to first active schedule for live audit widget if none selected
+      }
       setLoading(false);
     });
 
@@ -42,7 +45,7 @@ const AdminExpenses = () => {
   const handleOpenAdd = () => {
     setEditingExpense(null);
     setFormData({
-      scheduleId: schedules[0]?.id || '',
+      scheduleId: selectedScheduleFilter !== 'all' ? selectedScheduleFilter : (schedules[0]?.id || ''),
       category: 'diesel',
       amount: '',
       date: new Date().toISOString().split('T')[0],
@@ -55,7 +58,7 @@ const AdminExpenses = () => {
   const handleOpenEdit = (expense) => {
     setEditingExpense(expense);
     setFormData({
-      scheduleId: expense.scheduleId || '',
+      scheduleId: expense.scheduleId || (schedules[0]?.id || ''),
       category: expense.category || 'diesel',
       amount: expense.amount || '',
       date: expense.date || '',
@@ -88,6 +91,7 @@ const AdminExpenses = () => {
       const selectedSchedule = schedules.find(s => s.id === formData.scheduleId);
       const data = {
         ...formData,
+        scheduleId: formData.scheduleId,
         tripTitle: selectedSchedule ? `${selectedSchedule.tripTitle} (${selectedSchedule.departureDate})` : 'Unknown Trip',
         amount: Number(formData.amount)
       };
@@ -99,6 +103,7 @@ const AdminExpenses = () => {
       }
       setShowModal(false);
     } catch (err) {
+      console.error('Error saving expense:', err);
       setError('Failed to save expense details.');
     }
   };
@@ -134,7 +139,7 @@ const AdminExpenses = () => {
         <div>
           <h1 className="text-base font-bold text-gray-900">Trip Expenses & Profit Accounting</h1>
           <p className="text-gray-600 text-xs mt-0.5">
-            {expenses.length} records registered &bull; Total Spent: <strong className="text-red-600">{formatCurrency(grandTotalExpenses)}</strong>
+            {expenses.length} expense entries logged &bull; Total Incurred: <strong className="text-red-600">{formatCurrency(grandTotalExpenses)}</strong>
           </p>
         </div>
         <button
@@ -142,7 +147,7 @@ const AdminExpenses = () => {
           disabled={schedules.length === 0}
           className="flex items-center gap-1.5 bg-[#00C9B7] hover:bg-[#00b3a3] text-white font-bold py-2 px-4 rounded-xl text-xs transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
         >
-          <Plus size={16} /> Record Trip Expense
+          <Plus size={16} /> Record Expense for Trip
         </button>
       </div>
 
@@ -157,25 +162,34 @@ const AdminExpenses = () => {
           </div>
         )}
 
-        {/* Live Trip Profit / Loss Widget */}
+        {/* Live Trip Selector & Profit/Loss Audit Card */}
         {activeTripFinances && (
-          <div className="bg-white rounded-2xl border border-gray-150 p-4 shadow-sm">
+          <div className="bg-white rounded-2xl border border-gray-150 p-4 shadow-sm space-y-3">
+            {/* Quick Switch Trip Header */}
             <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-gray-100">
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-extrabold uppercase tracking-wider text-gray-400">TRIP PROFIT / LOSS AUDIT</span>
-                <span className="font-bold text-gray-900 text-sm">{activeTripFinances.tripTitle} ({activeTripFinances.departureDate})</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => printTripFinancialReport(activeScheduleObj, activeTripFinances)}
-                  className="flex items-center gap-1.5 bg-gray-50 hover:bg-gray-100 text-gray-700 font-bold py-1.5 px-3 rounded-lg text-xs border border-gray-200 transition-all cursor-pointer"
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-xs font-extrabold uppercase tracking-wider text-gray-400">SELECT TRIP DEPARTURE AUDIT:</span>
+                <select
+                  value={activeScheduleObj?.id || ''}
+                  onChange={(e) => setSelectedScheduleFilter(e.target.value)}
+                  className="bg-gray-50 border border-gray-300 text-gray-900 font-bold text-xs rounded-xl px-3 py-1.5 focus:outline-none focus:border-[#00C9B7] cursor-pointer"
                 >
-                  <Printer size={14} /> Download Trip Profit Audit PDF
-                </button>
+                  {schedules.map(s => (
+                    <option key={s.id} value={s.id}>{s.tripTitle} ({s.departureDate})</option>
+                  ))}
+                </select>
               </div>
+
+              <button
+                onClick={() => printTripFinancialReport(activeScheduleObj, activeTripFinances)}
+                className="flex items-center gap-1.5 bg-gray-50 hover:bg-gray-100 text-gray-700 font-bold py-1.5 px-3 rounded-lg text-xs border border-gray-200 transition-all cursor-pointer"
+              >
+                <Printer size={14} /> Download Trip Profit Audit PDF
+              </button>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
+            {/* Profitability Cards Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <div className="bg-gray-50 border border-gray-100 rounded-xl p-3 text-center">
                 <span className="block text-[10px] font-extrabold uppercase tracking-wider text-gray-400">Total Booked Value</span>
                 <span className="block font-black text-gray-900 text-sm mt-1">{formatCurrency(activeTripFinances.totalBookedValue)}</span>
@@ -220,7 +234,7 @@ const AdminExpenses = () => {
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
               type="text"
-              placeholder="Search expenses by trip name, vendor, note..."
+              placeholder="Search expenses by trip name, vendor, notes..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full bg-white border border-gray-300 rounded-xl pl-10 pr-4 py-2 text-xs text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#00C9B7]"
@@ -233,7 +247,7 @@ const AdminExpenses = () => {
               onChange={(e) => setSelectedScheduleFilter(e.target.value)}
               className="bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs text-gray-900 focus:outline-none focus:border-[#00C9B7] font-semibold cursor-pointer"
             >
-              <option value="all">All Trip Departures</option>
+              <option value="all">Filter: All Trip Departures</option>
               {schedules.map(s => (
                 <option key={s.id} value={s.id}>{s.tripTitle} ({s.departureDate})</option>
               ))}
@@ -244,7 +258,7 @@ const AdminExpenses = () => {
               onChange={(e) => setCategoryFilter(e.target.value)}
               className="bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs text-gray-900 focus:outline-none focus:border-[#00C9B7] cursor-pointer"
             >
-              <option value="all">All Categories</option>
+              <option value="all">Filter: All Categories</option>
               {EXPENSE_CATEGORIES.map(c => (
                 <option key={c.value} value={c.value}>{c.label}</option>
               ))}
@@ -255,47 +269,55 @@ const AdminExpenses = () => {
         {/* Expenses List / Table */}
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
           <div className="hidden lg:block overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full text-left">
               <thead>
-                <tr className="text-left text-gray-600 text-xs font-bold uppercase tracking-wide border-b border-gray-200 bg-gray-50/50">
-                  <th className="px-4 py-3">Trip Departure</th>
-                  <th className="px-4 py-3">Expense Category</th>
-                  <th className="px-4 py-3">Date</th>
+                <tr className="text-gray-600 text-xs font-bold uppercase tracking-wide border-b border-gray-200 bg-gray-50/50">
+                  <th className="px-4 py-3">Associated Trip Departure</th>
+                  <th className="px-4 py-3">Category</th>
+                  <th className="px-4 py-3">Expense Date</th>
                   <th className="px-4 py-3 text-right">Amount Paid</th>
-                  <th className="px-4 py-3">Notes & Details</th>
-                  <th className="px-4 py-3">Actions</th>
+                  <th className="px-4 py-3">Description / Notes</th>
+                  <th className="px-4 py-3 text-center">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredExpenses.map(expense => (
                   <tr key={expense.id} className="border-b border-gray-100 last:border-0 hover:bg-gray-50/80 transition-colors">
                     <td className="px-4 py-3 align-middle">
-                      <div className="text-gray-900 font-bold text-xs">{expense.tripTitle}</div>
+                      <div className="font-bold text-gray-900 text-xs flex items-center gap-1.5">
+                        <MapPin size={13} className="text-[#00C9B7]" />
+                        {expense.tripTitle}
+                      </div>
                     </td>
+
                     <td className="px-4 py-3 align-middle">
                       <span className="bg-slate-100 text-slate-700 border border-slate-200 text-[11px] font-bold px-2.5 py-0.5 rounded-full uppercase">
                         {getCategoryLabel(expense.category)}
                       </span>
                     </td>
+
                     <td className="px-4 py-3 align-middle">
                       <div className="flex items-center gap-1 text-gray-700 text-xs font-semibold">
                         <Calendar size={12} className="text-gray-400" /> {expense.date}
                       </div>
                     </td>
+
                     <td className="px-4 py-3 align-middle text-right text-red-600 font-extrabold text-xs">
                       {formatCurrency(expense.amount)}
                     </td>
+
                     <td className="px-4 py-3 align-middle text-gray-600 text-xs max-w-[250px] truncate">
                       {expense.notes || 'N/A'}
                     </td>
-                    <td className="px-4 py-3 align-middle">
-                      <div className="flex items-center gap-1.5">
+
+                    <td className="px-4 py-3 align-middle text-center">
+                      <div className="flex items-center justify-center gap-1.5">
                         <button 
                           onClick={() => handleOpenEdit(expense)} 
-                          className="p-1.5 text-gray-400 hover:text-[#00C9B7] hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
-                          title="Edit Expense"
+                          className="bg-gray-50 hover:bg-gray-100 text-gray-700 border border-gray-200 font-bold px-2 py-1 rounded-lg text-[11px] transition-colors flex items-center gap-1 cursor-pointer"
+                          title="Change Trip / Edit Expense"
                         >
-                          <Edit2 size={14} />
+                          <ArrowRightLeft size={12} /> Change Trip / Edit
                         </button>
                         <button 
                           onClick={() => handleDelete(expense.id)} 
@@ -318,7 +340,10 @@ const AdminExpenses = () => {
               <div key={expense.id} className="p-4 space-y-2.5">
                 <div className="flex justify-between items-start">
                   <div>
-                    <h4 className="font-bold text-gray-900 text-xs">{expense.tripTitle}</h4>
+                    <h4 className="font-bold text-gray-900 text-xs flex items-center gap-1">
+                      <MapPin size={12} className="text-[#00C9B7]" />
+                      {expense.tripTitle}
+                    </h4>
                     <p className="text-gray-500 text-[11px]">Date: {expense.date}</p>
                   </div>
                   <span className="bg-slate-100 text-slate-700 border border-slate-200 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">
@@ -343,7 +368,7 @@ const AdminExpenses = () => {
                     onClick={() => handleOpenEdit(expense)}
                     className="flex-1 bg-gray-50 hover:bg-gray-100 border border-gray-200 text-gray-700 font-bold py-1.5 rounded-xl text-xs flex items-center justify-center gap-1"
                   >
-                    <Edit2 size={12} /> Edit
+                    <ArrowRightLeft size={12} /> Change Trip / Edit
                   </button>
                   <button
                     onClick={() => handleDelete(expense.id)}
@@ -366,13 +391,13 @@ const AdminExpenses = () => {
         </div>
       </div>
 
-      {/* Modal */}
+      {/* Add / Edit / Change Trip Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 my-auto">
             <div className="px-6 py-4 border-b border-gray-150 flex items-center justify-between bg-gray-50/50">
               <h3 className="font-bold text-gray-900 text-sm">
-                {editingExpense ? 'Edit Expense Record' : 'Log New Trip Expense'}
+                {editingExpense ? 'Change Linked Trip / Edit Expense' : 'Log New Trip Expense'}
               </h3>
               <button onClick={() => setShowModal(false)} className="p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all">
                 <X size={18} />
@@ -387,22 +412,28 @@ const AdminExpenses = () => {
                 </div>
               )}
 
-              <div>
-                <label className="block text-gray-700 text-xs font-bold uppercase tracking-wider mb-1">Trip Departure *</label>
+              {/* Trip Selector with Highlight */}
+              <div className="bg-sky-50/50 p-3 rounded-2xl border border-sky-200/80 space-y-1">
+                <label className="block text-sky-900 text-xs font-black uppercase tracking-wider">
+                  Select / Change Trip Departure *
+                </label>
                 <select
                   value={formData.scheduleId}
                   onChange={(e) => setFormData({ ...formData, scheduleId: e.target.value })}
-                  className="w-full bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs text-gray-900 focus:outline-none focus:border-[#00C9B7] cursor-pointer"
+                  className="w-full bg-white border border-sky-300 rounded-xl px-3 py-2 text-xs text-gray-900 font-bold focus:outline-none focus:border-[#00C9B7] cursor-pointer shadow-xs"
                 >
                   {schedules.map(s => (
-                    <option key={s.id} value={s.id}>{s.tripTitle} ({s.departureDate})</option>
+                    <option key={s.id} value={s.id}>{s.tripTitle} — {s.departureDate}</option>
                   ))}
                 </select>
+                <span className="text-[10px] text-sky-700 block">
+                  Select the exact tour departure date this expense belongs to.
+                </span>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-gray-700 text-xs font-bold uppercase tracking-wider mb-1">Category *</label>
+                  <label className="block text-gray-700 text-xs font-bold uppercase tracking-wider mb-1">Expense Category *</label>
                   <select
                     value={formData.category}
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
@@ -460,7 +491,7 @@ const AdminExpenses = () => {
                   type="submit"
                   className="bg-[#00C9B7] hover:bg-[#00b3a3] text-white font-bold py-2 px-5 rounded-xl text-xs transition-all shadow-sm cursor-pointer"
                 >
-                  {editingExpense ? 'Save Changes' : 'Save Expense Record'}
+                  {editingExpense ? 'Update Expense & Trip Link' : 'Save Expense Record'}
                 </button>
               </div>
             </form>
