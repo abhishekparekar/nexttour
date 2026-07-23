@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { Loader2, MapPin, ChevronRight, Mountain, Globe, LayoutGrid } from 'lucide-react';
+import { Loader2, MapPin, ChevronRight, Mountain, Globe, LayoutGrid, RotateCcw, X } from 'lucide-react';
 import TripCard from '../components/TripCard';
 import { useCachedTrips, useCachedCategories } from '../firebaseCache';
 
@@ -14,44 +14,70 @@ const Trips = () => {
   const selectedCategory = searchParams.get('category') || 'all';
   const searchQuery = searchParams.get('search') || '';
 
-  const setType = (t) => setSearchParams(p => { const n = new URLSearchParams(p); t === 'all' ? n.delete('type') : n.set('type', t); return n; });
-  const setCategory = (c) => setSearchParams(p => { const n = new URLSearchParams(p); c === 'all' ? n.delete('category') : n.set('category', c); return n; });
+  const setType = (t) => setSearchParams(p => {
+    const n = new URLSearchParams(p);
+    t === 'all' ? n.delete('type') : n.set('type', t);
+    return n;
+  });
+
+  const setCategory = (c) => setSearchParams(p => {
+    const n = new URLSearchParams(p);
+    c === 'all' ? n.delete('category') : n.set('category', c);
+    return n;
+  });
+
+  const clearAllFilters = () => {
+    setSearchParams(new URLSearchParams());
+  };
 
   useEffect(() => {
     const unsubscribeTrips = useCachedTrips((data) => {
-      setTrips(data);
+      setTrips(data || []);
       setLoading(false);
     });
     const unsubscribeCategories = useCachedCategories((data) => {
       const allCat = [{ id: 'all', title: 'All Trips' }];
-      const mappedCats = data.map(cat => ({ id: cat.id, title: cat.name || cat.title }));
+      const mappedCats = (data || []).map(cat => ({ id: cat.id, title: cat.name || cat.title }));
       setCategories([...allCat, ...mappedCats]);
     });
     return () => { unsubscribeTrips(); unsubscribeCategories(); };
   }, []);
 
+  // Filter Logic with safe fallbacks
   const filteredTrips = trips.filter(trip => {
-    const matchesType = selectedType === 'all' || trip.tripType === selectedType;
+    // Trip Type Matching (domestic / international)
+    const tripTypeVal = (trip.tripType || 'domestic').toLowerCase();
+    const matchesType = selectedType === 'all' || tripTypeVal === selectedType.toLowerCase();
 
-    const targetCat = categories.find(c => String(c.id) === String(selectedCategory));
+    // Category Matching
+    const targetCat = categories.find(c => String(c.id).toLowerCase() === String(selectedCategory).toLowerCase());
     const targetTitle = (targetCat?.title || targetCat?.name || '').toLowerCase();
     const tripCatId = String(trip.categoryId || '').toLowerCase();
-    const tripCatName = String(trip.categoryName || '').toLowerCase();
+    const tripCatName = String(trip.categoryName || trip.category || '').toLowerCase();
     const selCatId = String(selectedCategory).toLowerCase();
 
     const matchesCategory = selectedCategory === 'all' ||
       tripCatId === selCatId ||
       tripCatName === selCatId ||
-      (targetTitle && (tripCatId === targetTitle || tripCatName === targetTitle));
+      (targetTitle && (tripCatId === targetTitle || tripCatName.includes(targetTitle)));
 
-    const matchesSearch = searchQuery === '' ||
-      trip.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      trip.location?.toLowerCase().includes(searchQuery.toLowerCase());
+    // Search Query Matching
+    const q = searchQuery.trim().toLowerCase();
+    const matchesSearch = q === '' ||
+      trip.title?.toLowerCase().includes(q) ||
+      trip.location?.toLowerCase().includes(q) ||
+      trip.categoryName?.toLowerCase().includes(q) ||
+      trip.description?.toLowerCase().includes(q) ||
+      trip.overview?.toLowerCase().includes(q);
+
     return matchesType && matchesCategory && matchesSearch;
   });
 
-  const domesticCount = trips.filter(t => t.tripType === 'domestic').length;
-  const internationalCount = trips.filter(t => t.tripType === 'international').length;
+  // Calculate domestic vs international count
+  const domesticCount = trips.filter(t => (t.tripType || 'domestic').toLowerCase() === 'domestic').length;
+  const internationalCount = trips.filter(t => (t.tripType || '').toLowerCase() === 'international').length;
+
+  const hasActiveFilters = selectedType !== 'all' || selectedCategory !== 'all' || searchQuery !== '';
 
   if (loading) {
     return (
@@ -63,7 +89,7 @@ const Trips = () => {
 
   return (
     <div className="min-h-screen bg-[#F8F9FB]">
-      {/* Hero Banner - Full Bleed Navbar Alignment */}
+      {/* Hero Banner */}
       <div className="relative h-[38vh] sm:h-[42vh] min-h-[300px] w-full overflow-hidden shadow-md bg-[#0d1117] flex items-center justify-center pt-20 pb-8 select-none">
         <img
           src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=2070&q=80"
@@ -113,18 +139,18 @@ const Trips = () => {
       {/* Sticky Filter Bar */}
       <div className="sticky top-16 md:top-20 z-40 bg-white/95 backdrop-blur-md border-b border-[#EEEEEE] shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Type Filters */}
+          {/* Type & Category Pill Filters */}
           <div className="flex items-center gap-2 py-3 overflow-x-auto no-scrollbar">
             <button
               onClick={() => setType('all')}
-              className="px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all shadow-2xs"
+              className="px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all shadow-2xs cursor-pointer"
               style={{ background: selectedType === 'all' ? '#00C9B7' : '#F3F4F6', color: selectedType === 'all' ? '#ffffff' : '#4B5563' }}
             >
               All ({trips.length})
             </button>
             <button
               onClick={() => setType('domestic')}
-              className="px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap flex items-center gap-1.5 transition-all shadow-2xs"
+              className="px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap flex items-center gap-1.5 transition-all shadow-2xs cursor-pointer"
               style={{ background: selectedType === 'domestic' ? '#10b981' : '#F3F4F6', color: selectedType === 'domestic' ? '#ffffff' : '#4B5563' }}
             >
               <MapPin size={11} />
@@ -132,7 +158,7 @@ const Trips = () => {
             </button>
             <button
               onClick={() => setType('international')}
-              className="px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap flex items-center gap-1.5 transition-all shadow-2xs"
+              className="px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap flex items-center gap-1.5 transition-all shadow-2xs cursor-pointer"
               style={{ background: selectedType === 'international' ? '#3b82f6' : '#F3F4F6', color: selectedType === 'international' ? '#ffffff' : '#4B5563' }}
             >
               <Globe size={11} />
@@ -143,53 +169,88 @@ const Trips = () => {
             {categories.length > 1 && <div className="w-px h-5 bg-[#EEEEEE] mx-1 flex-shrink-0" />}
 
             {/* Category Filters */}
-            {categories.map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => setCategory(cat.id)}
-                className="px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all"
-                style={{ background: selectedCategory === cat.id ? '#111827' : '#F3F4F6', color: selectedCategory === cat.id ? '#00C9B7' : '#4B5563' }}
-              >
-                {cat.title}
-              </button>
-            ))}
+            {categories.map((cat) => {
+              const isSelected = String(selectedCategory).toLowerCase() === String(cat.id).toLowerCase();
+              return (
+                <button
+                  key={cat.id}
+                  onClick={() => setCategory(cat.id)}
+                  className="px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all cursor-pointer"
+                  style={{ background: isSelected ? '#111827' : '#F3F4F6', color: isSelected ? '#00C9B7' : '#4B5563' }}
+                >
+                  {cat.title}
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>
 
-      {/* Results */}
+      {/* Results Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
           <p className="text-sm text-[#888888]">
             Showing <span className="text-[#111111] font-semibold">{filteredTrips.length}</span> adventures
           </p>
-          {searchQuery && (
-            <div className="flex items-center gap-2 text-sm">
-              <span className="text-[#888888]">Search results for:</span>
-              <span className="bg-[#f7f7f7] px-3 py-1 rounded-full font-medium text-[#222222] border border-[#ebebeb]">"{searchQuery}"</span>
+
+          {/* Active Filter Chips */}
+          {hasActiveFilters && (
+            <div className="flex flex-wrap items-center gap-2 text-xs">
+              <span className="text-gray-500 font-medium">Active Filters:</span>
+              {selectedType !== 'all' && (
+                <span className="bg-[#00C9B7]/10 text-[#00C9B7] px-2.5 py-1 rounded-full font-bold border border-[#00C9B7]/20 flex items-center gap-1">
+                  Type: {selectedType}
+                  <button onClick={() => setType('all')} className="hover:text-red-600"><X size={12} /></button>
+                </span>
+              )}
+              {selectedCategory !== 'all' && (
+                <span className="bg-gray-100 text-gray-800 px-2.5 py-1 rounded-full font-bold border border-gray-200 flex items-center gap-1">
+                  Category: {selectedCategory}
+                  <button onClick={() => setCategory('all')} className="hover:text-red-600"><X size={12} /></button>
+                </span>
+              )}
+              {searchQuery && (
+                <span className="bg-gray-100 text-gray-800 px-2.5 py-1 rounded-full font-bold border border-gray-200 flex items-center gap-1">
+                  Search: "{searchQuery}"
+                  <button onClick={() => setSearchParams(p => { const n = new URLSearchParams(p); n.delete('search'); return n; })} className="hover:text-red-600"><X size={12} /></button>
+                </span>
+              )}
+
               <button
-                onClick={() => setSearchParams(p => { const n = new URLSearchParams(p); n.delete('search'); return n; })}
-                className="text-red-500 hover:text-red-600 font-semibold text-xs ml-1"
+                onClick={clearAllFilters}
+                className="text-red-600 hover:text-red-700 font-bold text-xs flex items-center gap-1 bg-red-50 px-2.5 py-1 rounded-full border border-red-100 transition-colors"
               >
-                Clear
+                <RotateCcw size={11} /> Reset All
               </button>
             </div>
           )}
         </div>
 
+        {/* Trips Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {filteredTrips.map(trip => (
             <TripCard key={trip.id} trip={trip} />
           ))}
         </div>
 
+        {/* Empty State when 0 trips match current filter */}
         {filteredTrips.length === 0 && (
-          <div className="text-center py-10 bg-white rounded-2xl border border-[#EEEEEE]">
-            <div className="w-16 h-16 bg-[#F3F4F6] rounded-full flex items-center justify-center mx-auto mb-4">
-              <Mountain className="w-8 h-8 text-[#9CA3AF]" />
+          <div className="text-center py-14 bg-white rounded-3xl border border-[#EEEEEE] p-6 shadow-xs max-w-lg mx-auto">
+            <div className="w-16 h-16 bg-[#00C9B7]/10 text-[#00C9B7] rounded-full flex items-center justify-center mx-auto mb-4">
+              <Mountain className="w-8 h-8" />
             </div>
-            <h3 className="text-lg font-semibold text-[#111111] mb-1">No trips found</h3>
-            <p className="text-[#888888] text-sm">Try adjusting your filters.</p>
+            <h3 className="text-lg font-bold text-[#111111] mb-1">No trips match your filter</h3>
+            <p className="text-gray-500 text-xs mb-5">
+              {selectedType === 'international' && internationalCount === 0
+                ? 'All registered trips are currently Domestic. Switch to Domestic or All Trips to view all 4 adventure packages.'
+                : 'Try clearing your search query or selecting a different trip category.'}
+            </p>
+            <button
+              onClick={clearAllFilters}
+              className="inline-flex items-center gap-2 bg-[#00C9B7] hover:bg-[#00b3a3] text-white font-bold py-2.5 px-6 rounded-xl text-xs transition-all shadow-sm cursor-pointer"
+            >
+              <RotateCcw size={14} /> Show All Adventures ({trips.length})
+            </button>
           </div>
         )}
       </div>
