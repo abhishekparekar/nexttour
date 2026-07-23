@@ -59,6 +59,7 @@ const Contact = () => {
           src={contactData.heroImage || 'https://images.unsplash.com/photo-1454496522488-7a8e488e8606?q=80&w=2000'} 
           alt="Contact Us" 
           className="absolute inset-0 w-full h-full object-cover"
+          onError={(e) => { e.target.onerror = null; e.target.src = '/herobg2.jpg'; }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/50 to-black/20" />
         <div className="absolute inset-0 flex items-center justify-center">

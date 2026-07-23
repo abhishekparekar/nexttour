@@ -345,6 +345,7 @@ const TripDetail = () => {
                 src={trip.images?.[0] || '/placeholder.jpg'}
                 alt={trip.title}
                 className="absolute inset-0 w-full h-full object-cover !transform-none"
+                onError={(e) => { e.target.onerror = null; e.target.src = '/placeholder.jpg'; }}
               />
               {/* Optional blurred backdrop effect if image doesn't perfectly fit */}
               <div className="absolute inset-0 ring-1 ring-inset ring-black/10 rounded-[32px]"></div>

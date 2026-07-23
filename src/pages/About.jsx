@@ -39,6 +39,7 @@ const About = () => {
           src={aboutData.heroImage || 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=2000&q=80'} 
           alt="About NextTour" 
           className="absolute inset-0 w-full h-full object-cover" 
+          onError={(e) => { e.target.onerror = null; e.target.src = '/herobg1.png'; }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/50 to-black/20" />
         
@@ -73,6 +74,7 @@ const About = () => {
                 src={aboutData.storyImage || '/about.png'} 
                 alt="Our Journey" 
                 className="relative rounded-2xl shadow-lg w-full object-cover aspect-video"
+                onError={(e) => { e.target.onerror = null; e.target.src = '/herobg2.jpg'; }}
               />
             </div>
             
