@@ -1,22 +1,27 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { subscribeToBookings, subscribeToExpenses, subscribeToSchedules } from '../../firebase';
+import { useCachedTrips } from '../../firebaseCache';
 import { calculateTripFinances, formatCurrency, exportToCSV, EXPENSE_CATEGORIES, getCategoryLabel } from '../../utils/bookingUtils';
 import { printTripFinancialReport } from '../../utils/printTemplates';
-import { Loader2, TrendingUp, TrendingDown, DollarSign, Wallet, FileText, ArrowUpRight, BarChart3, Calendar, Download, Printer, Filter } from 'lucide-react';
+import { Loader2, TrendingUp, TrendingDown, DollarSign, Wallet, FileText, ArrowUpRight, BarChart3, Calendar, Download, Printer, Filter, Search, X, CheckCircle, AlertCircle, Eye } from 'lucide-react';
 
 const AdminReports = () => {
   const [bookings, setBookings] = useState([]);
   const [expenses, setExpenses] = useState([]);
   const [schedules, setSchedules] = useState([]);
+  const [tourPackages, setTourPackages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeReportTab, setActiveReportTab] = useState('trips');
   const [dateFilter, setDateFilter] = useState('all');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedAuditTrip, setSelectedAuditTrip] = useState(null);
 
   useEffect(() => {
-    const unsubBookings = subscribeToBookings((data) => setBookings(data));
-    const unsubExpenses = subscribeToExpenses((data) => setExpenses(data));
-    const unsubSchedules = subscribeToSchedules((data) => {
-      setSchedules(data);
+    const unsubBookings = subscribeToBookings((data) => setBookings(data || []));
+    const unsubExpenses = subscribeToExpenses((data) => setExpenses(data || []));
+    const unsubSchedules = subscribeToSchedules((data) => setSchedules(data || []));
+    const unsubTrips = useCachedTrips((data) => {
+      setTourPackages(data || []);
       setLoading(false);
     });
 
@@ -24,6 +29,7 @@ const AdminReports = () => {
       unsubBookings();
       unsubExpenses();
       unsubSchedules();
+      unsubTrips();
     };
   }, []);
 
@@ -43,29 +49,82 @@ const AdminReports = () => {
     return true;
   };
 
-  const filteredBookings = bookings.filter(b => filterByDate(b.createdAt || b.selectedDate));
-  const filteredExpenses = expenses.filter(e => filterByDate(e.date || e.createdAt));
-  const filteredSchedules = schedules.filter(s => filterByDate(s.departureDate));
+  const filteredBookings = useMemo(() => bookings.filter(b => filterByDate(b.createdAt || b.selectedDate)), [bookings, dateFilter]);
+  const filteredExpenses = useMemo(() => expenses.filter(e => filterByDate(e.date || e.createdAt)), [expenses, dateFilter]);
+  const filteredSchedules = useMemo(() => schedules.filter(s => filterByDate(s.departureDate)), [schedules, dateFilter]);
 
-  // 1. Trip Profitability Calculations per schedule
-  const tripReports = filteredSchedules.map(schedule => {
-    return {
-      schedule,
-      finances: calculateTripFinances(schedule, filteredBookings, filteredExpenses)
-    };
-  }).filter(item => item.finances !== null);
+  // Unified Trips List combining Schedules + Tour Packages + Customer Booked Trips
+  const unifiedTripsList = useMemo(() => {
+    const map = new Map();
+
+    // 1. Schedules
+    filteredSchedules.forEach(s => {
+      const id = String(s.id);
+      map.set(id, {
+        id: s.id,
+        tripId: s.tripId || s.id,
+        tripTitle: s.tripTitle || s.title || 'Tour Departure',
+        departureDate: s.departureDate || s.date || 'Active Departure'
+      });
+    });
+
+    // 2. Tour Packages
+    tourPackages.forEach(t => {
+      const id = `TRIP_${t.id}`;
+      if (!map.has(id)) {
+        map.set(id, {
+          id: id,
+          tripId: t.id,
+          tripTitle: t.title || t.name || 'Tour Package',
+          departureDate: (t.upcomingDates && t.upcomingDates[0]) || 'All Departures'
+        });
+      }
+    });
+
+    // 3. Customer Booked Trips
+    filteredBookings.forEach(b => {
+      if (b.tripName) {
+        const id = b.scheduleId || `BOOKING_TRIP_${b.tripId || b.tripName}`;
+        if (!map.has(id)) {
+          map.set(id, {
+            id: id,
+            tripId: b.tripId || id,
+            tripTitle: b.tripName,
+            departureDate: b.selectedDate || 'Booked Departure'
+          });
+        }
+      }
+    });
+
+    return Array.from(map.values());
+  }, [filteredSchedules, tourPackages, filteredBookings]);
+
+  // 1. Dynamic Trip Profitability Calculations for all trips
+  const tripReports = useMemo(() => {
+    return unifiedTripsList.map(trip => {
+      const finances = calculateTripFinances(trip, filteredBookings, filteredExpenses);
+      return {
+        trip,
+        finances
+      };
+    })
+    .filter(item => item.finances !== null)
+    .filter(item => {
+      const q = searchTerm.toLowerCase();
+      return (
+        item.trip.tripTitle?.toLowerCase().includes(q) ||
+        item.trip.departureDate?.toLowerCase().includes(q)
+      );
+    });
+  }, [unifiedTripsList, filteredBookings, filteredExpenses, searchTerm]);
 
   // Global Financial Statistics
   const globalTotalBooked = filteredBookings.reduce((sum, b) => sum + (Number(b.amount) || 0), 0);
   const globalTotalCollected = filteredBookings.reduce((sum, b) => sum + (Number(b.paidAmount) || 0), 0);
-  const globalTotalPending = globalTotalBooked - globalTotalCollected;
+  const globalTotalPending = Math.max(0, globalTotalBooked - globalTotalCollected);
   const globalTotalExpenses = filteredExpenses.reduce((sum, e) => sum + (Number(e.amount) || 0), 0);
   const globalNetProfit = globalTotalCollected - globalTotalExpenses;
   const globalIsProfit = globalNetProfit >= 0;
-
-  const countFullyPaid = filteredBookings.filter(b => b.paymentStatus === 'paid').length;
-  const countPartiallyPaid = filteredBookings.filter(b => b.paymentStatus === 'partial').length;
-  const countPending = filteredBookings.filter(b => b.paymentStatus === 'pending' || !b.paymentStatus).length;
 
   // Category Expenses Breakdown
   const categoryTotals = EXPENSE_CATEGORIES.map(cat => {
@@ -77,10 +136,9 @@ const AdminReports = () => {
 
   // Export CSV Report Handlers
   const handleExportTripReportCSV = () => {
-    const rows = tripReports.map(({ schedule, finances }) => ({
-      'Schedule ID': schedule.id,
-      'Trip Title': schedule.tripTitle,
-      'Departure Date': schedule.departureDate,
+    const rows = tripReports.map(({ trip, finances }) => ({
+      'Trip Title': trip.tripTitle,
+      'Departure Date': trip.departureDate,
       'Total Bookings': finances.bookingsCount,
       'Passengers Count': finances.travelersCount,
       'Total Booked Value (INR)': finances.totalBookedValue,
@@ -93,7 +151,6 @@ const AdminReports = () => {
     }));
 
     const headers = [
-      'Schedule ID',
       'Trip Title',
       'Departure Date',
       'Total Bookings',
@@ -138,7 +195,7 @@ const AdminReports = () => {
       <div className="bg-white border-b border-gray-100 px-4 py-3 flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-base font-bold text-gray-900">Financial Reports & Profitability Analytics</h1>
-          <p className="text-gray-600 text-xs mt-0.5">Comprehensive audit of trip revenues, expenses, collections, and net profit/loss</p>
+          <p className="text-gray-600 text-xs mt-0.5">Live dynamic audit of trip revenues, passenger collections, expenses, and net profit/loss</p>
         </div>
 
         <div className="flex items-center gap-2">
@@ -147,9 +204,9 @@ const AdminReports = () => {
             onChange={(e) => setDateFilter(e.target.value)}
             className="bg-white border border-gray-300 rounded-xl px-3 py-1.5 text-xs text-gray-800 font-bold focus:outline-none focus:border-[#00C9B7] cursor-pointer"
           >
-            <option value="all">All Time</option>
-            <option value="this_month">This Month</option>
-            <option value="last_month">Last Month</option>
+            <option value="all">Filter: All Time</option>
+            <option value="this_month">Filter: This Month</option>
+            <option value="last_month">Filter: Last Month</option>
           </select>
 
           <button
@@ -225,24 +282,37 @@ const AdminReports = () => {
           </div>
         </div>
 
-        {/* Tab Navigation */}
-        <div className="bg-white border border-gray-100 rounded-xl p-1 flex gap-1 w-fit shadow-xs">
-          <button
-            onClick={() => setActiveReportTab('trips')}
-            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-              activeReportTab === 'trips' ? 'bg-[#00C9B7] text-white shadow-xs' : 'text-gray-600 hover:bg-gray-50'
-            }`}
-          >
-            Trip Profitability Ledger ({tripReports.length} Departures)
-          </button>
-          <button
-            onClick={() => setActiveReportTab('expenses')}
-            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-              activeReportTab === 'expenses' ? 'bg-[#00C9B7] text-white shadow-xs' : 'text-gray-600 hover:bg-gray-50'
-            }`}
-          >
-            Expense Breakdown By Category
-          </button>
+        {/* Search & Tab Navigation */}
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex flex-col sm:flex-row justify-between items-center gap-3">
+          <div className="relative w-full sm:w-72">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search reports by trip name or date..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full bg-white border border-gray-300 rounded-xl pl-10 pr-4 py-2 text-xs text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#00C9B7]"
+            />
+          </div>
+
+          <div className="bg-gray-100 border border-gray-200 rounded-xl p-1 flex gap-1 shadow-xs">
+            <button
+              onClick={() => setActiveReportTab('trips')}
+              className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                activeReportTab === 'trips' ? 'bg-[#00C9B7] text-white shadow-xs' : 'text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              Trip Profitability Ledger ({tripReports.length} Trips)
+            </button>
+            <button
+              onClick={() => setActiveReportTab('expenses')}
+              className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                activeReportTab === 'expenses' ? 'bg-[#00C9B7] text-white shadow-xs' : 'text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              Expense Categories Breakdown
+            </button>
+          </div>
         </div>
 
         {/* TAB 1: Trip Profitability Table */}
@@ -253,26 +323,26 @@ const AdminReports = () => {
               <span className="text-[11px] text-gray-500 font-medium">Passenger Collections - Expenses = Profit / Loss</span>
             </div>
 
-            <div className="overflow-x-auto">
-              <table className="w-full">
+            <div className="hidden lg:block overflow-x-auto">
+              <table className="w-full text-left">
                 <thead>
-                  <tr className="text-left text-gray-600 text-xs font-bold uppercase tracking-wide border-b border-gray-200 bg-gray-50/50">
+                  <tr className="text-gray-600 text-xs font-bold uppercase tracking-wide border-b border-gray-200 bg-gray-50/50">
                     <th className="px-4 py-3">Trip Departure</th>
-                    <th className="px-4 py-3 text-center">Travelers</th>
-                    <th className="px-4 py-3 text-right">Booked Value</th>
+                    <th className="px-4 py-3 text-center">Travelers / Bookings</th>
+                    <th className="px-4 py-3 text-right">Total Booked Value</th>
                     <th className="px-4 py-3 text-right text-emerald-700">Revenue Collection</th>
-                    <th className="px-4 py-3 text-right text-rose-600">Trip Expenses</th>
+                    <th className="px-4 py-3 text-right text-rose-600">Total Expenses</th>
                     <th className="px-4 py-3 text-right">Net Profit / Loss</th>
                     <th className="px-4 py-3 text-center">Action</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {tripReports.map(({ schedule, finances }) => (
-                    <tr key={schedule.id} className="border-b border-gray-100 last:border-0 hover:bg-gray-50/80 transition-colors">
+                  {tripReports.map(({ trip, finances }) => (
+                    <tr key={trip.id} className="border-b border-gray-100 last:border-0 hover:bg-gray-50/80 transition-colors">
                       <td className="px-4 py-3 align-middle">
-                        <div className="font-bold text-gray-900 text-xs">{schedule.tripTitle}</div>
+                        <div className="font-bold text-gray-900 text-xs">{trip.tripTitle}</div>
                         <div className="text-gray-500 text-[11px] flex items-center gap-1">
-                          <Calendar size={11} /> Departure: {schedule.departureDate}
+                          <Calendar size={11} /> Departure: {trip.departureDate}
                         </div>
                       </td>
 
@@ -303,12 +373,22 @@ const AdminReports = () => {
                       </td>
 
                       <td className="px-4 py-3 align-middle text-center">
-                        <button
-                          onClick={() => printTripFinancialReport(schedule, finances)}
-                          className="bg-gray-50 hover:bg-gray-100 text-gray-700 border border-gray-200 font-bold py-1 px-2.5 rounded-lg text-[11px] transition-colors flex items-center justify-center gap-1 mx-auto cursor-pointer"
-                        >
-                          <Printer size={12} /> Audit PDF
-                        </button>
+                        <div className="flex items-center justify-center gap-1">
+                          <button
+                            onClick={() => setSelectedAuditTrip({ trip, finances })}
+                            className="bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200 font-bold py-1 px-2.5 rounded-lg text-[11px] transition-colors flex items-center gap-1 cursor-pointer"
+                            title="View Deep Audit Breakdown"
+                          >
+                            <Eye size={12} /> Audit
+                          </button>
+                          <button
+                            onClick={() => printTripFinancialReport(trip, finances)}
+                            className="bg-gray-50 hover:bg-gray-100 text-gray-700 border border-gray-200 font-bold py-1 px-2.5 rounded-lg text-[11px] transition-colors flex items-center gap-1 cursor-pointer"
+                            title="Download PDF Report"
+                          >
+                            <Printer size={12} /> PDF
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -316,10 +396,53 @@ const AdminReports = () => {
               </table>
             </div>
 
+            {/* Mobile View */}
+            <div className="block lg:hidden divide-y divide-gray-100">
+              {tripReports.map(({ trip, finances }) => (
+                <div key={trip.id} className="p-4 space-y-2">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h4 className="font-bold text-gray-900 text-xs">{trip.tripTitle}</h4>
+                      <p className="text-gray-500 text-[11px]">Departure: {trip.departureDate}</p>
+                    </div>
+                    <span className={`px-2.5 py-1 rounded-lg text-xs font-black border ${
+                      finances.isProfit 
+                        ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
+                        : 'bg-rose-50 text-rose-700 border-rose-200'
+                    }`}>
+                      {finances.isProfit ? '+' : ''}{formatCurrency(finances.netProfitLoss)}
+                    </span>
+                  </div>
+
+                  <div className="bg-gray-50 rounded-xl p-3 text-xs space-y-1 border border-gray-100">
+                    <div className="flex justify-between"><span className="text-gray-500">Travelers Count:</span><span className="font-bold">{finances.travelersCount} Pax ({finances.bookingsCount} Bks)</span></div>
+                    <div className="flex justify-between"><span className="text-gray-500">Total Booked Value:</span><span className="font-bold">{formatCurrency(finances.totalBookedValue)}</span></div>
+                    <div className="flex justify-between"><span className="text-gray-500">Revenue Collection:</span><span className="text-emerald-700 font-black">{formatCurrency(finances.passengerRevenueCollection)}</span></div>
+                    <div className="flex justify-between"><span className="text-gray-500">Trip Expenses:</span><span className="text-rose-600 font-black">{formatCurrency(finances.totalExpenses)}</span></div>
+                  </div>
+
+                  <div className="flex gap-2 pt-1">
+                    <button
+                      onClick={() => setSelectedAuditTrip({ trip, finances })}
+                      className="flex-1 bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200 font-bold py-1.5 rounded-xl text-xs flex items-center justify-center gap-1"
+                    >
+                      <Eye size={13} /> Deep Audit
+                    </button>
+                    <button
+                      onClick={() => printTripFinancialReport(trip, finances)}
+                      className="flex-1 bg-gray-50 hover:bg-gray-100 text-gray-700 border border-gray-200 font-bold py-1.5 rounded-xl text-xs flex items-center justify-center gap-1"
+                    >
+                      <Printer size={13} /> PDF Report
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
             {tripReports.length === 0 && (
               <div className="text-center py-12">
                 <FileText className="w-10 h-10 text-gray-300 mx-auto mb-2" />
-                <h4 className="text-gray-700 font-bold text-xs">No departure trip reports found</h4>
+                <h4 className="text-gray-700 font-bold text-xs">No trip profitability records found</h4>
               </div>
             )}
           </div>
@@ -376,6 +499,84 @@ const AdminReports = () => {
           </div>
         )}
       </div>
+
+      {/* Deep Audit Modal for a Selected Trip */}
+      {selectedAuditTrip && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 my-auto">
+            <div className="px-6 py-4 border-b border-gray-150 flex items-center justify-between bg-gray-50/50">
+              <div>
+                <h3 className="font-bold text-gray-900 text-sm">Trip Financial Audit Report</h3>
+                <p className="text-gray-500 text-xs">{selectedAuditTrip.trip.tripTitle} ({selectedAuditTrip.trip.departureDate})</p>
+              </div>
+              <button onClick={() => setSelectedAuditTrip(null)} className="p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all">
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-4 max-h-[75vh] overflow-y-auto text-xs">
+              {/* Financial KPI Summary */}
+              <div className="grid grid-cols-2 gap-3 text-center">
+                <div className="bg-gray-50 border border-gray-150 p-3 rounded-2xl">
+                  <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider block">Booked Value</span>
+                  <span className="font-black text-gray-900 text-sm block mt-0.5">{formatCurrency(selectedAuditTrip.finances.totalBookedValue)}</span>
+                </div>
+                <div className="bg-emerald-50 border border-emerald-200 p-3 rounded-2xl">
+                  <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-wider block">Revenue Collected</span>
+                  <span className="font-black text-emerald-700 text-sm block mt-0.5">{formatCurrency(selectedAuditTrip.finances.passengerRevenueCollection)}</span>
+                </div>
+                <div className="bg-rose-50 border border-rose-200 p-3 rounded-2xl">
+                  <span className="text-[10px] text-rose-600 font-bold uppercase tracking-wider block">Trip Expenses</span>
+                  <span className="font-black text-rose-700 text-sm block mt-0.5">{formatCurrency(selectedAuditTrip.finances.totalExpenses)}</span>
+                </div>
+                <div className={`border p-3 rounded-2xl ${
+                  selectedAuditTrip.finances.isProfit ? 'bg-emerald-100/60 border-emerald-300' : 'bg-rose-100/60 border-rose-300'
+                }`}>
+                  <span className="text-[10px] font-bold uppercase tracking-wider block">Net Profit / Loss</span>
+                  <span className={`font-black text-sm block mt-0.5 ${
+                    selectedAuditTrip.finances.isProfit ? 'text-emerald-800' : 'text-rose-800'
+                  }`}>
+                    {selectedAuditTrip.finances.isProfit ? '+' : ''}{formatCurrency(selectedAuditTrip.finances.netProfitLoss)}
+                  </span>
+                </div>
+              </div>
+
+              {/* Itemized Expenses List */}
+              <div>
+                <h4 className="font-extrabold uppercase tracking-wider text-gray-400 text-[10px] mb-1.5">Itemized Trip Expenses</h4>
+                <div className="space-y-1.5">
+                  {selectedAuditTrip.finances.scheduleExpenses.map(exp => (
+                    <div key={exp.id} className="bg-gray-50 border border-gray-100 rounded-xl p-2.5 flex justify-between items-center">
+                      <div>
+                        <span className="font-bold text-gray-800 uppercase text-[10px] bg-slate-200 px-1.5 py-0.5 rounded mr-1">
+                          {getCategoryLabel(exp.category)}
+                        </span>
+                        <span className="text-gray-600 text-xs">{exp.notes || 'Expense logged'}</span>
+                      </div>
+                      <span className="font-black text-rose-600 text-xs">{formatCurrency(exp.amount)}</span>
+                    </div>
+                  ))}
+
+                  {selectedAuditTrip.finances.scheduleExpenses.length === 0 && (
+                    <div className="text-gray-400 italic text-center py-3 bg-gray-50 rounded-xl border border-gray-100">
+                      No expenses logged for this trip yet.
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="pt-2 border-t border-gray-150 flex justify-end gap-2">
+                <button
+                  onClick={() => printTripFinancialReport(selectedAuditTrip.trip, selectedAuditTrip.finances)}
+                  className="bg-[#00C9B7] hover:bg-[#00b3a3] text-white font-bold py-2 px-4 rounded-xl text-xs flex items-center gap-1 shadow-sm cursor-pointer"
+                >
+                  <Printer size={14} /> Download PDF Profit Report
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
