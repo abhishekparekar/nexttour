@@ -48,6 +48,7 @@ function App() {
           <Route path="about" element={<About />} />
           <Route path="trips" element={<Trips />} />
           <Route path="trip/:id" element={<TripDetail />} />
+          <Route path="trips/:id" element={<TripDetail />} />
           <Route path="category/:id" element={<CategoryDetail />} />
           <Route path="booking/:tripId" element={<Booking />} />
 

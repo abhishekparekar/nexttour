@@ -67,14 +67,14 @@ const AdminTrips = () => {
 
   const handleEdit = (trip) => {
     const deepCopy = JSON.parse(JSON.stringify(trip));
-    deepCopy.highlights = (deepCopy.highlights || []).join(', ');
-    deepCopy.inclusions = (deepCopy.inclusions || []).join(', ');
-    deepCopy.exclusions = (deepCopy.exclusions || []).join(', ');
-    deepCopy.thingsToCarry = (deepCopy.thingsToCarry || []).join(', ');
-    deepCopy.cancellationPolicy = (deepCopy.cancellationPolicy || []).join(', ');
-    deepCopy.rules = (deepCopy.rules || []).join(', ');
-    deepCopy.placesCovered = (deepCopy.placesCovered || []).join(', ');
-    deepCopy.importantInstructions = (deepCopy.importantInstructions || []).join(', ');
+    deepCopy.highlights = (deepCopy.highlights || []).join('\n');
+    deepCopy.inclusions = (deepCopy.inclusions || []).join('\n');
+    deepCopy.exclusions = (deepCopy.exclusions || []).join('\n');
+    deepCopy.thingsToCarry = (deepCopy.thingsToCarry || []).join('\n');
+    deepCopy.cancellationPolicy = (deepCopy.cancellationPolicy || []).join('\n');
+    deepCopy.rules = (deepCopy.rules || []).join('\n');
+    deepCopy.placesCovered = (deepCopy.placesCovered || []).join('\n');
+    deepCopy.importantInstructions = (deepCopy.importantInstructions || []).join('\n');
     setEditingTrip(deepCopy);
     setNewDateInput('');
     setNewTimeInput('');
@@ -182,28 +182,28 @@ const AdminTrips = () => {
         days: Number(editingTrip.days) || (Number(editingTrip.nights) || 0) + 1,
         nights: Number(editingTrip.nights) || 0,
         highlights: typeof editingTrip.highlights === 'string'
-          ? editingTrip.highlights.split(',').map(h => h.trim()).filter(Boolean)
+          ? editingTrip.highlights.split(/[,\n]+/).map(h => h.trim()).filter(Boolean)
           : (editingTrip.highlights || []),
         inclusions: typeof editingTrip.inclusions === 'string'
-          ? editingTrip.inclusions.split(',').map(i => i.trim()).filter(Boolean)
+          ? editingTrip.inclusions.split(/[,\n]+/).map(i => i.trim()).filter(Boolean)
           : (editingTrip.inclusions || []),
         exclusions: typeof editingTrip.exclusions === 'string'
-          ? editingTrip.exclusions.split(',').map(e => e.trim()).filter(Boolean)
+          ? editingTrip.exclusions.split(/[,\n]+/).map(e => e.trim()).filter(Boolean)
           : (editingTrip.exclusions || []),
         thingsToCarry: typeof editingTrip.thingsToCarry === 'string'
-          ? editingTrip.thingsToCarry.split(',').map(t => t.trim()).filter(Boolean)
+          ? editingTrip.thingsToCarry.split(/[,\n]+/).map(t => t.trim()).filter(Boolean)
           : (editingTrip.thingsToCarry || []),
         cancellationPolicy: typeof editingTrip.cancellationPolicy === 'string'
-          ? editingTrip.cancellationPolicy.split(',').map(c => c.trim()).filter(Boolean)
+          ? editingTrip.cancellationPolicy.split(/[,\n]+/).map(c => c.trim()).filter(Boolean)
           : (editingTrip.cancellationPolicy || []),
         rules: typeof editingTrip.rules === 'string'
-          ? editingTrip.rules.split(',').map(r => r.trim()).filter(Boolean)
+          ? editingTrip.rules.split(/[,\n]+/).map(r => r.trim()).filter(Boolean)
           : (editingTrip.rules || []),
         placesCovered: typeof editingTrip.placesCovered === 'string'
-          ? editingTrip.placesCovered.split(',').map(p => p.trim()).filter(Boolean)
+          ? editingTrip.placesCovered.split(/[,\n]+/).map(p => p.trim()).filter(Boolean)
           : (editingTrip.placesCovered || []),
         importantInstructions: typeof editingTrip.importantInstructions === 'string'
-          ? editingTrip.importantInstructions.split(',').map(i => i.trim()).filter(Boolean)
+          ? editingTrip.importantInstructions.split(/[,\n]+/).map(i => i.trim()).filter(Boolean)
           : (editingTrip.importantInstructions || []),
         hotelDetails: editingTrip.hotelDetails || '',
         foodDetails: editingTrip.foodDetails || '',
@@ -477,9 +477,6 @@ const AdminTrips = () => {
                   <th className="p-6 font-semibold">Category</th>
                   <th className="p-6 font-semibold">Duration</th>
                   <th className="p-6 font-semibold">Price</th>
-                  <th className="p-6 font-semibold">Difficulty</th>
-                  <th className="p-6 font-semibold">Status</th>
-                  <th className="p-6 font-semibold">Featured</th>
                   <th className="p-6 font-semibold">Upcoming</th>
                   <th className="p-6 font-semibold">Actions</th>
                 </tr>
@@ -501,21 +498,6 @@ const AdminTrips = () => {
                     </td>
                     <td className="p-6 text-gray-700">{trip.nights || 0}N/{trip.days || (trip.nights || 0) + 1}D</td>
                     <td className="p-6 text-gray-900 font-bold">₹{trip.price?.toLocaleString()}</td>
-                    <td className="p-4">
-                      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${difficultyColors[trip.difficulty]}`}>{trip.difficulty}</span>
-                    </td>
-                    <td className="p-4">
-                      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${trip.status === 'active' ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-gray-100 text-gray-600 border border-gray-200'}`}>
-                        {trip.status?.charAt(0).toUpperCase() + trip.status?.slice(1)}
-                      </span>
-                    </td>
-                    <td className="p-4">
-                      {trip.featured ? (
-                        <span className="px-2 py-0.5 bg-[#E6FAF8] text-[#00A192] border border-[#00C9B7]/30 rounded-full text-xs font-bold flex items-center gap-1"><Star size={10} className="fill-[#00C9B7] text-[#00C9B7]" /> Featured</span>
-                      ) : (
-                        <span className="text-gray-600 text-sm">-</span>
-                      )}
-                    </td>
                     <td className="p-4">
                       {trip.upcoming ? (
                         <span className="px-3 py-1 bg-blue-50 text-blue-700 border border-blue-200 rounded-full text-xs font-semibold">📅 Upcoming</span>
@@ -775,21 +757,22 @@ const AdminTrips = () => {
                 <button type="button" onClick={() => toggleSection('highlights')} className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors">
                   <span className="text-base font-bold text-gray-900 flex items-center gap-2">
                     <span className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center text-white text-sm">3</span>
-                    Trip Highlights ({typeof editingTrip.highlights === 'string' ? editingTrip.highlights.split(',').map(h => h.trim()).filter(Boolean).length : (editingTrip.highlights || []).length})
+                    Trip Highlights ({typeof editingTrip.highlights === 'string' ? editingTrip.highlights.split(/[,\n]+/).map(h => h.trim()).filter(Boolean).length : (editingTrip.highlights || []).length})
                   </span>
                   {expandedSections.includes('highlights') ? <ChevronUp size={20} className="text-gray-500" /> : <ChevronDown size={20} className="text-gray-500" />}
                 </button>
                 
                 {expandedSections.includes('highlights') && (
-                  <div className="p-6 pt-2 space-y-4">
+                  <div className="p-6 pt-2 space-y-3">
+                    <p className="text-xs text-gray-500 font-medium bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">💡 Type each highlight on a <strong>new line</strong>. You can also separate with commas.</p>
                     <div className="flex gap-3 items-start">
                       <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-3" />
                       <textarea 
                         value={editingTrip.highlights || ''} 
                         onChange={(e) => handleFieldChange('highlights', e.target.value)}
-                        placeholder="Enter highlights separated by commas (e.g. Kalu Waterfall Trek, Scenic views, Expert guides)..."
-                        className="flex-1 bg-white border border-gray-300 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-primary-500 resize-none focus:ring-1 focus:ring-primary-500" 
-                        rows={3}
+                        placeholder={`Kalu Waterfall Trek\nScenic mountain views\nExpert local guides\nCampfire nights`}
+                        className="flex-1 bg-white border border-gray-300 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-primary-500 resize-y focus:ring-1 focus:ring-primary-500 font-medium text-sm leading-6" 
+                        rows={5}
                       />
                     </div>
                   </div>
@@ -808,11 +791,12 @@ const AdminTrips = () => {
                 
                 {expandedSections.includes('inclusions') && (
                   <div className="p-6 pt-2 space-y-4">
+                    <p className="text-xs text-gray-500 font-medium bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">💡 Type each item on a <strong>new line</strong>. You can also separate with commas.</p>
                     <div>
                       <h4 className="text-green-700 font-bold mb-3 flex items-center gap-2">
                         <span>✓ What's Included</span>
                         <span className="text-xs font-normal text-gray-400">
-                          ({typeof editingTrip.inclusions === 'string' ? editingTrip.inclusions.split(',').map(i => i.trim()).filter(Boolean).length : (editingTrip.inclusions || []).length})
+                          ({typeof editingTrip.inclusions === 'string' ? editingTrip.inclusions.split(/[,\n]+/).map(i => i.trim()).filter(Boolean).length : (editingTrip.inclusions || []).length})
                         </span>
                       </h4>
                       <div className="flex gap-3 items-start">
@@ -820,9 +804,9 @@ const AdminTrips = () => {
                         <textarea 
                           value={editingTrip.inclusions || ''} 
                           onChange={(e) => handleFieldChange('inclusions', e.target.value)}
-                          placeholder="Enter inclusions separated by commas (e.g. Accommodation, Meals, Guide, Permits)..."
-                          className="flex-1 bg-white border border-gray-300 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-primary-500 resize-none focus:ring-1 focus:ring-primary-500" 
-                          rows={3}
+                          placeholder={`Accommodation (hotel/tent)\nAll meals (breakfast, lunch, dinner)\nTrek guide & permits\nFirst aid kit`}
+                          className="flex-1 bg-white border border-gray-300 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-primary-500 resize-y focus:ring-1 focus:ring-primary-500 font-medium text-sm leading-6" 
+                          rows={5}
                         />
                       </div>
                     </div>
@@ -831,7 +815,7 @@ const AdminTrips = () => {
                       <h4 className="text-red-700 font-bold mb-3 flex items-center gap-2">
                         <span>✗ Excluded</span>
                         <span className="text-xs font-normal text-gray-400">
-                          ({typeof editingTrip.exclusions === 'string' ? editingTrip.exclusions.split(',').map(e => e.trim()).filter(Boolean).length : (editingTrip.exclusions || []).length})
+                          ({typeof editingTrip.exclusions === 'string' ? editingTrip.exclusions.split(/[,\n]+/).map(e => e.trim()).filter(Boolean).length : (editingTrip.exclusions || []).length})
                         </span>
                       </h4>
                       <div className="flex gap-3 items-start">
@@ -839,9 +823,9 @@ const AdminTrips = () => {
                         <textarea 
                           value={editingTrip.exclusions || ''} 
                           onChange={(e) => handleFieldChange('exclusions', e.target.value)}
-                          placeholder="Enter exclusions separated by commas (e.g. Travel insurance, Personal expenses, Mineral water)..."
-                          className="flex-1 bg-white border border-gray-300 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-primary-500 resize-none focus:ring-1 focus:ring-primary-500" 
-                          rows={3}
+                          placeholder={`Travel insurance\nPersonal expenses\nMineral water\nTips & gratuities`}
+                          className="flex-1 bg-white border border-gray-300 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-primary-500 resize-y focus:ring-1 focus:ring-primary-500 font-medium text-sm leading-6" 
+                          rows={5}
                         />
                       </div>
                     </div>
@@ -1239,22 +1223,23 @@ const AdminTrips = () => {
                 <button type="button" onClick={() => toggleSection('thingsToCarry')} className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors">
                   <span className="text-base font-bold text-gray-900 flex items-center gap-2">
                     <span className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center text-white text-sm">8</span>
-                    Things to Carry ({typeof editingTrip.thingsToCarry === 'string' ? editingTrip.thingsToCarry.split(',').map(t => t.trim()).filter(Boolean).length : (editingTrip.thingsToCarry || []).length})
+                    Things to Carry ({typeof editingTrip.thingsToCarry === 'string' ? editingTrip.thingsToCarry.split(/[,\n]+/).map(t => t.trim()).filter(Boolean).length : (editingTrip.thingsToCarry || []).length})
                   </span>
                   {expandedSections.includes('thingsToCarry') ? <ChevronUp size={20} className="text-gray-500" /> : <ChevronDown size={20} className="text-gray-500" />}
                 </button>
                 
                 {expandedSections.includes('thingsToCarry') && (
-                  <div className="p-6 pt-2 space-y-4">
-                    <p className="text-gray-600 text-sm">Add items that trekkers should carry for this trip (separated by commas)</p>
+                  <div className="p-6 pt-2 space-y-3">
+                    <p className="text-xs text-gray-500 font-medium bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">💡 Type each item on a <strong>new line</strong>. You can also separate with commas.</p>
+                    <p className="text-gray-600 text-sm">Add items that trekkers should carry for this trip</p>
                     <div className="flex gap-3 items-start">
                       <CheckCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-3" />
                       <textarea 
                         value={editingTrip.thingsToCarry || ''} 
                         onChange={(e) => handleFieldChange('thingsToCarry', e.target.value)}
-                        placeholder="Enter items separated by commas (e.g. Trekking shoes, Water bottle, Raincoat, Torch)..."
-                        className="flex-1 bg-white border border-gray-300 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-primary-500 resize-none focus:ring-1 focus:ring-primary-500" 
-                        rows={3}
+                        placeholder={`Trekking shoes\nWater bottle (2 litre)\nRaincoat / poncho\nTorch with batteries\nFirst aid kit`}
+                        className="flex-1 bg-white border border-gray-300 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-primary-500 resize-y focus:ring-1 focus:ring-primary-500 font-medium text-sm leading-6" 
+                        rows={6}
                       />
                     </div>
                   </div>
@@ -1266,22 +1251,23 @@ const AdminTrips = () => {
                 <button type="button" onClick={() => toggleSection('cancellationPolicy')} className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors">
                   <span className="text-base font-bold text-gray-900 flex items-center gap-2">
                     <span className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center text-white text-sm">9</span>
-                    Cancellation Policy ({typeof editingTrip.cancellationPolicy === 'string' ? editingTrip.cancellationPolicy.split(',').map(c => c.trim()).filter(Boolean).length : (editingTrip.cancellationPolicy || []).length})
+                    Cancellation Policy ({typeof editingTrip.cancellationPolicy === 'string' ? editingTrip.cancellationPolicy.split(/[,\n]+/).map(c => c.trim()).filter(Boolean).length : (editingTrip.cancellationPolicy || []).length})
                   </span>
                   {expandedSections.includes('cancellationPolicy') ? <ChevronUp size={20} className="text-gray-500" /> : <ChevronDown size={20} className="text-gray-500" />}
                 </button>
                 
                 {expandedSections.includes('cancellationPolicy') && (
-                  <div className="p-6 pt-2 space-y-4">
-                    <p className="text-gray-600 text-sm">Add cancellation policy rules for this trip (separated by commas)</p>
+                  <div className="p-6 pt-2 space-y-3">
+                    <p className="text-xs text-gray-500 font-medium bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">💡 Type each policy on a <strong>new line</strong>. You can also separate with commas.</p>
+                    <p className="text-gray-600 text-sm">Add cancellation policy rules for this trip</p>
                     <div className="flex gap-3 items-start">
                       <X className="w-5 h-5 text-orange-600 flex-shrink-0 mt-3" />
                       <textarea 
                         value={editingTrip.cancellationPolicy || ''} 
                         onChange={(e) => handleFieldChange('cancellationPolicy', e.target.value)}
-                        placeholder="Enter cancellation rules separated by commas (e.g. Free cancellation up to 7 days before, No refund within 24 hours)..."
-                        className="flex-1 bg-white border border-gray-300 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-primary-500 resize-none focus:ring-1 focus:ring-primary-500" 
-                        rows={3}
+                        placeholder={`Free cancellation up to 7 days before trip\n50% refund within 3-7 days before trip\nNo refund within 48 hours of departure`}
+                        className="flex-1 bg-white border border-gray-300 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-primary-500 resize-y focus:ring-1 focus:ring-primary-500 font-medium text-sm leading-6" 
+                        rows={5}
                       />
                     </div>
                   </div>
@@ -1293,22 +1279,23 @@ const AdminTrips = () => {
                 <button type="button" onClick={() => toggleSection('rules')} className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors">
                   <span className="text-base font-bold text-gray-900 flex items-center gap-2">
                     <span className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center text-white text-sm">10</span>
-                    Trip Rules ({typeof editingTrip.rules === 'string' ? editingTrip.rules.split(',').map(r => r.trim()).filter(Boolean).length : (editingTrip.rules || []).length})
+                    Trip Rules ({typeof editingTrip.rules === 'string' ? editingTrip.rules.split(/[,\n]+/).map(r => r.trim()).filter(Boolean).length : (editingTrip.rules || []).length})
                   </span>
                   {expandedSections.includes('rules') ? <ChevronUp size={20} className="text-gray-500" /> : <ChevronDown size={20} className="text-gray-500" />}
                 </button>
                 
                 {expandedSections.includes('rules') && (
-                  <div className="p-6 pt-2 space-y-4">
-                    <p className="text-gray-600 text-sm">Add rules and guidelines for this trip (separated by commas)</p>
+                  <div className="p-6 pt-2 space-y-3">
+                    <p className="text-xs text-gray-500 font-medium bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">💡 Type each rule on a <strong>new line</strong>. You can also separate with commas.</p>
+                    <p className="text-gray-600 text-sm">Add rules and guidelines for this trip</p>
                     <div className="flex gap-3 items-start">
                       <AlertCircle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-3" />
                       <textarea 
                         value={editingTrip.rules || ''} 
                         onChange={(e) => handleFieldChange('rules', e.target.value)}
-                        placeholder="Enter trip rules separated by commas (e.g. No smoking during trek, Keep the environment clean, Follow guide instructions)..."
-                        className="flex-1 bg-white border border-gray-300 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-primary-500 resize-none focus:ring-1 focus:ring-primary-500" 
-                        rows={3}
+                        placeholder={`No smoking or alcohol during the trek\nKeep the environment clean – no littering\nFollow guide instructions at all times\nAge limit: 10 to 60 years`}
+                        className="flex-1 bg-white border border-gray-300 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-primary-500 resize-y focus:ring-1 focus:ring-primary-500 font-medium text-sm leading-6" 
+                        rows={5}
                       />
                     </div>
                   </div>
@@ -1363,14 +1350,15 @@ const AdminTrips = () => {
                 
                 {expandedSections.includes('additionalInfo') && (
                   <div className="p-6 pt-2 space-y-4">
+                    <p className="text-xs text-gray-500 font-medium bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">💡 Type each place/instruction on a <strong>new line</strong>. You can also separate with commas.</p>
                     <div>
                       <label className="block text-gray-700 font-semibold text-sm mb-2">Places Covered</label>
                       <textarea 
                         value={editingTrip.placesCovered || ''} 
                         onChange={(e) => handleFieldChange('placesCovered', e.target.value)}
-                        rows={3}
-                        placeholder="Enter places covered separated by commas (e.g. Solang Valley, Rohtang Pass, Old Manali)..."
-                        className="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-primary-500 resize-none focus:ring-1 focus:ring-primary-500" 
+                        rows={5}
+                        placeholder={`Solang Valley\nRohtang Pass\nOld Manali Market\nHidimba Devi Temple`}
+                        className="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-primary-500 resize-y focus:ring-1 focus:ring-primary-500 font-medium text-sm leading-6" 
                       />
                     </div>
                     <div>
@@ -1378,9 +1366,9 @@ const AdminTrips = () => {
                       <textarea 
                         value={editingTrip.importantInstructions || ''} 
                         onChange={(e) => handleFieldChange('importantInstructions', e.target.value)}
-                        rows={3}
-                        placeholder="Enter important instructions separated by commas (e.g. Carry original ID proof, Avoid plastic bags, Keep cash handy)..."
-                        className="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-primary-500 resize-none focus:ring-1 focus:ring-primary-500" 
+                        rows={5}
+                        placeholder={`Carry original government ID proof\nAvoid plastic bags – use cloth bags\nKeep cash handy – limited ATMs available\nArrive 15 minutes before departure time`}
+                        className="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-primary-500 resize-y focus:ring-1 focus:ring-primary-500 font-medium text-sm leading-6" 
                       />
                     </div>
                   </div>
