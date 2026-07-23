@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, User, Phone, Mail, Calendar, MapPin, Plus, Trash2, CreditCard, CheckCircle, Printer, Send, AlertCircle, Building, Contact, DollarSign } from 'lucide-react';
+import { X, User, Phone, Mail, Calendar, MapPin, Plus, Trash2, CreditCard, CheckCircle, Printer, Send, AlertCircle, Building, Contact, DollarSign, Users } from 'lucide-react';
 import { getTrips, getSchedules, addBooking, saveCustomer, updateBookingPayments, subscribeToBookings } from '../../firebase';
 import { generateBookingId, calculatePaymentStatus, formatCurrency, calculateTripSeatAvailability } from '../../utils/bookingUtils';
 import { printBookingConfirmation, printPaymentReceipt } from '../../utils/printTemplates';

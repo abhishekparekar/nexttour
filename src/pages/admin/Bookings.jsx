@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Search, Filter, X, Loader2, CheckCircle, Clock, AlertCircle, Phone, Mail, Calendar, Printer, Send, CreditCard, Plus, Building, UserCheck, User, History } from 'lucide-react';
 import { subscribeToBookings, updateBookingStatus } from '../../firebase';
 import { printBookingConfirmation, printPaymentReceipt } from '../../utils/printTemplates';
@@ -11,6 +11,8 @@ const AdminBookings = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [sourceFilter, setSourceFilter] = useState('all');
+  const [tripFilter, setTripFilter] = useState('all');
+  const [monthFilter, setMonthFilter] = useState('all');
   const [loading, setLoading] = useState(true);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [selectedCustomerPhone, setSelectedCustomerPhone] = useState(null);
@@ -48,19 +50,44 @@ const AdminBookings = () => {
     setShowCustomerModal(true);
   };
 
-  const filteredBookings = bookings.filter(booking => {
-    const matchesSearch = 
-      booking.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      booking.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      booking.phone?.includes(searchTerm) ||
-      booking.id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      booking.tripName?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || booking.status === statusFilter;
-    const matchesSource = sourceFilter === 'all' || 
-      (sourceFilter === 'office' && booking.bookingSource === 'office') ||
-      (sourceFilter === 'web' && booking.bookingSource !== 'office');
-    return matchesSearch && matchesStatus && matchesSource;
-  });
+  // Unique trip titles in bookings
+  const uniqueTripTitles = useMemo(() => {
+    const set = new Set();
+    (bookings || []).forEach(b => { if (b.tripName) set.add(b.tripName); });
+    return Array.from(set).sort();
+  }, [bookings]);
+
+  const filteredBookings = useMemo(() => {
+    return (bookings || []).filter(booking => {
+      const matchesSearch = 
+        booking.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        booking.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        booking.phone?.includes(searchTerm) ||
+        booking.id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        booking.tripName?.toLowerCase().includes(searchTerm.toLowerCase());
+
+      const matchesStatus = statusFilter === 'all' || booking.status === statusFilter;
+      const matchesSource = sourceFilter === 'all' || 
+        (sourceFilter === 'office' && booking.bookingSource === 'office') ||
+        (sourceFilter === 'web' && booking.bookingSource !== 'office');
+      
+      const matchesTrip = tripFilter === 'all' || booking.tripName === tripFilter;
+
+      let matchesMonth = true;
+      if (monthFilter !== 'all') {
+        const bDate = new Date(booking.createdAt || booking.selectedDate);
+        const now = new Date();
+        if (monthFilter === 'this_month') {
+          matchesMonth = bDate.getMonth() === now.getMonth() && bDate.getFullYear() === now.getFullYear();
+        } else if (monthFilter === 'last_month') {
+          const lm = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+          matchesMonth = bDate.getMonth() === lm.getMonth() && bDate.getFullYear() === lm.getFullYear();
+        }
+      }
+
+      return matchesSearch && matchesStatus && matchesSource && matchesTrip && matchesMonth;
+    });
+  }, [bookings, searchTerm, statusFilter, sourceFilter, tripFilter, monthFilter]);
 
   const statusColors = {
     pending: 'bg-yellow-50 text-yellow-700 border border-yellow-200',
@@ -84,6 +111,18 @@ const AdminBookings = () => {
   const primaryCustomerObj = customerHistoryBookings[0] || {};
   const customerTotalSpent = customerHistoryBookings.reduce((sum, b) => sum + (Number(b.paidAmount) || 0), 0);
 
+  // Quick stats from ALL bookings (not filtered) — must be BEFORE any early returns (Rules of Hooks)
+  const quickStats = useMemo(() => ({
+    total: bookings.length,
+    confirmed: bookings.filter(b => b.status === 'confirmed').length,
+    pending: bookings.filter(b => b.status === 'pending').length,
+    cancelled: bookings.filter(b => b.status === 'cancelled').length,
+    office: bookings.filter(b => b.bookingSource === 'office').length,
+    web: bookings.filter(b => b.bookingSource !== 'office').length,
+  }), [bookings]);
+
+  const hasFilters = searchTerm || statusFilter !== 'all' || sourceFilter !== 'all' || tripFilter !== 'all' || monthFilter !== 'all';
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -97,17 +136,33 @@ const AdminBookings = () => {
       {/* Header & Quick Action */}
       <div className="bg-white border-b border-gray-100 px-4 py-3 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-base font-bold text-gray-900">Reservations & Office Counter Manager</h1>
-          <p className="text-gray-600 text-xs mt-0.5">{bookings.length} total reservations (Online & Office Counter)</p>
+          <h1 className="text-sm font-extrabold text-gray-900">Reservations & Office Counter Manager</h1>
+          <p className="text-gray-500 text-[11px] mt-0.5">{bookings.length} total · {quickStats.confirmed} confirmed · {quickStats.pending} pending</p>
         </div>
-
         <button
           onClick={() => setShowOfficeBookingModal(true)}
           className="bg-[#00C9B7] hover:bg-[#00b3a3] text-white font-bold py-2 px-4 rounded-xl text-xs transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
         >
           <Plus size={16} />
-          <span>New Office Counter Booking</span>
+          <span>New Office Booking</span>
         </button>
+      </div>
+
+      {/* Quick KPI Stats Strip */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 p-4 pb-0">
+        {[
+          { label: 'Total Bookings', val: quickStats.total, color: 'gray' },
+          { label: 'Confirmed', val: quickStats.confirmed, color: 'emerald' },
+          { label: 'Pending', val: quickStats.pending, color: 'amber' },
+          { label: 'Cancelled', val: quickStats.cancelled, color: 'rose' },
+          { label: 'Office Walk-in', val: quickStats.office, color: 'sky' },
+          { label: 'Online Website', val: quickStats.web, color: 'violet' },
+        ].map(s => (
+          <div key={s.label} className={`bg-white border border-gray-100 rounded-2xl p-3 text-center shadow-sm`}>
+            <div className={`text-lg font-black text-${s.color}-600`}>{s.val}</div>
+            <div className="text-[10px] text-gray-500 font-bold uppercase tracking-wider mt-0.5">{s.label}</div>
+          </div>
+        ))}
       </div>
 
       <div className="p-4 space-y-4">
@@ -126,7 +181,28 @@ const AdminBookings = () => {
                 />
               </div>
 
-              <div className="flex gap-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <select 
+                  value={tripFilter} 
+                  onChange={(e) => setTripFilter(e.target.value)}
+                  className="bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs font-bold text-gray-900 focus:outline-none focus:border-[#00C9B7] cursor-pointer"
+                >
+                  <option value="all">All Trip Packages ({uniqueTripTitles.length})</option>
+                  {uniqueTripTitles.map(t => (
+                    <option key={t} value={t}>{t}</option>
+                  ))}
+                </select>
+
+                <select 
+                  value={monthFilter} 
+                  onChange={(e) => setMonthFilter(e.target.value)}
+                  className="bg-sky-50 border border-sky-300 rounded-xl px-3 py-2 text-xs font-bold text-sky-900 focus:outline-none focus:border-[#00C9B7] cursor-pointer"
+                >
+                  <option value="all">Date: All Time</option>
+                  <option value="this_month">Date: This Month</option>
+                  <option value="last_month">Date: Last Month</option>
+                </select>
+
                 <select 
                   value={statusFilter} 
                   onChange={(e) => setStatusFilter(e.target.value)}
@@ -149,6 +225,21 @@ const AdminBookings = () => {
                   <option value="web">Online Website</option>
                 </select>
               </div>
+
+              {/* Active filter summary + Clear button */}
+              {hasFilters && (
+                <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+                  <span className="text-[11px] text-gray-500">
+                    Showing <strong className="text-gray-900">{filteredBookings.length}</strong> of {bookings.length} bookings
+                  </span>
+                  <button
+                    onClick={() => { setSearchTerm(''); setStatusFilter('all'); setSourceFilter('all'); setTripFilter('all'); setMonthFilter('all'); }}
+                    className="text-[11px] font-bold text-rose-600 border border-rose-200 bg-rose-50 px-2.5 py-1 rounded-xl flex items-center gap-1 hover:bg-rose-100 cursor-pointer"
+                  >
+                    <X size={11} /> Clear All Filters
+                  </button>
+                </div>
+              )}
             </div>
           </div>
 
