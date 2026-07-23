@@ -70,14 +70,12 @@ const About = () => {
           >
             <div className="relative">
               <div className="absolute -inset-3 bg-[#00C9B7]/10 rounded-[2rem] transform -rotate-3 pointer-events-none" />
-              <div className="relative w-full aspect-[16/9] rounded-2xl overflow-hidden shadow-lg border border-gray-200/60 bg-gray-100">
-                <img 
-                  src={aboutData.storyImage || '/about.png'} 
-                  alt="Our Journey" 
-                  className="w-full h-full object-cover object-center transition-transform duration-700 hover:scale-105"
-                  onError={(e) => { e.target.onerror = null; e.target.src = '/herobg2.jpg'; }}
-                />
-              </div>
+              <img 
+                src={aboutData.storyImage || '/about.png'} 
+                alt="Our Journey" 
+                className="relative z-10 w-full h-auto max-h-[450px] rounded-2xl shadow-lg object-cover"
+                onError={(e) => { e.target.onerror = null; e.target.src = '/herobg2.jpg'; }}
+              />
             </div>
             
             <div className="text-center lg:text-left">
