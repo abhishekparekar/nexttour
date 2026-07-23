@@ -4,6 +4,8 @@ import { Loader2, Mountain, Compass, MapPin, Calendar } from 'lucide-react';
 import TripCard from '../components/TripCard';
 import { useCachedTrips, useCachedCategories } from '../firebaseCache';
 import { motion, AnimatePresence } from 'framer-motion';
+import heroBg1 from '../assest/img/herobg1.png';
+import heroBg2 from '../assest/img/herobg2.jpg';
 
 const extractEmoji = (str) => {
   const match = str.match(/^([\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])\s*/);
@@ -21,9 +23,8 @@ const Home = () => {
 
   const [currentHeroIdx, setCurrentHeroIdx] = useState(0);
   const HERO_IMAGES = [
-    'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1900&q=80',
-    'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=1900&q=80',
-    'https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=1900&q=80'
+    heroBg1,
+    heroBg2
   ];
 
   const [typedText, setTypedText] = useState('');
@@ -86,11 +87,12 @@ const Home = () => {
   }, []);
 
   useEffect(() => {
+    if (HERO_IMAGES.length <= 1) return;
     const timer = setInterval(() => {
       setCurrentHeroIdx((prev) => (prev + 1) % HERO_IMAGES.length);
-    }, 6000);
+    }, 4500);
     return () => clearInterval(timer);
-  }, []);
+  }, [HERO_IMAGES.length]);
 
   const selectedCategory = searchParams.get('category') || 'all';
   const setCategory = (c) => setSearchParams(p => { const n = new URLSearchParams(p); c === 'all' ? n.delete('category') : n.set('category', c); return n; });
@@ -166,7 +168,20 @@ const Home = () => {
     });
 
   const filteredTrips = trips.filter(trip => {
-    return selectedCategory === 'all' || trip.categoryId === selectedCategory;
+    if (selectedCategory === 'all') return true;
+    
+    const targetCat = categories.find(c => String(c.id) === String(selectedCategory));
+    const targetTitle = (targetCat?.title || targetCat?.name || '').toLowerCase();
+    
+    const tripCatId = String(trip.categoryId || '').toLowerCase();
+    const tripCatName = String(trip.categoryName || '').toLowerCase();
+    const selCatId = String(selectedCategory).toLowerCase();
+
+    return (
+      tripCatId === selCatId ||
+      tripCatName === selCatId ||
+      (targetTitle && (tripCatId === targetTitle || tripCatName === targetTitle))
+    );
   });
 
   const heroContentVariants = {
@@ -213,47 +228,66 @@ const Home = () => {
         }
       `}</style>
 
-      {/* Hero Section */}
-      <div className="relative w-full h-screen bg-black overflow-hidden flex items-center justify-center">
-        {/* Background Background Images Slider */}
+      {/* Hero Section - Compact Viewport Fit */}
+      <div className="relative w-full min-h-[520px] h-[78vh] lg:h-[84vh] max-h-[750px] bg-[#0d1117] overflow-hidden flex items-center justify-center pt-16 select-none">
+        {/* Background Images Slider - Seamless Cross-Fade + Ken Burns Effect */}
         <AnimatePresence initial={false}>
           <motion.img
             key={currentHeroIdx}
             src={HERO_IMAGES[currentHeroIdx]}
-            initial={{ scale: 1, opacity: 0 }}
-            animate={{ scale: 1.25, opacity: 0.65 }}
+            alt="NextTour Hero Background"
+            initial={{ opacity: 0, scale: 1 }}
+            animate={{ opacity: 0.75, scale: 1.08 }}
             exit={{ opacity: 0 }}
             transition={{
-              scale: { duration: 6, ease: "easeOut" },
-              opacity: { duration: 1.2, ease: "easeInOut" }
+              opacity: { duration: 1.6, ease: "easeInOut" },
+              scale: { duration: 5.5, ease: "easeOut" }
             }}
-            className="absolute inset-0 w-full h-full object-cover"
+            className="absolute inset-0 w-full h-full object-cover object-center"
           />
         </AnimatePresence>
 
-        {/* Premium dark gradient overlay for better text readability */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/25 to-black/60 pointer-events-none" />
+        {/* Premium dark gradient overlay for crystal clear text readability */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/75 via-black/30 to-black/85 pointer-events-none" />
+
+        {/* Slide Indicator Dots */}
+        {HERO_IMAGES.length > 1 && (
+          <div className="absolute bottom-5 z-20 flex items-center gap-2">
+            {HERO_IMAGES.map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => setCurrentHeroIdx(idx)}
+                aria-label={`Go to slide ${idx + 1}`}
+                className={`h-2 rounded-full transition-all duration-500 ${
+                  currentHeroIdx === idx
+                    ? 'w-8 bg-[#00C9B7] shadow-[0_0_10px_#00C9B7]'
+                    : 'w-2 bg-white/40 hover:bg-white/70'
+                }`}
+              />
+            ))}
+          </div>
+        )}
 
         {/* Hero Content */}
         <motion.div
           variants={heroContentVariants}
           initial="hidden"
           animate="visible"
-          className="relative z-10 text-center text-white px-6 max-w-5xl flex flex-col items-center"
+          className="relative z-10 text-center text-white px-4 sm:px-6 max-w-5xl flex flex-col items-center py-6"
         >
           {/* Badge indicator */}
           <motion.div
             variants={heroItemVariants}
             whileHover={{ scale: 1.05 }}
-            className="mb-6 inline-flex items-center gap-2 px-4 py-1.5 bg-white/10 backdrop-blur-md rounded-full border border-white/25 text-xs sm:text-sm font-semibold tracking-wider text-[#00C9B7] shadow-lg select-none cursor-default transition-shadow duration-300 hover:shadow-[#00C9B7]/10 hover:shadow-xl"
+            className="mb-4 inline-flex items-center gap-2 px-4 py-1.5 bg-white/10 backdrop-blur-md rounded-full border border-white/25 text-xs sm:text-sm font-bold tracking-wider text-[#00C9B7] shadow-lg select-none cursor-default"
           >
-            🏔️ Premium Trekking & Adventures
+            🏔️ Premium Trekking &amp; Adventures
           </motion.div>
 
-          {/* Heading */}
+          {/* Heading - NextTour */}
           <motion.h1
             variants={heroItemVariants}
-            className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black mb-6 tracking-tight leading-none drop-shadow-2xl flex flex-wrap justify-center gap-x-3 sm:gap-x-5"
+            className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black mb-4 tracking-tight leading-none drop-shadow-[0_10px_30px_rgba(0,0,0,0.9)] flex flex-wrap justify-center gap-x-2 sm:gap-x-4"
             style={{ fontFamily: "'Hanken Grotesk', sans-serif" }}
           >
             <span className="inline-block overflow-hidden py-1">
@@ -261,9 +295,9 @@ const Home = () => {
                 initial={{ y: "100%" }}
                 animate={{ y: 0 }}
                 transition={{ duration: 1.0, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                className="inline-block"
+                className="inline-block text-white"
               >
-                Trek
+                Next
               </motion.span>
             </span>
             <span className="inline-block overflow-hidden py-1">
@@ -271,19 +305,9 @@ const Home = () => {
                 initial={{ y: "100%" }}
                 animate={{ y: 0 }}
                 transition={{ duration: 1.0, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
-                className="inline-block"
+                className="inline-block text-[#00C9B7] drop-shadow-[0_0_35px_rgba(0,201,183,0.8)] typing-cursor pr-2"
               >
-                Premi
-              </motion.span>
-            </span>
-            <span className="inline-block overflow-hidden py-1">
-              <motion.span
-                initial={{ y: "100%" }}
-                animate={{ y: 0 }}
-                transition={{ duration: 1.0, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                className="inline-block text-[#00C9B7] drop-shadow-[0_0_20px_rgba(0, 201, 183,0.45)] typing-cursor pr-2"
-              >
-                {typedText}
+                Tour
               </motion.span>
             </span>
           </motion.h1>
@@ -291,7 +315,7 @@ const Home = () => {
           {/* Tagline */}
           <motion.p
             variants={heroItemVariants}
-            className="text-base sm:text-lg md:text-xl lg:text-2xl font-medium tracking-wide text-gray-200 max-w-4xl mx-auto leading-relaxed drop-shadow-lg min-h-[2em]"
+            className="text-base sm:text-lg md:text-xl font-medium tracking-wide text-gray-200 max-w-3xl mx-auto leading-relaxed drop-shadow-lg min-h-[2.5em]"
           >
             {typedTagline}
           </motion.p>
@@ -299,9 +323,9 @@ const Home = () => {
       </div>
 
       {/* Category Filter Bar */}
-      <div className="bg-white border-b border-[#e5e5e5] mb-8 pb-6">
+      <div className="bg-white border-b border-gray-200 mb-8 pb-6 shadow-2xs">
         <div className="w-full max-w-[2400px] mx-auto px-4 sm:px-8 xl:px-12">
-          <div className="flex items-center gap-3 overflow-x-auto no-scrollbar pt-4 pb-2">
+          <div className="flex items-center gap-3 overflow-x-auto no-scrollbar pt-5 pb-2">
             {categories.map((cat) => {
               const { cleanTitle } = extractEmoji(cat.title);
               const isSelected = selectedCategory === cat.id;
@@ -310,21 +334,21 @@ const Home = () => {
                 <button
                   key={cat.id}
                   onClick={() => setCategory(cat.id)}
-                  className={`group relative flex-shrink-0 rounded-[20px] h-[68px] min-w-[140px] px-5 flex items-center justify-center transition-all duration-300 border-[3px] transform-gpu ${isSelected
-                    ? 'border-[#222222] shadow-md scale-[0.98]'
-                    : 'border-transparent hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)] hover:-translate-y-1'
+                  className={`group relative flex-shrink-0 rounded-2xl h-[64px] min-w-[135px] px-5 flex items-center justify-center transition-all duration-300 border-2 transform-gpu ${isSelected
+                    ? 'border-[#00C9B7] shadow-md scale-[0.98]'
+                    : 'border-transparent hover:shadow-lg hover:-translate-y-0.5'
                     }`}
                 >
                   {/* Inner clipping container to prevent corner bleeding on hover */}
                   <div
-                    className="absolute inset-0 rounded-[17px] overflow-hidden"
+                    className="absolute inset-0 rounded-xl overflow-hidden"
                     style={{ WebkitMaskImage: '-webkit-radial-gradient(white, black)', isolation: 'isolate' }}
                   >
                     {/* Photo Background */}
                     <img
                       src={cat.image}
                       alt=""
-                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110 bg-[#e5e5e5]"
+                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110 bg-gray-200"
                       onError={(e) => {
                         e.target.onerror = null;
                         e.target.src = 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=400&q=80';
@@ -333,15 +357,15 @@ const Home = () => {
 
                     {/* Overlay */}
                     <div className={`absolute inset-0 transition-colors duration-300 ${isSelected
-                      ? 'bg-black/60'
-                      : 'bg-black/30 group-hover:bg-black/40 backdrop-blur-[0.5px]'
+                      ? 'bg-black/65'
+                      : 'bg-black/40 group-hover:bg-black/50 backdrop-blur-[0.5px]'
                       }`} />
                   </div>
 
                   {/* Icon & Title */}
                   <div className="relative z-10 flex items-center gap-2">
-                    {cat.id === 'all' && <Compass className="w-4 h-4 text-white drop-shadow-md" strokeWidth={2.5} />}
-                    <span className="text-white font-bold text-[14px] tracking-wide drop-shadow-md">
+                    {cat.id === 'all' && <Compass className="w-4 h-4 text-[#00C9B7] drop-shadow-md" strokeWidth={2.5} />}
+                    <span className={`font-bold text-sm tracking-wide drop-shadow-md ${isSelected ? 'text-[#00C9B7]' : 'text-white'}`}>
                       {cleanTitle}
                     </span>
                   </div>
@@ -353,27 +377,28 @@ const Home = () => {
       </div>
 
       {/* Ongoing Trips Section */}
+      {/* Upcoming Trips */}
       {upcomingTrips.length > 0 && (
-        <div className="w-full max-w-[2400px] mx-auto px-4 sm:px-8 xl:px-12 pb-16">
-          <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 mb-8">
+        <div className="w-full max-w-[2400px] mx-auto px-4 sm:px-6 xl:px-10 pb-6 pt-4">
+          <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-1 mb-4">
             <div>
-              <h2 className="text-2xl sm:text-3xl font-black text-[#0a0a0a]" style={{ fontFamily: "'Hanken Grotesk', sans-serif" }}>
+              <h2 className="text-xl sm:text-2xl font-black text-gray-900" style={{ fontFamily: "'Hanken Grotesk', sans-serif" }}>
                 Upcoming Trips
               </h2>
-              <p className="text-gray-500 text-sm mt-1">
+              <p className="text-gray-500 text-xs sm:text-sm mt-0.5 font-medium">
                 Secure your spot on our next upcoming scheduled group tours
               </p>
             </div>
           </div>
 
-          <div className="flex overflow-x-auto no-scrollbar gap-6 pb-4 -mx-4 px-4 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 md:gap-8">
+          <div className="flex overflow-x-auto no-scrollbar gap-4 pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 md:gap-5">
             {upcomingTrips.map((trip, index) => (
               <motion.div
                 key={`upcoming-${trip.id}`}
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
+                transition={{ duration: 0.4, delay: index * 0.08 }}
                 className="w-[280px] sm:w-auto flex-shrink-0"
               >
                 <TripCard trip={trip} />
@@ -383,27 +408,27 @@ const Home = () => {
         </div>
       )}
 
-      {/* Results Grid */}
-      <div id="trips-grid" className={`w-full max-w-[2400px] mx-auto px-4 sm:px-8 xl:px-12 pb-24 ${upcomingTrips.length > 0 ? 'border-t border-[#ebebeb] pt-16' : ''}`}>
-        <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 mb-8">
+      {/* Ongoing Trips Grid - Compact Spacing */}
+      <div id="trips-grid" className={`w-full max-w-[2400px] mx-auto px-4 sm:px-6 xl:px-10 pb-12 ${upcomingTrips.length > 0 ? 'border-t border-gray-100 pt-6' : 'pt-4'}`}>
+        <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-1 mb-5">
           <div>
-            <h2 className="text-2xl sm:text-3xl font-black text-[#0a0a0a]" style={{ fontFamily: "'Hanken Grotesk', sans-serif" }}>
+            <h2 className="text-xl sm:text-2xl font-black text-gray-900" style={{ fontFamily: "'Hanken Grotesk', sans-serif" }}>
               Ongoing Trips
             </h2>
-            <p className="text-gray-500 text-sm mt-1">
+            <p className="text-gray-500 text-xs sm:text-sm mt-0.5 font-medium">
               Explore our ongoing adventures and scheduled tours
             </p>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 md:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-5 md:gap-5">
           {filteredTrips.map((trip, index) => (
             <motion.div
               key={trip.id}
-              initial={{ opacity: 0, y: 55 }}
+              initial={{ opacity: 0, y: 25 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: false, margin: "-40px" }}
-              transition={{ duration: 0.6, delay: (index % 4) * 0.1, ease: "easeOut" }}
+              viewport={{ once: false, margin: "-30px" }}
+              transition={{ duration: 0.4, delay: (index % 4) * 0.06, ease: "easeOut" }}
             >
               <TripCard trip={trip} />
             </motion.div>
@@ -411,23 +436,24 @@ const Home = () => {
         </div>
 
         {filteredTrips.length === 0 && (
-          <div className="text-center py-10">
-            <div className="w-16 h-16 bg-[#f5f5f5] rounded-full flex items-center justify-center mx-auto mb-4">
-              <MapPin className="w-8 h-8 text-[#a3a3a3]" />
+          <div className="text-center py-12 bg-white rounded-3xl border border-gray-200 shadow-sm max-w-lg mx-auto">
+            <div className="w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+              <MapPin className="w-7 h-7 text-gray-400" />
             </div>
-            <h3 className="text-xl font-bold text-[#0a0a0a] mb-2">No trips found</h3>
-            <p className="text-[#737373] text-sm max-w-md mx-auto">
+            <h3 className="text-lg font-bold text-gray-900 mb-1">No trips found</h3>
+            <p className="text-gray-500 text-xs sm:text-sm max-w-md mx-auto">
               We couldn't find any trips in this category right now. Check back later or explore other categories.
             </p>
             <button
               onClick={() => setCategory('all')}
-              className="mt-6 bg-[#D2E823] text-[#111111] px-6 py-2.5 rounded-full text-sm font-bold hover:bg-[#c4db1c] transition-colors"
+              className="mt-5 bg-[#00C9B7] text-white px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold hover:bg-[#00b5a3] transition-colors shadow-md"
             >
               View All Trips
             </button>
           </div>
         )}
       </div>
+
 
       {/* Floating WhatsApp Button */}
       <a

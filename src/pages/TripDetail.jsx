@@ -310,23 +310,25 @@ const TripDetail = () => {
   const nextDeparture = allDepartureDates.length > 0 ? allDepartureDates[0] : null;
 
   return (
-    <div className="min-h-screen bg-white" id="trip-content-for-pdf">
-      <div className="w-full mx-auto px-3 lg:px-6 pt-24 md:pt-28 pb-24">
+    <div className="min-h-screen bg-[#F8F9FB]" id="trip-content-for-pdf">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 md:pt-6 pb-24">
 
         {/* Breadcrumbs & Actions */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-          <nav className="flex items-center gap-2 text-sm text-[#717171] font-medium">
-            <Link to="/" className="hover:text-[#222222] transition-colors">Home</Link>
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+          <nav className="flex items-center gap-2 text-sm text-gray-500 font-semibold">
+            <Link to="/" className="hover:text-[#00C9B7] transition-colors">Home</Link>
             <ChevronRight size={14} />
-            <span className="text-[#222222] line-clamp-1">{trip.title}</span>
+            <Link to="/trips" className="hover:text-[#00C9B7] transition-colors">Trips</Link>
+            <ChevronRight size={14} />
+            <span className="text-gray-900 line-clamp-1">{trip.title}</span>
           </nav>
 
-          <div className="flex gap-4">
+          <div className="flex gap-3">
             <button
               onClick={handleShare}
-              className="flex items-center gap-2 text-sm font-semibold text-[#222222] hover:bg-gray-100 px-3 py-1.5 rounded-lg transition-colors underline"
+              className="flex items-center gap-2 text-xs font-bold text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 px-3.5 py-2 rounded-xl transition-all shadow-2xs"
             >
-              <Share2 size={16} /> Share
+              <Share2 size={15} className="text-[#00C9B7]" /> Share
             </button>
           </div>
         </div>

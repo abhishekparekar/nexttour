@@ -246,27 +246,27 @@ const Booking = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa]">
+    <div className="min-h-screen bg-[#F8F9FB]">
       {/* Hero Banner */}
-      <div className="relative h-[35vh] min-h-[250px] w-full overflow-hidden">
+      <div className="relative h-[32vh] min-h-[240px] w-full overflow-hidden rounded-b-3xl shadow-md">
         <img 
           src={trip?.image || "https://images.unsplash.com/photo-1551632811-561732d1e306?q=80&w=2000"} 
           alt="Booking Banner" 
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/10" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/50 to-black/20" />
         
-        <div className="absolute inset-0 flex flex-col items-center justify-center pt-20 px-4">
+        <div className="absolute inset-0 flex flex-col items-center justify-center px-4">
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: 'easeOut' }}
             className="text-center"
           >
-            <h1 className="text-4xl md:text-6xl font-bold text-white mb-4 tracking-tight drop-shadow-md">
+            <h1 className="text-3xl md:text-5xl font-black text-white mb-2 tracking-tight drop-shadow-md">
               {trip ? `Book ${trip.title}` : 'Reserve Your Adventure'}
             </h1>
-            <p className="text-lg md:text-xl text-white/90 max-w-2xl mx-auto font-light drop-shadow-sm">
+            <p className="text-base md:text-lg text-gray-200 max-w-2xl mx-auto font-medium drop-shadow-sm">
               {trip?.duration ? `${trip.duration} | ₹${trip.price || 0} per person` : 'Just a few details to secure your spot in the wild.'}
             </p>
           </motion.div>

@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { MapPin, Phone, Mail, Clock, Send, CheckCircle, AlertCircle, ArrowRight } from 'lucide-react';
 import { collection, addDoc } from 'firebase/firestore';
-import { db } from '../firebase';
+import { db, subscribeToContactSettings, DEFAULT_CONTACT_SETTINGS } from '../firebase';
 import { getTenantPath } from '../config/tenant';
 import { motion } from 'framer-motion';
 
@@ -10,6 +10,14 @@ const Contact = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
+  const [contactData, setContactData] = useState(DEFAULT_CONTACT_SETTINGS);
+
+  useEffect(() => {
+    const unsub = subscribeToContactSettings((data) => {
+      if (data) setContactData(data);
+    });
+    return () => unsub();
+  }, []);
 
   const handleChange = (e) => setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
 
@@ -35,34 +43,36 @@ const Contact = () => {
   };
 
   const contactInfo = [
-    { icon: MapPin, title: 'Visit Us', desc: 'Sai Vihar Colony, Near Sai Mandir, MIDC, Ranjangaon Shenpunji, Waluj, MH 431001' },
-    { icon: Phone, title: 'Call Us', desc: '+91 9156434444\n+91 7758998055' },
-    { icon: Mail, title: 'Email Us', desc: 'trekpremi01@gmail.com' },
-    { icon: Clock, title: 'Working Hours', desc: 'Mon - Sat: 9AM - 8PM\nSunday: 10AM - 6PM' }
+    { icon: MapPin, title: 'Visit Us', desc: contactData.address || DEFAULT_CONTACT_SETTINGS.address },
+    { icon: Phone, title: 'Call Us', desc: `${contactData.phone1 || '+91 9156434444'}${contactData.phone2 ? `\n${contactData.phone2}` : ''}` },
+    { icon: Mail, title: 'Email Us', desc: contactData.email || DEFAULT_CONTACT_SETTINGS.email },
+    { icon: Clock, title: 'Working Hours', desc: contactData.workingHours || DEFAULT_CONTACT_SETTINGS.workingHours }
   ];
 
   const inputClass = "w-full bg-[#f8f9fa] border-b-2 border-[#e5e5e5] px-4 py-4 text-[#111111] placeholder-[#9ca3af] focus:outline-none focus:border-[#00C9B7] focus:bg-[#E6FAF8] transition-all duration-300 rounded-t-xl";
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[#F8F9FB]">
       {/* Hero Banner */}
-      <div className="relative h-[30vh] min-h-[250px] w-full overflow-hidden">
+      <div className="relative h-[32vh] min-h-[240px] w-full overflow-hidden rounded-b-3xl shadow-md">
         <img 
-          src="https://images.unsplash.com/photo-1454496522488-7a8e488e8606?q=80&w=2000" 
+          src={contactData.heroImage || 'https://images.unsplash.com/photo-1454496522488-7a8e488e8606?q=80&w=2000'} 
           alt="Contact Us" 
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/10" />
-        <div className="absolute inset-0 flex items-center justify-center pt-16">
+        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/50 to-black/20" />
+        <div className="absolute inset-0 flex items-center justify-center">
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: 'easeOut' }}
             className="text-center px-4"
           >
-            <h1 className="text-4xl md:text-6xl font-bold text-white mb-4 tracking-tight">Let's Talk Adventure</h1>
-            <p className="text-lg md:text-xl text-white/90 max-w-2xl mx-auto font-light">
-              Got a trek in mind? We are here to guide you every step of the way. Reach out to our experts.
+            <h1 className="text-3xl md:text-5xl font-black text-white mb-3 tracking-tight">
+              {contactData.heroTitle || "Let's Talk Adventure"}
+            </h1>
+            <p className="text-base md:text-lg text-gray-200 max-w-2xl mx-auto font-medium">
+              {contactData.heroSubtitle || 'Got a trek in mind? We are here to guide you every step of the way. Reach out to our experts.'}
             </p>
           </motion.div>
         </div>
@@ -153,7 +163,7 @@ const Contact = () => {
             className="xl:col-span-2 h-full min-h-[300px] rounded-2xl overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.06)] relative border border-[#f0f0f0]"
           >
             <iframe 
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d120092.34863810168!2d75.21045435!3d19.827725!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bdba2c1ce1248fd%3A0x2ce1120023a1050!2sWaluj%2C%20Maharashtra!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin" 
+              src={contactData.mapUrl || DEFAULT_CONTACT_SETTINGS.mapUrl} 
               className="absolute inset-0 w-full h-full border-0"
               allowFullScreen="" 
               loading="lazy" 

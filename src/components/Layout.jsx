@@ -7,9 +7,9 @@ const Layout = () => {
   const isHome = location.pathname === '/';
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-[#F8F9FB] selection:bg-[#00C9B7] selection:text-white">
       <Navbar />
-      <main className={`flex-1 ${isHome ? 'mt-0' : 'mt-[48px]'} md:mt-0`}>
+      <main className={`flex-1 ${isHome ? 'pt-0' : 'pt-16 md:pt-20 lg:pt-22'}`}>
         <Outlet />
       </main>
       <Footer />
@@ -18,3 +18,4 @@ const Layout = () => {
 };
 
 export default Layout;
+

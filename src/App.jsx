@@ -30,6 +30,10 @@ import AdminPayments from './pages/admin/Payments';
 import AdminPendingPayments from './pages/admin/PendingPayments';
 import AdminCustomers from './pages/admin/Customers';
 import AdminReports from './pages/admin/Reports';
+import AdminFooterSettings from './pages/admin/FooterSettings';
+import AdminAboutSettings from './pages/admin/AboutSettings';
+import AdminContactSettings from './pages/admin/ContactSettings';
+import AdminInquiries from './pages/admin/Inquiries';
 
 function App() {
   const location = useLocation();
@@ -56,6 +60,7 @@ function App() {
           <Route path="trips" element={<AdminTrips />} />
           <Route path="bookings" element={<AdminBookings />} />
           <Route path="leads" element={<AdminLeads />} />
+          <Route path="inquiries" element={<AdminInquiries />} />
           <Route path="categories" element={<AdminCategories />} />
           <Route path="testimonials" element={<AdminTestimonials />} />
           <Route path="gallery" element={<AdminGallery />} />
@@ -67,6 +72,9 @@ function App() {
           <Route path="pending-payments" element={<AdminPendingPayments />} />
           <Route path="customers" element={<AdminCustomers />} />
           <Route path="reports" element={<AdminReports />} />
+          <Route path="footer" element={<AdminFooterSettings />} />
+          <Route path="about" element={<AdminAboutSettings />} />
+          <Route path="contact" element={<AdminContactSettings />} />
         </Route>
       </Routes>
 

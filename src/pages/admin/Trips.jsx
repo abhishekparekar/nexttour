@@ -148,11 +148,11 @@ const AdminTrips = () => {
   };
 
   const handleCategoryChange = (categoryId) => {
-    const category = categories.find(c => c.id === categoryId);
+    const category = categories.find(c => String(c.id) === String(categoryId));
     setEditingTrip(prev => ({ 
       ...prev, 
-      categoryId,
-      categoryName: category?.title || category?.name || categoryId
+      categoryId: category ? category.id : categoryId,
+      categoryName: category ? (category.title || category.name) : categoryId
     }));
   };
 
@@ -167,7 +167,7 @@ const AdminTrips = () => {
 
     try {
       // Find the selected category to get its name
-      const selectedCategory = categories.find(c => c.id === editingTrip.categoryId);
+      const selectedCategory = categories.find(c => String(c.id) === String(editingTrip.categoryId));
       
       // Sort itinerary chronologically by day before saving
       const sortedItinerary = [...(editingTrip.itinerary || [])].sort((a, b) => (Number(a.day) || 0) - (Number(b.day) || 0));
@@ -175,6 +175,8 @@ const AdminTrips = () => {
       // Prepare trip data with both categoryId and categoryName
       const tripData = {
         ...editingTrip,
+        categoryId: selectedCategory ? selectedCategory.id : (editingTrip.categoryId || ''),
+        categoryName: selectedCategory ? (selectedCategory.title || selectedCategory.name) : (editingTrip.categoryName || ''),
         featured: !!editingTrip.featured,
         upcoming: !!editingTrip.upcoming,
         days: Number(editingTrip.days) || (Number(editingTrip.nights) || 0) + 1,
@@ -205,9 +207,7 @@ const AdminTrips = () => {
           : (editingTrip.importantInstructions || []),
         hotelDetails: editingTrip.hotelDetails || '',
         foodDetails: editingTrip.foodDetails || '',
-        itinerary: sortedItinerary,
-        categoryId: editingTrip.categoryId,
-        categoryName: selectedCategory?.title || selectedCategory?.name || editingTrip.categoryId
+        itinerary: sortedItinerary
       };
 
       // Clean undefined fields to prevent Firestore errors

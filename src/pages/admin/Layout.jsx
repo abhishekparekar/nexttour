@@ -4,7 +4,7 @@ import {
   LayoutDashboard, MapPin, Calendar, Users, Image,
   ChevronLeft, ChevronRight, FileDown, LogOut, Truck,
   UserCheck, Clock, CreditCard, AlertCircle, BarChart3,
-  Menu, X, MessageSquare, Tags, Receipt
+  Menu, X, MessageSquare, Tags, Receipt, Settings, Info, PhoneCall
 } from 'lucide-react';
 import AdminLogin from './Login';
 
@@ -23,10 +23,14 @@ const Sidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen, onLogout 
     { path: '/admin/drivers', icon: UserCheck, label: 'Drivers' },
     { path: '/admin/expenses', icon: Receipt, label: 'Trip Expenses' },
     { path: '/admin/leads', icon: FileDown, label: 'PDF Leads' },
+    { path: '/admin/inquiries', icon: MessageSquare, label: 'Contact Inquiries' },
     { path: '/admin/categories', icon: Tags, label: 'Categories' },
     { path: '/admin/testimonials', icon: MessageSquare, label: 'Testimonials' },
     { path: '/admin/gallery', icon: Image, label: 'Gallery' },
-    { path: '/admin/reports', icon: BarChart3, label: 'Reports' }
+    { path: '/admin/reports', icon: BarChart3, label: 'Reports' },
+    { path: '/admin/footer', icon: Settings, label: 'Footer Settings' },
+    { path: '/admin/about', icon: Info, label: 'About Page' },
+    { path: '/admin/contact', icon: PhoneCall, label: 'Contact Settings' }
   ];
 
   const isCollapsed = collapsed && !mobileOpen;

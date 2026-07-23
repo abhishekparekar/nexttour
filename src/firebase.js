@@ -56,7 +56,8 @@ export const collections = {
   DRIVERS: getTenantPath(BASE_COLLECTIONS.DRIVERS),
   SCHEDULES: getTenantPath(BASE_COLLECTIONS.SCHEDULES),
   EXPENSES: getTenantPath(BASE_COLLECTIONS.EXPENSES),
-  CUSTOMERS: getTenantPath(BASE_COLLECTIONS.CUSTOMERS)
+  CUSTOMERS: getTenantPath(BASE_COLLECTIONS.CUSTOMERS),
+  SETTINGS: getTenantPath('settings')
 };
 
 // Real-time data listeners
@@ -505,11 +506,34 @@ export const deleteLead = async (phone) => {
   console.log('Deleting lead:', phone);
   try {
     await deleteDoc(doc(db, collections.LEADS, phone));
-    console.log('Lead deleted successfully');
+    console.log('Lead deleted');
   } catch (error) {
     console.error('Error deleting lead:', error);
     throw error;
   }
+};
+
+// Contacts / Inquiries CRUD
+export const subscribeToContacts = (callback) => {
+  const q = query(collection(db, collections.CONTACTS), orderBy('createdAt', 'desc'));
+  return onSnapshot(q, (snapshot) => {
+    const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    callback(data);
+  }, (error) => {
+    console.error('Error subscribing to contacts:', error);
+    callback([]);
+  });
+};
+
+export const deleteContact = async (id) => {
+  await deleteDoc(doc(db, collections.CONTACTS, id));
+};
+
+export const updateContactStatus = async (id, status) => {
+  await updateDoc(doc(db, collections.CONTACTS, id), {
+    status,
+    updatedAt: new Date().toISOString()
+  });
 };
 
 // Vehicles CRUD
@@ -710,6 +734,126 @@ export const updateBookingPayments = async (bookingId, payments, updatedFields) 
     ...updatedFields,
     updatedAt: new Date().toISOString()
   });
+};
+
+// Footer Settings
+export const DEFAULT_FOOTER_SETTINGS = {
+  socialLinks: {
+    facebook: 'https://facebook.com',
+    instagram: 'https://www.instagram.com/trekpremii?igsh=N3U3ZGVhNmExZDRq&utm_source=qr',
+    whatsapp: 'https://wa.me/message/FH3CMQXFFIY2H1',
+    youtube: 'https://youtube.com'
+  },
+  contactUs: {
+    address: 'Sai Vihar Colony, Near Sai Mandir, MIDC, Ranjangaon Shenpunji, Waluj, Wadgaon Kolhati, Maharashtra 431001',
+    phone1: '+91 9156434444',
+    phone2: '+91 7758998055',
+    email: 'trekpremi01@gmail.com'
+  },
+  copyrightLine: '© 2026 NextTour. All rights reserved.'
+};
+
+export const subscribeToFooterSettings = (callback) => {
+  const docRef = doc(db, collections.SETTINGS, 'footer');
+  return onSnapshot(docRef, (snapshot) => {
+    if (snapshot.exists()) {
+      callback({ ...DEFAULT_FOOTER_SETTINGS, ...snapshot.data() });
+    } else {
+      callback(DEFAULT_FOOTER_SETTINGS);
+    }
+  }, (error) => {
+    console.error('Error subscribing to footer settings:', error);
+    callback(DEFAULT_FOOTER_SETTINGS);
+  });
+};
+
+export const saveFooterSettings = async (data) => {
+  const docRef = doc(db, collections.SETTINGS, 'footer');
+  await setDoc(docRef, {
+    ...data,
+    updatedAt: new Date().toISOString()
+  }, { merge: true });
+};
+
+// About Page Settings
+export const DEFAULT_ABOUT_SETTINGS = {
+  heroTitle: 'Our Story',
+  heroSubtitle: 'Your trusted partner for extraordinary mountain adventures since 2014.',
+  heroImage: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=2000&q=80',
+  storyBadge: 'Who We Are',
+  storyTitle: 'Where Adventure Meets Excellence',
+  storyParagraph1: "NextTour was born from a simple belief: everyone deserves to experience the transformative power of mountain adventures. Founded by seasoned mountaineers, we've grown from a small group of passionate trekkers to one of India's most trusted adventure travel companies.",
+  storyParagraph2: 'Our mission is to create unforgettable journeys that push boundaries while maintaining the highest standards of safety, sustainability, and customer satisfaction.',
+  storyImage: '/about.png',
+  stats: [
+    { value: '8+', label: 'Years Experience' },
+    { value: '500+', label: 'Treks Completed' },
+    { value: '10k+', label: 'Happy Trekkers' },
+    { value: '50+', label: 'Destinations' }
+  ],
+  values: [
+    { title: 'Safety First', description: 'Your safety is our top priority. We maintain the highest safety standards with certified guides and comprehensive protocols.' },
+    { title: 'Premium Quality', description: 'From accommodations to equipment, we ensure premium quality at every step of your journey.' },
+    { title: 'Expert Team', description: 'Our team of certified mountaineers and local guides bring years of experience and deep regional knowledge.' },
+    { title: 'Sustainable Travel', description: 'We are committed to eco-friendly practices and supporting local communities in the mountains.' }
+  ],
+  leadershipTitle: 'Meet Our Leadership',
+  leadershipSubtitle: "The experienced team driving NextTour's vision and ensuring excellence in every journey.",
+  teamMembers: [
+    { name: 'Akash Jalatkar', role: 'Founder & Lead Guide', image: '/male.jpeg' },
+    { name: 'Swapnali Annadate', role: 'Head Of Operations', image: '/female.png' }
+  ]
+};
+
+export const subscribeToAboutSettings = (callback) => {
+  const docRef = doc(db, collections.SETTINGS, 'aboutPage');
+  return onSnapshot(docRef, (snapshot) => {
+    if (snapshot.exists()) {
+      callback({ ...DEFAULT_ABOUT_SETTINGS, ...snapshot.data() });
+    } else {
+      callback(DEFAULT_ABOUT_SETTINGS);
+    }
+  }, (err) => {
+    console.error('Error subscribing to about settings:', err);
+    callback(DEFAULT_ABOUT_SETTINGS);
+  });
+};
+
+export const saveAboutSettings = async (data) => {
+  const docRef = doc(db, collections.SETTINGS, 'aboutPage');
+  await setDoc(docRef, { ...data, updatedAt: new Date().toISOString() }, { merge: true });
+};
+
+// Contact Page Settings
+export const DEFAULT_CONTACT_SETTINGS = {
+  heroTitle: "Let's Talk Adventure",
+  heroSubtitle: 'Got a trek in mind? We are here to guide you every step of the way. Reach out to our experts.',
+  heroImage: 'https://images.unsplash.com/photo-1454496522488-7a8e488e8606?q=80&w=2000',
+  address: 'Sai Vihar Colony, Near Sai Mandir, MIDC, Ranjangaon Shenpunji, Waluj, Wadgaon Kolhati, Maharashtra 431001',
+  phone1: '+91 9156434444',
+  phone2: '+91 7758998055',
+  email: 'trekpremi01@gmail.com',
+  workingHours: 'Mon - Sat: 9AM - 8PM\nSunday: 10AM - 6PM',
+  mapUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3753.308738363711!2d75.2155458!3d19.8268884!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTnCsDQ5JzM2LjgiTiA3NcKwMTInNTU.fIk!5e0!3m2!1sen!2sin!4v1620000000000!5m2!1sen!2sin'
+};
+
+export const subscribeToContactSettings = (callback) => {
+  const docRef = doc(db, collections.SETTINGS, 'contactPage');
+  return onSnapshot(docRef, (snapshot) => {
+    if (snapshot.exists()) {
+      callback({ ...DEFAULT_CONTACT_SETTINGS, ...snapshot.data() });
+    } else {
+      callback(DEFAULT_CONTACT_SETTINGS);
+    }
+  }, (err) => {
+    console.error('Error subscribing to contact settings:', err);
+    callback(DEFAULT_CONTACT_SETTINGS);
+  });
+};
+
+export const saveContactSettings = async (data) => {
+  const docRef = doc(db, collections.SETTINGS, 'contactPage');
+  await setDoc(docRef, { ...data, updatedAt: new Date().toISOString() }, { merge: true });
 };
 
 export default app;

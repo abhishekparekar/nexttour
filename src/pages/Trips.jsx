@@ -32,7 +32,18 @@ const Trips = () => {
 
   const filteredTrips = trips.filter(trip => {
     const matchesType = selectedType === 'all' || trip.tripType === selectedType;
-    const matchesCategory = selectedCategory === 'all' || trip.categoryId === selectedCategory;
+    
+    const targetCat = categories.find(c => String(c.id) === String(selectedCategory));
+    const targetTitle = (targetCat?.title || targetCat?.name || '').toLowerCase();
+    const tripCatId = String(trip.categoryId || '').toLowerCase();
+    const tripCatName = String(trip.categoryName || '').toLowerCase();
+    const selCatId = String(selectedCategory).toLowerCase();
+
+    const matchesCategory = selectedCategory === 'all' ||
+      tripCatId === selCatId ||
+      tripCatName === selCatId ||
+      (targetTitle && (tripCatId === targetTitle || tripCatName === targetTitle));
+
     const matchesSearch = searchQuery === '' || 
       trip.title?.toLowerCase().includes(searchQuery.toLowerCase()) || 
       trip.location?.toLowerCase().includes(searchQuery.toLowerCase());
@@ -101,29 +112,29 @@ const Trips = () => {
       </div>
 
       {/* Sticky Filter Bar */}
-      <div className="sticky top-16 lg:top-[70px] z-40 bg-white border-b border-[#EEEEEE] shadow-sm">
+      <div className="sticky top-16 md:top-20 z-40 bg-white/95 backdrop-blur-md border-b border-[#EEEEEE] shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Type Filters */}
-          <div className="flex items-center gap-2 py-3 overflow-x-auto scrollbar-hide">
+          <div className="flex items-center gap-2 py-3 overflow-x-auto no-scrollbar">
             <button
               onClick={() => setType('all')}
-              className="px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all"
-              style={{ background: selectedType === 'all' ? '#00C9B7' : '#F3F4F6', color: selectedType === 'all' ? '#111111' : '#555555' }}
+              className="px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all shadow-2xs"
+              style={{ background: selectedType === 'all' ? '#00C9B7' : '#F3F4F6', color: selectedType === 'all' ? '#ffffff' : '#4B5563' }}
             >
               All ({trips.length})
             </button>
             <button
               onClick={() => setType('domestic')}
-              className="px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap flex items-center gap-1.5 transition-all"
-              style={{ background: selectedType === 'domestic' ? '#10b981' : '#F3F4F6', color: selectedType === 'domestic' ? '#ffffff' : '#555555' }}
+              className="px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap flex items-center gap-1.5 transition-all shadow-2xs"
+              style={{ background: selectedType === 'domestic' ? '#10b981' : '#F3F4F6', color: selectedType === 'domestic' ? '#ffffff' : '#4B5563' }}
             >
               <MapPin size={11} />
               Domestic ({domesticCount})
             </button>
             <button
               onClick={() => setType('international')}
-              className="px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap flex items-center gap-1.5 transition-all"
-              style={{ background: selectedType === 'international' ? '#3b82f6' : '#F3F4F6', color: selectedType === 'international' ? '#ffffff' : '#555555' }}
+              className="px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap flex items-center gap-1.5 transition-all shadow-2xs"
+              style={{ background: selectedType === 'international' ? '#3b82f6' : '#F3F4F6', color: selectedType === 'international' ? '#ffffff' : '#4B5563' }}
             >
               <Globe size={11} />
               International ({internationalCount})
@@ -137,8 +148,8 @@ const Trips = () => {
               <button
                 key={cat.id}
                 onClick={() => setCategory(cat.id)}
-                className="px-4 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all"
-                style={{ background: selectedCategory === cat.id ? '#111111' : '#F3F4F6', color: selectedCategory === cat.id ? '#00C9B7' : '#555555' }}
+                className="px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all"
+                style={{ background: selectedCategory === cat.id ? '#111827' : '#F3F4F6', color: selectedCategory === cat.id ? '#00C9B7' : '#4B5563' }}
               >
                 {cat.title}
               </button>

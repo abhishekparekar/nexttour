@@ -6,9 +6,6 @@ import AllDatesModal from './AllDatesModal';
 
 const PLACEHOLDER_IMAGE = '/placeholder.jpg';
 
-// myair.link uses Hanken Grotesk as root font-family
-const HK = "'Hanken Grotesk', sans-serif";
-
 const TripCard = ({ trip }) => {
   const [imageError, setImageError] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -37,7 +34,6 @@ const TripCard = ({ trip }) => {
             return;
           }
           
-          // Display direct url immediately while caching in background
           if (isMounted) setImageUrl(url);
           
           const response = await fetch(url);
@@ -58,7 +54,6 @@ const TripCard = ({ trip }) => {
     };
   }, [images, imageError]);
 
-  /* ── Date logic (unchanged) ── */
   const allDates = [
     ...(trip.availableDates || []),
     ...(trip.pickupLocations || []).filter(p => p.date).map(p => p.date),
@@ -74,15 +69,13 @@ const TripCard = ({ trip }) => {
   const upcomingDates = allValidDates.filter(d => d >= now);
   const displayDates  = upcomingDates.length > 0 ? upcomingDates : allValidDates;
   const nextDate      = displayDates[0] ?? null;
-  const otherDates    = displayDates.slice(1, 4); // max 3 date pills
+  const otherDates    = displayDates.slice(1, 4);
 
-  const fmt   = (d, opts) => d.toLocaleDateString('en-IN', opts);
+  const fmt = (d, opts) => d.toLocaleDateString('en-IN', opts);
 
-  /* strip leading emoji */
   const cleanTitle =
     title?.replace(/^([\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])\s*/, '').trim() ?? title;
 
-  /* badge — same colours as myair */
   const s = (status || '').toLowerCase().replace(/[\s_-]/g, '');
   const badgeLabel =
     s === 'confirmed' ? 'Confirmed' :
@@ -93,256 +86,114 @@ const TripCard = ({ trip }) => {
   const badgeBg =
     badgeLabel === 'Sold Out' ? '#dc3545' :
     badgeLabel === 'Featured' ? '#0d6efd' :
-    'rgb(40, 167, 69)'; // exact myair green: rgb(40, 167, 69)
+    'rgb(40, 167, 69)';
 
   return (
     <>
-      {/*
-        EXACT myair.link structure:
-        <div cursor-pointer relative>          ← outer wrapper only
-          <div image-card rounded shadow>      ← image IS the card
-          <div info py-2>                      ← info sits BELOW image, no bg
-      */}
       <motion.div
-        whileHover={{ y: -3 }}
+        whileHover={{ y: -5 }}
         transition={{ duration: 0.25, ease: 'easeOut' }}
-        style={{ cursor: 'pointer', position: 'relative', fontFamily: HK, width: '100%' }}
+        className="group relative w-full flex flex-col font-sans"
       >
-
-        {/* ── IMAGE CARD — rounded-2xl shadow overflow-hidden ── */}
-        {/* This IS the card, info sits below it */}
+        {/* Image Card Container */}
         <Link
           to={`/trip/${id}`}
-          style={{
-            display:      'block',
-            position:     'relative',
-            width:        '100%',
-            aspectRatio:  '1 / 1',            // perfect square 1:1 aspect ratio
-            borderRadius: '1rem',               // rounded-2xl = 16px
-            boxShadow:    '1px 2px 6px #e6e5e5', // exact myair shadow
-            overflow:     'hidden',
-            WebkitMaskImage: '-webkit-radial-gradient(white, black)',
-            isolation:    'isolate',
-            lineHeight:   0,
-          }}
+          className="relative w-full aspect-square rounded-2xl overflow-hidden shadow-md group-hover:shadow-xl transition-all duration-300 bg-gray-100 block"
         >
           <motion.img
             src={imageUrl}
             alt={cleanTitle}
             onError={() => setImageError(true)}
             loading="lazy"
-            whileHover={{ scale: 1.04 }}
-            transition={{ duration: 0.4, ease: 'easeOut' }}
-            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+            whileHover={{ scale: 1.06 }}
+            transition={{ duration: 0.5, ease: 'easeOut' }}
+            className="w-full h-full object-cover block"
           />
 
-          {/*
-            Badge — exact myair:
-            class="absolute top-0 right-0 px-2 py-1"
-            style="background-color: rgb(40,167,69); color: #fff"
-            with ribbon-2 class giving border-bottom-left-radius
-          */}
+          {/* Status Badge */}
           {badgeLabel && (
-            <div style={{
-              position:            'absolute',
-              top:                 0,
-              right:               0,
-              background:          badgeBg,
-              color:               '#ffffff',
-              padding:             '4px 10px',
-              borderBottomLeftRadius: '10px',   // ribbon-2 folded corner effect
-              fontFamily:          HK,
-              fontSize:            '12px',
-              fontWeight:          '700',
-              letterSpacing:       '0.01em',
-              textTransform:       'capitalize',
-              zIndex:              5,
-              lineHeight:          '1.4',
-              pointerEvents:       'none',
-            }}>
+            <div 
+              className="absolute top-0 right-0 px-3 py-1.5 text-white font-bold text-xs tracking-wider rounded-bl-xl shadow-md z-10 select-none"
+              style={{ backgroundColor: badgeBg }}
+            >
               {badgeLabel}
             </div>
           )}
         </Link>
 
-        {/* ── INFO SECTION — py-2, plain, sits below image ── */}
-        {/* class="py-2" → padding 8px top/bottom, no background, no border */}
-        <div style={{ paddingTop: '8px', paddingBottom: '4px' }}>
-          <div style={{ display: 'flex', gap: '8px', width: '100%' }}>
+        {/* Info Section Below Image */}
+        <div className="pt-3 pb-1 flex flex-col">
+          <div className="flex gap-2.5 w-full items-start">
 
-            {/* ── LEFT: date_holder — plain stacked text, NO border ── */}
+            {/* Date Box Holder */}
             {nextDate ? (
-              <div style={{
-                display:        'flex',
-                flexDirection:  'column',
-                alignItems:     'center',
-                justifyContent: 'center',
-                flexShrink:     0,
-                border:         '1px solid #dedede',
-                borderRadius:   '8px',
-                background:     '#ffffff',
-                minWidth:       '56px',
-                width:          '56px',
-                padding:        '8px 4px',
-                gap:            '4px',
-              }}>
-                {/* Weekday — increased to 13px */}
-                <span style={{
-                  fontFamily: HK,
-                  fontSize:   '13px',
-                  fontWeight: '600',
-                  color:      '#6b7280',
-                  lineHeight: 1,
-                }}>
+              <div className="flex flex-col items-center justify-center flex-shrink-0 border border-gray-200 rounded-xl bg-white min-w-[54px] sm:min-w-[58px] p-2 gap-0.5 shadow-2xs">
+                <span className="text-[11px] sm:text-xs font-semibold text-gray-500 uppercase leading-none">
                   {fmt(nextDate, { weekday: 'short' })}
                 </span>
-
-                {/* Day number — highlight bg ONLY on this span */}
-                <span style={{
-                  fontFamily:    HK,
-                  fontSize:      '26px',
-                  fontWeight:    '800',
-                  color:         '#111111',
-                  lineHeight:    1,
-                  letterSpacing: '-0.03em',
-                  background:    '#f0f4ff',
-                  borderRadius:  '6px',
-                  padding:       '2px 6px',
-                  display:       'inline-block',
-                }}>
+                <span className="text-xl sm:text-2xl font-black text-gray-900 leading-tight bg-teal-50 text-[#00C9B7] rounded-md px-1.5 py-0.5 my-0.5">
                   {fmt(nextDate, { day: 'numeric' })}
                 </span>
-
-                {/* Month — increased to 13px */}
-                <span style={{
-                  fontFamily: HK,
-                  fontSize:   '13px',
-                  fontWeight: '600',
-                  color:      '#6b7280',
-                  lineHeight: 1,
-                }}>
+                <span className="text-[11px] sm:text-xs font-semibold text-gray-500 uppercase leading-none">
                   {fmt(nextDate, { month: 'short' })}
                 </span>
               </div>
             ) : (
-              /* No date — empty left column placeholder */
-              <div style={{ width: '44px', flexShrink: 0 }} />
+              <div className="w-12 flex-shrink-0" />
             )}
 
-            {/* ── RIGHT: date pills + title + price ── */}
-            <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minWidth: 0 }}>
+            {/* Right Column: Pills + Title + Price */}
+            <div className="flex flex-col flex-1 min-w-0">
 
-              {/* Date pills row + All Dates button */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '4px', flexWrap: 'nowrap', overflow: 'hidden' }}>
-
-                {/* Pills — px-2 py-1 rounded-md text-xs, bg rgba(0,0,0,0.05), border #dedede */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginBottom: 0, overflow: 'hidden' }}>
+              {/* Date Pills & All Dates Button */}
+              <div className="flex items-center gap-1.5 mb-1.5 flex-nowrap overflow-hidden">
+                <div className="flex items-center gap-1 overflow-hidden">
                   {nextDate && otherDates.map((date, i) => (
-                    <div key={i} style={{
-                      padding:      '4px 8px',          // px-2 py-1
-                      borderRadius: '6px',               // rounded-md
-                      fontSize:     '12px',              // text-xs
-                      fontWeight:   '600',
-                      fontFamily:   HK,
-                      color:        '#111111',
-                      background:   'rgba(0, 0, 0, 0.05)', // exact myair
-                      border:       '1px solid rgb(222, 222, 222)', // exact myair #dedede
-                      whiteSpace:   'nowrap',
-                      flexShrink:   0,
-                    }}>
+                    <div 
+                      key={i} 
+                      className="px-2 py-0.5 rounded-md text-[11px] font-semibold text-gray-800 bg-gray-100 border border-gray-200 whitespace-nowrap flex-shrink-0"
+                    >
                       {fmt(date, { day: 'numeric', month: 'short' })}
                     </div>
                   ))}
 
                   {!nextDate && (
-                    <span style={{ fontFamily: HK, fontSize: '12px', color: '#9ca3af' }}>No dates</span>
+                    <span className="text-xs text-gray-400 font-medium">No upcoming dates</span>
                   )}
                 </div>
 
-                {/* All Dates button — h-[1.65rem] border-[2px] px-2 gap-1 text-xs */}
-                <span style={{ flexShrink: 0 }}>
-                  <button
-                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); setIsModalOpen(true); }}
-                    style={{
-                      display:        'inline-flex',
-                      alignItems:     'center',
-                      justifyContent: 'center',
-                      whiteSpace:     'nowrap',
-                      height:         '1.65rem',       // h-[1.65rem] = 26.4px
-                      padding:        '0 8px',          // px-2
-                      gap:            '4px',             // gap-1
-                      border:         '2px solid #d1d5db', // border-[2px] border-input
-                      borderRadius:   '6px',             // rounded-md
-                      background:     '#ffffff',
-                      fontFamily:     HK,
-                      fontSize:       '12px',            // text-xs
-                      fontWeight:     '500',
-                      color:          '#111111',
-                      cursor:         'pointer',
-                      outline:        'none',
-                      transition:     'background 0.12s',
-                      marginBottom:   '4px',             // mb-1
-                    }}
-                    onMouseEnter={e => e.currentTarget.style.background = '#f9fafb'}
-                    onMouseLeave={e => e.currentTarget.style.background = '#ffffff'}
-                  >
-                    <Calendar style={{ width: '14px', height: '14px', color: '#6b7280' }} strokeWidth={2} />
-                    All Dates
-                  </button>
-                </span>
+                <button
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); setIsModalOpen(true); }}
+                  className="inline-flex items-center justify-center whitespace-nowrap h-6 px-2 gap-1 border border-gray-300 rounded-md bg-white text-[11px] font-semibold text-gray-700 hover:bg-gray-50 hover:border-[#00C9B7] transition-all flex-shrink-0 ml-auto"
+                >
+                  <Calendar className="w-3 h-3 text-[#00C9B7]" strokeWidth={2.5} />
+                  <span>Dates</span>
+                </button>
               </div>
 
-              {/* Title — h6 capitalize text-sm font-bold leading-tight */}
-              <Link to={`/trip/${id}`} style={{ textDecoration: 'none' }}>
-                <h6 style={{
-                  margin:          0,
-                  marginBottom:    '4px',
-                  fontFamily:      HK,
-                  fontSize:        '14px',           // text-sm
-                  fontWeight:      '700',            // font-bold
-                  color:           '#111827',
-                  lineHeight:      '1.25',           // leading-tight
-                  textTransform:   'capitalize',     // capitalize
-                  display:         '-webkit-box',
-                  WebkitLineClamp: 2,
-                  WebkitBoxOrient: 'vertical',
-                  overflow:        'hidden',
-                }}>
+              {/* Title */}
+              <Link to={`/trip/${id}`} className="group-hover:text-[#00C9B7] transition-colors">
+                <h3 className="m-0 mb-1 text-sm sm:text-base font-extrabold text-gray-900 leading-tight line-clamp-2 capitalize">
                   {cleanTitle}
-                </h6>
+                </h3>
+              </Link>
 
-                {/* Price — "from ₹ 1,599" */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontFamily: HK, display: 'inline-flex', alignItems: 'baseline', gap: '4px' }}>
-                    <span style={{ fontFamily: HK, fontSize: '16px', fontWeight: '300', color: '#374151' }}>
-                      from
-                    </span>
-                    <span style={{ display: 'inline-flex', alignItems: 'baseline' }}>
-                      <span style={{ fontFamily: HK, fontSize: '17px', fontWeight: '500', marginRight: '2px', color: '#111111' }}>₹</span>
-                      <span style={{ fontFamily: HK, fontSize: '19px', fontWeight: '900', color: '#111111' }}>
-                        {price?.toLocaleString('en-IN') || '0'}
-                      </span>
-                    </span>
-                  </span>
-                  <span style={{
-                    fontFamily:     HK,
-                    fontSize:       '12px',
-                    fontWeight:     '800',
-                    color:          '#00C9B7',
-                    border:         '1px solid #dedede',
-                    borderRadius:   '8px',
-                    background:     '#ffffff',
-                    padding:        '8px 12px',
-                    display:        'inline-flex',
-                    alignItems:     'center',
-                    justifyContent: 'center',
-                    gap:            '2px',
-                    boxShadow:      '0 1px 2px rgba(0, 0, 0, 0.02)'
-                  }}>
-                    More Details &rarr;
+              {/* Price & CTA */}
+              <div className="flex items-center justify-between mt-auto pt-1">
+                <div className="flex items-baseline gap-1">
+                  <span className="text-xs font-normal text-gray-500">from</span>
+                  <span className="text-base sm:text-lg font-black text-gray-900">
+                    ₹{price?.toLocaleString('en-IN') || '0'}
                   </span>
                 </div>
-              </Link>
+
+                <Link
+                  to={`/trip/${id}`}
+                  className="text-xs font-bold text-[#00C9B7] border border-[#00C9B7]/30 bg-teal-50/50 hover:bg-[#00C9B7] hover:text-white px-3 py-1.5 rounded-lg transition-all duration-200 inline-flex items-center gap-1 shadow-2xs"
+                >
+                  Details &rarr;
+                </Link>
+              </div>
 
             </div>
           </div>
