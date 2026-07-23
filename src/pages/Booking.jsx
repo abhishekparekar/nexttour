@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useSearchParams } from 'react-router-dom';
-import { CheckCircle, AlertCircle, ArrowRight, User, Map, ShieldAlert, FileText } from 'lucide-react';
-import { addBooking, getTripById } from '../firebase';
+import { CheckCircle, AlertCircle, ArrowRight, User, Map, ShieldAlert, FileText, Users } from 'lucide-react';
+import { addBooking, getTripById, subscribeToBookings } from '../firebase';
+import { calculateTripSeatAvailability } from '../utils/bookingUtils';
 import { motion } from 'framer-motion';
 
 const isSaturday = (dateStr) => {
@@ -20,6 +21,13 @@ const Booking = () => {
   const [availableBatches, setAvailableBatches] = useState([]);
   const [useCustomDate, setUseCustomDate] = useState(false);
   const [isCustomTrekkers, setIsCustomTrekkers] = useState(false);
+  const [allBookings, setAllBookings] = useState([]);
+
+  // Subscribe to live bookings for seat capacity tracking
+  useEffect(() => {
+    const unsub = subscribeToBookings((data) => setAllBookings(data || []));
+    return () => unsub();
+  }, []);
 
   // Initialize form data with URL params if available
   const [formData, setFormData] = useState({
@@ -430,6 +438,33 @@ const Booking = () => {
                   </select>
                 ) : (
                   <input type="date" name="date" required value={formData.date} onChange={handleChange} className={inputClass} />
+                )}
+
+                {/* Live Seat Availability Banner */}
+                {formData.date && (
+                  (() => {
+                    const seatInfo = calculateTripSeatAvailability({ ...trip, departureDate: formData.date }, allBookings);
+                    return (
+                      <div className="mt-2.5 flex items-center justify-between bg-emerald-50/70 border border-emerald-200/80 p-3 rounded-2xl text-xs">
+                        <span className="text-emerald-900 font-bold flex items-center gap-1.5">
+                          <Users size={14} className="text-emerald-600" /> Seats Availability Status:
+                        </span>
+                        <span className={`font-extrabold px-3 py-1 rounded-full text-xs border ${
+                          seatInfo.isFullyBooked 
+                            ? 'bg-rose-50 text-rose-700 border-rose-200 font-black' 
+                            : seatInfo.remainingSeats <= 5
+                            ? 'bg-amber-50 text-amber-800 border-amber-200'
+                            : 'bg-emerald-100 text-emerald-800 border-emerald-300'
+                        }`}>
+                          {seatInfo.isFullyBooked ? (
+                            '🔴 FULLY BOOKED (0 Seats Left)'
+                          ) : (
+                            `🔥 ${seatInfo.remainingSeats} Seats Available (${seatInfo.bookedPassengers}/${seatInfo.totalCapacity} Booked)`
+                          )}
+                        </span>
+                      </div>
+                    );
+                  })()
                 )}
               </div>
 

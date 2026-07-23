@@ -4,6 +4,7 @@ import {
   subscribeToSchedules, addSchedule, updateSchedule, deleteSchedule,
   subscribeToTrips, subscribeToVehicles, subscribeToDrivers, subscribeToBookings 
 } from '../../firebase';
+import { calculateTripSeatAvailability } from '../../utils/bookingUtils';
 
 const AdminSchedules = () => {
   const [schedules, setSchedules] = useState([]);
@@ -232,7 +233,27 @@ const AdminSchedules = () => {
                         </div>
                       ) : 'Not Assigned'}
                     </td>
-                    <td className="px-3 py-2 align-middle text-center text-gray-800 text-xs font-bold">{schedule.capacity} seats</td>
+                    <td className="px-3 py-2 align-middle text-center">
+                      {(() => {
+                        const seatInfo = calculateTripSeatAvailability(schedule, bookings);
+                        return (
+                          <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold border inline-flex items-center gap-1 ${
+                            seatInfo.isFullyBooked 
+                              ? 'bg-rose-50 text-rose-700 border-rose-200 font-black' 
+                              : seatInfo.remainingSeats <= 5
+                              ? 'bg-amber-50 text-amber-800 border-amber-200'
+                              : 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                          }`}>
+                            <Users size={12} />
+                            {seatInfo.isFullyBooked ? (
+                              'FULL (0 Left)'
+                            ) : (
+                              `${seatInfo.remainingSeats} Seats Left (${seatInfo.bookedPassengers}/${seatInfo.totalCapacity})`
+                            )}
+                          </span>
+                        );
+                      })()}
+                    </td>
                     <td className="px-3 py-2 align-middle">
                       <span className={`px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider ${statusColors[schedule.status]}`}>
                         {schedule.status}

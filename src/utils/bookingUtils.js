@@ -200,13 +200,59 @@ export const exportToCSV = (filename, rows, headers) => {
   ].join('\n');
 
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-  const link = document.createElement('a');
   const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
   link.setAttribute('href', url);
   link.setAttribute('download', filename);
-  link.style.visibility = 'hidden';
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
 };
 
+/**
+ * Calculates live seat availability for a trip or departure schedule:
+ * Total Seats Capacity, Total Booked Passengers, Remaining Seats, and isFullyBooked state.
+ * @param {Object} scheduleOrTrip 
+ * @param {Array} bookings 
+ */
+export const calculateTripSeatAvailability = (scheduleOrTrip, bookings = []) => {
+  if (!scheduleOrTrip) {
+    return { totalCapacity: 0, bookedPassengers: 0, remainingSeats: 0, isFullyBooked: false, percentBooked: 0 };
+  }
+
+  // Determine total capacity
+  const totalCapacity = Number(scheduleOrTrip.capacity || scheduleOrTrip.maxCapacity || scheduleOrTrip.maxGroupSize || 15);
+
+  // Match all non-cancelled bookings for this trip/schedule
+  const matchingBookings = (bookings || []).filter(b => {
+    if (b.status === 'cancelled') return false;
+    if (scheduleOrTrip.id && b.scheduleId && String(b.scheduleId) === String(scheduleOrTrip.id)) return true;
+    if (scheduleOrTrip.tripId && b.tripId && String(b.tripId) === String(scheduleOrTrip.tripId) && b.selectedDate === scheduleOrTrip.departureDate) return true;
+    
+    const schedTitle = (scheduleOrTrip.tripTitle || scheduleOrTrip.title || scheduleOrTrip.name || '').toLowerCase();
+    const bTitle = (b.tripName || '').toLowerCase();
+    const schedDate = scheduleOrTrip.departureDate || scheduleOrTrip.date;
+
+    if (schedTitle && bTitle && (bTitle.includes(schedTitle) || schedTitle.includes(bTitle))) {
+      if (schedDate && b.selectedDate) {
+        return b.selectedDate === schedDate;
+      }
+      return true;
+    }
+    return false;
+  });
+
+  const bookedPassengers = matchingBookings.reduce((sum, b) => sum + (Number(b.travelers) || 1), 0);
+  const remainingSeats = Math.max(0, totalCapacity - bookedPassengers);
+  const isFullyBooked = remainingSeats <= 0;
+  const percentBooked = totalCapacity > 0 ? Math.min(100, Math.round((bookedPassengers / totalCapacity) * 100)) : 0;
+
+  return {
+    totalCapacity,
+    bookedPassengers,
+    remainingSeats,
+    isFullyBooked,
+    percentBooked,
+    matchingBookings
+  };
+};

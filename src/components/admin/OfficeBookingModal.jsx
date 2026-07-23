@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
 import { X, User, Phone, Mail, Calendar, MapPin, Plus, Trash2, CreditCard, CheckCircle, Printer, Send, AlertCircle, Building, Contact, DollarSign } from 'lucide-react';
-import { getTrips, getSchedules, addBooking, saveCustomer, updateBookingPayments } from '../../firebase';
-import { generateBookingId, calculatePaymentStatus, formatCurrency } from '../../utils/bookingUtils';
+import { getTrips, getSchedules, addBooking, saveCustomer, updateBookingPayments, subscribeToBookings } from '../../firebase';
+import { generateBookingId, calculatePaymentStatus, formatCurrency, calculateTripSeatAvailability } from '../../utils/bookingUtils';
 import { printBookingConfirmation, printPaymentReceipt } from '../../utils/printTemplates';
 import { sendWhatsAppNotification } from '../../utils/whatsapp';
 
 const OfficeBookingModal = ({ isOpen, onClose, onSuccess }) => {
   const [trips, setTrips] = useState([]);
   const [schedules, setSchedules] = useState([]);
+  const [bookings, setBookings] = useState([]);
   const [loadingData, setLoadingData] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
@@ -40,9 +41,11 @@ const OfficeBookingModal = ({ isOpen, onClose, onSuccess }) => {
   const [paymentMode, setPaymentMode] = useState('cash');
   const [paymentReference, setPaymentReference] = useState('');
 
-  // Load Trips & Schedules on mount
+  // Load Trips, Schedules & Bookings on mount
   useEffect(() => {
     if (!isOpen) return;
+
+    const unsubBookings = subscribeToBookings((data) => setBookings(data || []));
 
     const fetchData = async () => {
       setLoadingData(true);
@@ -66,6 +69,8 @@ const OfficeBookingModal = ({ isOpen, onClose, onSuccess }) => {
     };
 
     fetchData();
+
+    return () => unsubBookings();
   }, [isOpen]);
 
   const handleSelectTrip = (trip, allSchedules = schedules) => {
@@ -365,6 +370,31 @@ const OfficeBookingModal = ({ isOpen, onClose, onSuccess }) => {
                   />
                 </div>
               </div>
+
+              {/* Live Seat Availability Indicator */}
+              {(() => {
+                const selectedScheduleObj = schedules.find(s => s.tripId === selectedTripId && s.departureDate === selectedDate);
+                const seatInfo = calculateTripSeatAvailability(selectedScheduleObj || { ...selectedTrip, departureDate: selectedDate }, bookings);
+                return (
+                  <div className="mt-2.5 flex items-center justify-between bg-gray-50 border border-gray-200/80 rounded-xl p-2.5 text-xs">
+                    <span className="text-gray-600 font-medium">Trip Seat Capacity Status:</span>
+                    <span className={`font-bold px-2.5 py-0.5 rounded-full text-[11px] border flex items-center gap-1 ${
+                      seatInfo.isFullyBooked 
+                        ? 'bg-rose-50 text-rose-700 border-rose-200 font-black' 
+                        : seatInfo.remainingSeats <= 5
+                        ? 'bg-amber-50 text-amber-800 border-amber-200'
+                        : 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                    }`}>
+                      <Users size={12} />
+                      {seatInfo.isFullyBooked ? (
+                        'FULL / FULLY BOOKED (0 Seats Left)'
+                      ) : (
+                        `${seatInfo.remainingSeats} Seats Remaining (${seatInfo.bookedPassengers}/${seatInfo.totalCapacity} Booked)`
+                      )}
+                    </span>
+                  </div>
+                );
+              })()}
 
               <div className="mt-3">
                 <label className="block text-xs font-bold text-gray-700 mb-1">Pickup Point / Boarding Location</label>
