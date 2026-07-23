@@ -727,11 +727,23 @@ export const deleteCustomer = async (phone) => {
 };
 
 // Booking payments updating helper
-export const updateBookingPayments = async (bookingId, payments, updatedFields) => {
+export const updateBookingPayments = async (bookingId, payments, updatedFields = {}) => {
+  if (!bookingId) {
+    throw new Error('Booking ID is missing');
+  }
   const docRef = doc(db, collections.BOOKINGS, bookingId);
+
+  // Clean undefined values from updatedFields to satisfy Firestore constraint
+  const cleanFields = {};
+  Object.keys(updatedFields).forEach(key => {
+    if (updatedFields[key] !== undefined) {
+      cleanFields[key] = updatedFields[key];
+    }
+  });
+
   await updateDoc(docRef, {
-    payments,
-    ...updatedFields,
+    payments: payments || [],
+    ...cleanFields,
     updatedAt: new Date().toISOString()
   });
 };

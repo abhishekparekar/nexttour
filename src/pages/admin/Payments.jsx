@@ -61,16 +61,16 @@ const AdminPayments = () => {
     try {
       const newTransaction = {
         id: `TXN_${Date.now()}`,
-        amount: paymentAmount,
-        date: formData.date,
-        mode: formData.mode,
-        reference: formData.reference || 'N/A'
+        amount: Number(paymentAmount) || 0,
+        date: formData.date || new Date().toISOString().split('T')[0],
+        mode: formData.mode || 'cash',
+        reference: (formData.reference || '').trim() || 'N/A'
       };
 
       const currentPayments = selectedBooking.payments || [];
       const updatedPayments = [...currentPayments, newTransaction];
       const newPaidAmount = paidAmount + paymentAmount;
-      const newPendingAmount = totalAmount - newPaidAmount;
+      const newPendingAmount = Math.max(0, totalAmount - newPaidAmount);
       
       let newPaymentStatus = 'pending';
       if (newPaidAmount >= totalAmount) {
@@ -80,16 +80,17 @@ const AdminPayments = () => {
       }
 
       const updatedFields = {
-        paidAmount: newPaidAmount,
-        pendingAmount: newPendingAmount,
+        paidAmount: Number(newPaidAmount) || 0,
+        pendingAmount: Number(newPendingAmount) || 0,
         paymentStatus: newPaymentStatus,
-        status: newPaidAmount > 0 ? 'confirmed' : selectedBooking.status
+        status: (newPaidAmount > 0) ? 'confirmed' : (selectedBooking?.status || 'pending')
       };
 
       await updateBookingPayments(selectedBooking.id, updatedPayments, updatedFields);
       setShowModal(false);
     } catch (err) {
-      setError('Failed to record payment transaction.');
+      console.error('Error recording payment transaction:', err);
+      setError(err?.message || 'Failed to record payment transaction.');
     }
   };
 
