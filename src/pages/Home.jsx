@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { Loader2, Mountain, Compass, MapPin, Calendar } from 'lucide-react';
 import TripCard from '../components/TripCard';
 import { useCachedTrips, useCachedCategories } from '../firebaseCache';
+import { getCache } from '../cache';
 import { motion, AnimatePresence } from 'framer-motion';
 import heroBg1 from '../assest/img/herobg1.png';
 import heroBg2 from '../assest/img/herobg2.jpg';
@@ -16,9 +17,10 @@ const extractEmoji = (str) => {
 };
 
 const Home = () => {
-  const [trips, setTrips] = useState([]);
+  const initialTrips = getCache('trips') || [];
+  const [trips, setTrips] = useState(initialTrips);
   const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(initialTrips.length === 0);
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [currentHeroIdx, setCurrentHeroIdx] = useState(0);
